@@ -1,0 +1,45 @@
+{
+  "coreSkills": ["Research", "Data Analysis", "Academic Writing", "Critical Thinking"],
+  "questions": [
+    {
+      "id": "research-methods",
+      "label": "Do you conduct research studies?",
+      "skills": ["Research Methods", "Experimental Design", "Study Design", "Methodology"]
+    },
+    {
+      "id": "data-analysis",
+      "label": "Do you analyze research data?",
+      "skills": ["Data Analysis", "Statistical Analysis", "SPSS", "R", "Python"]
+    },
+    {
+      "id": "academic-writing",
+      "label": "Do you write academic papers?",
+      "skills": ["Academic Writing", "Scientific Writing", "Publication", "Grant Writing"]
+    },
+    {
+      "id": "literature-review",
+      "label": "Do you conduct literature reviews?",
+      "skills": ["Literature Review", "Systematic Review", "Meta-analysis", "Research Synthesis"]
+    },
+    {
+      "id": "lab-work",
+      "label": "Do you work in a laboratory?",
+      "skills": ["Laboratory Skills", "Wet Lab", "Equipment Operation", "Safety Protocols"]
+    },
+    {
+      "id": "presentation",
+      "label": "Do you present research findings?",
+      "skills": ["Presentation Skills", "Conference Presentations", "Poster Sessions", "Public Speaking"]
+    },
+    {
+      "id": "collaboration",
+      "label": "Do you collaborate with other researchers?",
+      "skills": ["Collaboration", "Team Research", "Cross-disciplinary Work", "Networking"]
+    },
+    {
+      "id": "funding",
+      "label": "Do you secure research funding?",
+      "skills": ["Grant Writing", "Funding Applications", "Budget Planning", "Proposal Development"]
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "personalInfo": {
+    "name": "Abdelrahman Yasser",
+    "title": "Flutter Software Engineer",
+    "email": "abdo.yasser.dev@gmail.com",
+    "phone": "+201015694732",
+    "location": "Cairo, Egypt",
+    "links": {
+      "linkedin": "https://linkedin.com/in/abdelrahmanyasserdev",
+      "github": "https://github.com/AbdelrahmanYasserDev"
+    }
+  },
+  "careerProfile": {
+    "field": "developer",
+    "specialization": "flutter",
+    "level": "mid"
+  },
+  "professionalSummary": "Flutter Software Engineer with 2+ years of hands-on experience building cross-platform mobile and desktop applications. Focused on clean architecture, offline-first solutions, and real-world business integrations including POS systems, booking platforms, and service marketplaces. Comfortable working across the full Flutter stack from state management and local databases to hardware printing and real-time communication.",
+  "experience": [
+    {
+      "role": "Flutter Software Engineer",
+      "company": "Believe Agency",
+      "period": "Dec 2025 – Present",
+      "bullets": [
+        "Built and maintained cross-platform Flutter apps for Android, iOS, and Windows.",
+        "Implemented offline-first architecture with local SQLite databases and Hive for background data persistence.",
+        "Integrated ESC/POS thermal printing over USB, Bluetooth, and IP network interfaces.",
+        "Worked with REST APIs, Firebase services, and real-time socket connections.",
+        "Refactored existing codebases toward Clean Architecture and feature-based structure."
+      ]
+    },
+    {
+      "role": "Flutter Developer",
+      "company": "Manarat Elasr (Part Time)",
+      "period": "Dec 2023 – Present",
+      "bullets": [
+        "Developed and maintained mobile apps using Flutter and clean architecture.",
+        "Implemented Bloc and MVVM patterns for scalable and maintainable code.",
+        "Integrated RESTful APIs, Firebase services, and custom push notification logic.",
+        "Collaborated in a small Agile team (2-3 members) using Git and GitHub for version control."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Tog v-1 — POS & E-Invoicing",
+      "category": "ERP & POS Offline System",
+      "desc": "Point of sale and electronic invoicing system for the Saudi market with ZATCA compliance.",
+      "bullets": [
+        "Designed offline-first local database with 27 SQLite tables, sync logic, and automatic inventory updates.",
+        "Integrated multi-interface thermal printer support (USB, Bluetooth, IP) with Arabic RTL receipt rendering.",
+        "Implemented ZATCA-compliant e-invoicing workflow with QR code generation.",
+        "Optimized desktop performance for Windows POS terminals using window_manager."
+      ],
+      "tech": "Flutter · SQLite · Hive · Provider · ESC/POS · Dio",
+      "links": { "googlePlay": "https://play.google.com/store/apps/details?id=com.manaratalasr.apps.tog1_3" }
+    },
+    {
+      "name": "Gear — Rider",
+      "category": "Ride-Hailing Platform",
+      "desc": "Ride-hailing passenger app with real-time trip tracking and management.",
+      "bullets": [
+        "Rendered live route polylines between pickup and destination using Google Maps and flutter_polyline_points.",
+        "Integrated OneSignal push notifications and Razorpay payment gateway.",
+        "Implemented real-time trip status updates via Socket.io."
+      ],
+      "tech": "Flutter · GetX · Socket.io · Google Maps · OneSignal · Razorpay",
+      "links": { "googlePlay": "https://play.google.com/store/apps/details?id=com.gear.app" }
+    },
+    {
+      "name": "Gear — Captain",
+      "category": "Ride-Hailing Platform",
+      "desc": "Ride-hailing driver app for receiving and managing ride requests.",
+      "bullets": [
+        "Built background GPS tracking service that syncs driver location to server via Socket.io.",
+        "Implemented slide-to-accept ride request UX for captain app.",
+        "Rendered live routes and integrated real-time notifications."
+      ],
+      "tech": "Flutter · GetX · Socket.io · Google Maps · OneSignal",
+      "links": { "googlePlay": "https://play.google.com/store/apps/details?id=com.gear.app.captain" }
+    },
+    {
+      "name": "Hogga — Legal Consulting",
+      "category": "Legal Consulting Platform",
+      "desc": "Platform connecting clients with certified attorneys via text chat and live video consultations.",
+      "bullets": [
+        "Integrated Agora RTC Engine for real-time audio and video consultation sessions.",
+        "Built real-time chat using Socket.io with Laravel Echo and Pusher for message delivery status.",
+        "Applied Flutter Secure Storage for encrypted token and credentials management."
+      ],
+      "tech": "Flutter · Bloc · Agora RTC · Socket.io · Laravel Echo · Pusher",
+      "links": { "googlePlay": "https://play.google.com/store/apps/details?id=com.hogga.app.hogga" }
+    },
+    {
+      "name": "Zone — Event & Venue Booking",
+      "category": "Service & Event Booking Platform",
+      "desc": "Booking platform for wedding halls, event venues, and beauty centers.",
+      "bullets": [
+        "Built calendar-based booking UI with Table Calendar and dynamic availability locking from API.",
+        "Implemented location-based venue search filtered by governorate and city from local JSON assets.",
+        "Integrated Google Maps for venue discovery and directions."
+      ],
+      "tech": "Flutter · Bloc · Google Maps · Table Calendar · Dio",
+      "links": { "googlePlay": "https://play.google.com/store/apps/details?id=com.zone.app.zone" }
+    },
+    {
+      "name": "My Feny — Home Services",
+      "category": "Home Services Marketplace",
+      "desc": "On-demand home maintenance marketplace connecting users with licensed technicians.",
+      "bullets": [
+        "Built real-time request status tracker (Pending → Accepted → In-Progress → Completed).",
+        "Integrated Firebase Messaging for technician arrival and status update notifications.",
+        "Implemented in-app chat and service rating system."
+      ],
+      "tech": "Flutter · Bloc · Dio · Firebase Messaging · Geolocator",
+      "links": {
+        "googlePlay": "https://play.google.com/store/search?q=ماي+فني",
+        "appStore": "https://apps.apple.com/kw/app/ماي-فني/id6746807479"
+      }
+    }
+  ],
+  "skills": {
+    "Languages": ["Dart"],
+    "Framework": ["Flutter (Android, iOS, Windows)"],
+    "Architecture": ["Clean Architecture", "MVVM", "Feature-first Architecture"],
+    "State Management": ["Bloc / Cubit", "Provider", "GetX"],
+    "Backend Integration": ["REST API", "Firebase"],
+    "Local Storage": ["SQLite", "Hive", "SharedPreferences"],
+    "Maps & Location": ["Google Maps", "Geolocator", "Mapbox"],
+    "Desktop & Printing": ["Windows Desktop", "ESC/POS", "USB Printing"],
+    "Tools": ["Git", "GitHub", "Play Console", "Firebase Console"]
+  },
+  "education": [
+    {
+      "degree": "Bachelor of Computer Science (Faculty of Computers and Information)",
+      "institution": "Beni-Suef University",
+      "period": "2018 – 2023"
+    }
+  ],
+  "languages": [
+    { "lang": "Arabic", "level": "Native" },
+    { "lang": "English", "level": "Professional" }
+  ],
+  "meta": {
+    "locale": "en",
+    "templateId": "ai-recommended",
+    "selectedSummaryId": "001",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-07-03T00:00:00.000Z"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "profession": "accountant",
+  "coreSkills": [
+    "payroll processing",
+    "IFRS",
+    "payroll processing",
+    "Excel (Advanced)",
+    "tax returns",
+    "financial statements",
+    "Attention to Detail",
+    "QuickBooks",
+    "Time Management",
+    "month-end closings",
+    "QuickBooks",
+    "SAP ERP",
+    "QuickBooks",
+    "Xero",
+    "IFRS",
+    "financial statements",
+    "financial statements",
+    "Oracle Financials",
+    "Attention to Detail",
+    "payroll processing",
+    "IFRS",
+    "month-end closings",
+    "Time Management",
+    "Xero",
+    "month-end closings",
+    "Excel (Advanced)",
+    "internal controls",
+    "NetSuite",
+    "TaxSlayer",
+    "general ledgers",
+    "Confidentiality",
+    "QuickBooks",
+    "Attention to Detail",
+    "Xero",
+    "Xero",
+    "Attention to Detail",
+    "payroll processing",
+    "NetSuite",
+    "GAAP",
+    "SAP ERP"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with IFRS?",
+      "skills": [
+        "IFRS",
+        "Confidentiality"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Oracle Financials?",
+      "skills": [
+        "Oracle Financials",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with TaxSlayer?",
+      "skills": [
+        "TaxSlayer",
+        "Analytical Thinking"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with Excel (Advanced)?",
+      "skills": [
+        "Excel (Advanced)",
+        "Confidentiality"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Xero?",
+      "skills": [
+        "Xero",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with IFRS?",
+      "skills": [
+        "IFRS",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with TaxSlayer?",
+      "skills": [
+        "TaxSlayer",
+        "Attention to Detail"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with Oracle Financials?",
+      "skills": [
+        "Oracle Financials",
+        "Time Management"
+      ]
+    }
+  ]
+}

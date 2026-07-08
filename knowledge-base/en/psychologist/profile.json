@@ -1,0 +1,16 @@
+{
+  "profession": "psychologist",
+  "recommendedTemplates": {
+    "fresh": "classic",
+    "junior": "sidebar",
+    "mid": "ats",
+    "senior": "executive"
+  },
+  "defaultTitle": {
+    "fresh": "Psychology Intern",
+    "junior": "Psychologist",
+    "mid": "Clinical Psychologist",
+    "senior": "Senior Psychologist"
+  },
+  "coreSkills": ["Psychology", "Counseling", "Assessment", "Therapy"]
+}

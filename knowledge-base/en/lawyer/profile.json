@@ -1,0 +1,16 @@
+{
+  "profession": "lawyer",
+  "recommendedTemplates": {
+    "fresh": "classic",
+    "junior": "ats",
+    "mid": "sidebar",
+    "senior": "executive"
+  },
+  "defaultTitle": {
+    "fresh": "Associate Attorney",
+    "junior": "Attorney",
+    "mid": "Senior Attorney",
+    "senior": "Partner"
+  },
+  "coreSkills": ["Legal Research", "Contract Law", "Legal Writing", "Client Communication"]
+}

@@ -1,0 +1,111 @@
+{
+  "profession": "business_analyst",
+  "coreSkills": [
+    "Risk Management",
+    "Problem Solving",
+    "Planning",
+    "Adaptability",
+    "Agile",
+    "Data Visualization",
+    "Agile",
+    "Adaptability",
+    "project deliverables",
+    "team workflows",
+    "Project Management Software",
+    "Teamwork",
+    "Project Management Software",
+    "Critical Thinking",
+    "Agile",
+    "team workflows",
+    "MS Office",
+    "data analysis",
+    "client relationships",
+    "Leadership",
+    "process improvements",
+    "Communication",
+    "Communication",
+    "Cross-functional Leadership",
+    "Planning",
+    "Data Visualization",
+    "Communication",
+    "project deliverables",
+    "Agile",
+    "Teamwork",
+    "Adaptability",
+    "Planning",
+    "Communication",
+    "Risk Management",
+    "project deliverables",
+    "CRM Systems",
+    "MS Office",
+    "Analytics",
+    "MS Office",
+    "Time Management"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Planning?",
+      "skills": [
+        "Planning",
+        "Adaptability"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Operations?",
+      "skills": [
+        "Operations",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with Agile?",
+      "skills": [
+        "Agile",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with Planning?",
+      "skills": [
+        "Planning",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Risk Management?",
+      "skills": [
+        "Risk Management",
+        "Teamwork"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with Communication?",
+      "skills": [
+        "Communication",
+        "Time Management"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with Planning?",
+      "skills": [
+        "Planning",
+        "Time Management"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with Agile?",
+      "skills": [
+        "Agile",
+        "Leadership"
+      ]
+    }
+  ]
+}

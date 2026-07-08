@@ -1,0 +1,16 @@
+{
+  "profession": "consultant",
+  "recommendedTemplates": {
+    "fresh": "classic",
+    "junior": "sidebar",
+    "mid": "corporate",
+    "senior": "executive"
+  },
+  "defaultTitle": {
+    "fresh": "Junior Consultant",
+    "junior": "Consultant",
+    "mid": "Senior Consultant",
+    "senior": "Principal Consultant"
+  },
+  "coreSkills": ["Strategic Planning", "Business Analysis", "Client Management", "Problem Solving"]
+}

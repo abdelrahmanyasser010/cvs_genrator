@@ -1,0 +1,16 @@
+{
+  "profession": "hr",
+  "recommendedTemplates": {
+    "fresh": "classic",
+    "junior": "sidebar",
+    "mid": "corporate",
+    "senior": "executive"
+  },
+  "defaultTitle": {
+    "fresh": "HR Coordinator",
+    "junior": "HR Generalist",
+    "mid": "HR Manager",
+    "senior": "HR Director"
+  },
+  "coreSkills": ["Recruitment", "Employee Relations", "HR Policies", "Performance Management"]
+}

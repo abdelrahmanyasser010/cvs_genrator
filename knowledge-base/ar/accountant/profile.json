@@ -1,0 +1,5 @@
+{
+  "profession": "accountant",
+  "recommendedTemplates": { "fresh": "classic", "junior": "modern", "mid": "sidebar", "senior": "corporate" },
+  "defaultTitle": { "fresh": "محاسب junior", "junior": "محاسب", "mid": "محاسب أول", "senior": "مدير مالي" }
+}

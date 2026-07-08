@@ -1,0 +1,45 @@
+{
+  "coreSkills": ["Journalism", "Writing", "Research", "Interviewing"],
+  "questions": [
+    {
+      "id": "news-writing",
+      "label": "Do you write news articles?",
+      "skills": ["News Writing", "Journalism", "AP Style", "Inverted Pyramid"]
+    },
+    {
+      "id": "investigative",
+      "label": "Do you do investigative journalism?",
+      "skills": ["Investigative Journalism", "Data Journalism", "Public Records", "Source Development"]
+    },
+    {
+      "id": "interviewing",
+      "label": "Do you conduct interviews?",
+      "skills": ["Interviewing", "Source Building", "Questioning Techniques", "On-camera Skills"]
+    },
+    {
+      "id": "digital-media",
+      "label": "Do you work with digital media?",
+      "skills": ["Digital Journalism", "Social Media", "SEO Writing", "Content Management"]
+    },
+    {
+      "id": "broadcasting",
+      "label": "Do you work in broadcast journalism?",
+      "skills": ["Broadcasting", "TV Reporting", "Radio", "Video Production"]
+    },
+    {
+      "id": "editing",
+      "label": "Do you edit content?",
+      "skills": ["Editing", "Copy Editing", "Proofreading", "Headline Writing"]
+    },
+    {
+      "id": "photography",
+      "label": "Do you take photos for stories?",
+      "skills": ["Photography", "Photojournalism", "Visual Storytelling", "Image Editing"]
+    },
+    {
+      "id": "multimedia",
+      "label": "Do you create multimedia content?",
+      "skills": ["Multimedia", "Podcasting", "Video Editing", "Interactive Graphics"]
+    }
+  ]
+}

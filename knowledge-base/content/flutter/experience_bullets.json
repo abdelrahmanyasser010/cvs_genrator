@@ -1,0 +1,24 @@
+{
+  "bullets": [
+    "Developed and maintained cross-platform Flutter applications for Android, iOS, and Windows using Clean Architecture principles.",
+    "Implemented Bloc/Cubit state management for scalable, testable, and maintainable codebases across multiple production apps.",
+    "Integrated RESTful APIs, Firebase services, and real-time WebSocket communication (Socket.io) for live data synchronization.",
+    "Designed offline-first local databases with SQLite and Hive, including background sync and conflict resolution logic.",
+    "Built ESC/POS thermal printing modules supporting USB, Bluetooth, and IP network connections with Arabic RTL receipt rendering.",
+    "Refactored monolithic codebases into feature-based modular architecture, reducing coupling and improving team velocity.",
+    "Integrated Google Maps, Mapbox, and geolocation services for location-based features and real-time tracking.",
+    "Implemented push notification pipelines using Firebase Messaging and OneSignal for user engagement and alerts.",
+    "Developed payment integrations including Razorpay, in-app purchases, and secure JWT-based authentication flows.",
+    "Optimized app performance for low-end devices and POS terminals, including memory management and lazy loading strategies.",
+    "Collaborated in Agile teams using Git/GitHub for version control, code reviews, and CI-friendly branching workflows.",
+    "Integrated Agora RTC Engine for real-time audio/video consultation features with adaptive bitrate handling.",
+    "Built image compression and upload pipelines reducing storage costs by up to 70% before cloud upload.",
+    "Implemented ZATCA-compliant e-invoicing workflows with QR code generation for the Saudi Arabian market.",
+    "Created paginated data controllers with local caching (sqflite) for smooth scrolling through large datasets.",
+    "Developed background GPS tracking services with battery-optimized location update rates for driver applications.",
+    "Applied flutter_secure_storage and screen protection for DRM-compliant content delivery in e-learning apps.",
+    "Built calendar-based booking UIs with dynamic availability locking and optimistic reservation state machines.",
+    "Integrated Laravel Echo and Pusher for real-time chat with message delivery status tracking.",
+    "Shipped production apps to Google Play and App Store with full release pipeline management."
+  ]
+}

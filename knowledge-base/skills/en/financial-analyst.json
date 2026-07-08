@@ -1,0 +1,45 @@
+{
+  "coreSkills": ["Financial Analysis", "Excel", "Financial Modeling", "Data Analysis"],
+  "questions": [
+    {
+      "id": "financial-modeling",
+      "label": "Do you build financial models?",
+      "skills": ["Financial Modeling", "Excel", "Valuation", "DCF Analysis"]
+    },
+    {
+      "id": "data-analysis",
+      "label": "Do you analyze financial data?",
+      "skills": ["Data Analysis", "Financial Analysis", "Trend Analysis", "Variance Analysis"]
+    },
+    {
+      "id": "reporting",
+      "label": "Do you create financial reports?",
+      "skills": ["Financial Reporting", "Management Reporting", "Dashboard Creation", "KPI Tracking"]
+    },
+    {
+      "id": "forecasting",
+      "label": "Do you perform financial forecasting?",
+      "skills": ["Forecasting", "Budgeting", "Planning", "Projections"]
+    },
+    {
+      "id": "investment-analysis",
+      "label": "Do you analyze investment opportunities?",
+      "skills": ["Investment Analysis", "Portfolio Management", "Risk Assessment", "Asset Allocation"]
+    },
+    {
+      "id": "sql",
+      "label": "Do you use SQL for data analysis?",
+      "skills": ["SQL", "Database Querying", "Data Extraction", "Data Manipulation"]
+    },
+    {
+      "id": "visualization",
+      "label": "Do you create financial visualizations?",
+      "skills": ["Data Visualization", "Tableau", "Power BI", "Chart Creation"]
+    },
+    {
+      "id": "communication",
+      "label": "Do you present financial insights?",
+      "skills": ["Presentation Skills", "Stakeholder Communication", "Executive Summaries", "Storytelling"]
+    }
+  ]
+}

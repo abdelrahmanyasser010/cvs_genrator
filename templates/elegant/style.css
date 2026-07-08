@@ -1,0 +1,32 @@
+@import url('../shared/base.css');
+
+.cv-paper {
+  --accent: #334155;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.cv-header {
+  border-bottom: 1px solid #334155;
+}
+.cv-header h1 {
+  font-size: 25px;
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: 0;
+}
+.cv-header .cv-subtitle {
+  color: #475569;
+  font-style: italic;
+  font-weight: 600;
+}
+.cv-section-title {
+  color: #334155;
+  border-bottom: 1px solid #cbd5e1;
+  letter-spacing: 0;
+}
+.cv-role,
+.cv-proj-name,
+.degree {
+  color: #1f2937;
+}

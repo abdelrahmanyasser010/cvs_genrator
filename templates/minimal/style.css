@@ -1,0 +1,29 @@
+@import url('../shared/base.css');
+
+.cv-paper {
+  --accent: #4b5563;
+  padding: 46px 58px;
+  font-size: 13px;
+}
+.cv-header {
+  border-bottom: 1px solid #d1d5db;
+}
+.cv-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: 0;
+}
+.cv-header .cv-subtitle {
+  color: #374151;
+  font-weight: 600;
+}
+.cv-section-title {
+  font-size: 11.5px;
+  letter-spacing: 0;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+.cv-contacts .ci a {
+  color: #1f2937;
+}

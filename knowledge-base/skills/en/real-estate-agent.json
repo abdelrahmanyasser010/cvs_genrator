@@ -1,0 +1,45 @@
+{
+  "coreSkills": ["Real Estate Sales", "Property Showings", "Market Analysis", "Client Relations"],
+  "questions": [
+    {
+      "id": "sales",
+      "label": "Do you sell real estate properties?",
+      "skills": ["Real Estate Sales", "Property Sales", "Closing Deals", "Negotiation"]
+    },
+    {
+      "id": "showings",
+      "label": "Do you conduct property showings?",
+      "skills": ["Property Showings", "Open Houses", "Property Tours", "Client Presentation"]
+    },
+    {
+      "id": "market-analysis",
+      "label": "Do you analyze real estate markets?",
+      "skills": ["Market Analysis", "Comparative Market Analysis", "Pricing Strategy", "Market Trends"]
+    },
+    {
+      "id": "listings",
+      "label": "Do you manage property listings?",
+      "skills": ["Listings", "Property Marketing", "MLS", "Listing Agreements"]
+    },
+    {
+      "id": "contracts",
+      "label": "Do you handle real estate contracts?",
+      "skills": ["Real Estate Contracts", "Purchase Agreements", "Lease Agreements", "Legal Documents"]
+    },
+    {
+      "id": "client-relations",
+      "label": "Do you manage client relationships?",
+      "skills": ["Client Relations", "Customer Service", "Communication", "Follow-up"]
+    },
+    {
+      "id": "financing",
+      "label": "Do you help clients with financing?",
+      "skills": ["Mortgage Knowledge", "Financing Options", "Lender Relations", "Pre-approval Process"]
+    },
+    {
+      "id": "networking",
+      "label": "Do you network for business development?",
+      "skills": ["Networking", "Referral Generation", "Business Development", "Lead Generation"]
+    }
+  ]
+}

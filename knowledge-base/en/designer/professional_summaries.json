@@ -1,0 +1,25 @@
+{
+  "profession": "designer",
+  "summaries": [
+    {
+      "id": "designer-1",
+      "text": "Creative UI/UX Designer with 3+ years of experience crafting user-centered digital experiences. Proficient in Figma and Adobe Creative Suite, with a strong focus on accessibility and responsive design. Passionate about creating intuitive interfaces that delight users.",
+      "levels": ["junior", "mid"]
+    },
+    {
+      "id": "designer-2",
+      "text": "Senior Designer with 5+ years of experience leading design systems and brand identity projects. Expert in translating complex requirements into elegant visual solutions. Skilled in mentoring junior designers and collaborating with cross-functional teams to deliver cohesive design strategies.",
+      "levels": ["senior"]
+    },
+    {
+      "id": "designer-3",
+      "text": "Versatile Graphic Designer specializing in brand identity, print design, and digital marketing materials. Adept at creating compelling visual narratives that strengthen brand recognition. Strong portfolio spanning corporate branding, packaging design, and social media campaigns.",
+      "levels": ["mid", "senior"]
+    },
+    {
+      "id": "designer-4",
+      "text": "Entry-level Designer with a passion for clean aesthetics and user experience. Proficient in industry-standard design tools with a solid foundation in design principles. Eager to contribute creative solutions and grow within a collaborative design team.",
+      "levels": ["fresh"]
+    }
+  ]
+}

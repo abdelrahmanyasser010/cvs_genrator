@@ -1,0 +1,5 @@
+@import url('base.css');
+.cv-paper { background: #1a1a2e; color: #eee; }
+.cv-header { border-bottom-color: #eee; }
+.cv-header h1, .cv-role, .cv-section-title { color: #fff; }
+.cv-company, .cv-proj-desc, ul.cv-ul li { color: #ccc; }

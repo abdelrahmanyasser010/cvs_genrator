@@ -1,0 +1,16 @@
+{
+  "profession": "doctor",
+  "recommendedTemplates": {
+    "fresh": "classic",
+    "junior": "ats",
+    "mid": "sidebar",
+    "senior": "executive"
+  },
+  "defaultTitle": {
+    "fresh": "Medical Resident",
+    "junior": "Physician",
+    "mid": "Senior Physician",
+    "senior": "Medical Director"
+  },
+  "coreSkills": ["Patient Care", "Medical Diagnosis", "Clinical Skills", "Electronic Health Records"]
+}

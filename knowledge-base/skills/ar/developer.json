@@ -1,0 +1,111 @@
+{
+  "profession": "developer",
+  "coreSkills": [
+    "بنية الخدمات المصغرة",
+    "Flutter",
+    "التعاون بين الأقسام",
+    "React",
+    "Flutter",
+    "مسارات التكامل والتسليم المستمر (CI/CD)",
+    "تصميم النظم",
+    "مراجعة الكود",
+    "حل المشكلات",
+    "Python",
+    "GraphQL",
+    "React",
+    "TypeScript",
+    "حل المشكلات",
+    "البنية التحتية السحابية",
+    "TypeScript",
+    "منهجية أجايل",
+    "منهجية أجايل",
+    "التعاون بين الأقسام",
+    "TypeScript",
+    "Flutter",
+    "التعاون بين الأقسام",
+    "توجيه الموظفين",
+    "Flutter",
+    "AWS",
+    "Docker",
+    "TypeScript",
+    "منهجية أجايل",
+    "Kubernetes",
+    "منهجية أجايل",
+    "Python",
+    "Python",
+    "توجيه الموظفين",
+    "تصميم النظم",
+    "Docker",
+    "البنية التحتية السحابية",
+    "AWS",
+    "تصميم النظم",
+    "Node.js",
+    "تصميم النظم"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "خبرة في React؟",
+      "skills": [
+        "React",
+        "منهجية أجايل"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "خبرة في MongoDB؟",
+      "skills": [
+        "MongoDB",
+        "حل المشكلات"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "خبرة في TypeScript؟",
+      "skills": [
+        "TypeScript",
+        "منهجية أجايل"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "خبرة في React؟",
+      "skills": [
+        "React",
+        "تصميم النظم"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "خبرة في TypeScript؟",
+      "skills": [
+        "TypeScript",
+        "التعاون بين الأقسام"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "خبرة في Node.js؟",
+      "skills": [
+        "Node.js",
+        "قيادة الفريق"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "خبرة في SQL؟",
+      "skills": [
+        "SQL",
+        "تصميم النظم"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "خبرة في GraphQL؟",
+      "skills": [
+        "GraphQL",
+        "التعاون بين الأقسام"
+      ]
+    }
+  ]
+}

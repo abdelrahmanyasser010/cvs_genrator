@@ -1,0 +1,41 @@
+@import url('../shared/base.css');
+
+.layout-sidebar {
+  display: grid;
+  grid-template-columns: 235px 1fr;
+  gap: 26px;
+}
+.layout-sidebar .cv-sidebar {
+  background: #f3f4f6;
+  color: #111827;
+  padding: 26px 22px;
+  border-right: 1px solid #d1d5db;
+}
+[dir="rtl"] .layout-sidebar .cv-sidebar {
+  border-right: 0;
+  border-left: 1px solid #d1d5db;
+}
+.layout-sidebar .cv-main {
+  padding: 26px 34px 26px 0;
+}
+[dir="rtl"] .layout-sidebar .cv-main {
+  padding: 26px 0 26px 34px;
+}
+.layout-sidebar .cv-header {
+  text-align: left;
+  border-bottom: 1.5px solid #111827;
+}
+[dir="rtl"] .layout-sidebar .cv-header {
+  text-align: right;
+}
+.layout-sidebar .cv-header h1 {
+  font-size: 24px;
+  letter-spacing: 0;
+}
+.layout-sidebar .cv-section-title {
+  font-size: 11.5px;
+  letter-spacing: 0;
+}
+.layout-sidebar .cv-sidebar .cv-section-title {
+  border-bottom-color: #d1d5db;
+}

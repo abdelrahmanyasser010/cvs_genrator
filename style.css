@@ -1,0 +1,387 @@
+/* ATS-Friendly CV Stylesheet
+   Design: Black, White, Subtle Gray — No decorative colors
+   Font: Google Fonts Inter (English) + Cairo (Arabic)
+   Print-ready for A4
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+/* =============================================
+   VARIABLES
+============================================= */
+:root {
+  --color-black:    #111111;
+  --color-dark:     #222222;
+  --color-mid:      #444444;
+  --color-gray:     #666666;
+  --color-border:   #dddddd;
+  --color-bg-light: #f7f7f7;
+  --color-white:    #ffffff;
+
+  --font-en: 'Inter', 'Segoe UI', Arial, sans-serif;
+  --font-ar: 'Cairo', 'Segoe UI', Arial, sans-serif;
+
+  --page-width: 820px;
+}
+
+/* =============================================
+   RESET & BASE
+============================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-en);
+  background: var(--color-bg-light);
+  color: var(--color-dark);
+  font-size: 14px;
+  line-height: 1.55;
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* =============================================
+   CV WRAPPER (simulates A4 paper)
+============================================= */
+.cv-page {
+  background: var(--color-white);
+  width: 100%;
+  max-width: var(--page-width);
+  padding: 40px 48px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
+
+/* =============================================
+   HEADER
+============================================= */
+.cv-header {
+  border-bottom: 2px solid var(--color-black);
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+
+.cv-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-black);
+  letter-spacing: -0.3px;
+  margin-bottom: 2px;
+}
+
+.cv-header .cv-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-gray);
+  margin-bottom: 10px;
+}
+
+.cv-contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  font-size: 12.5px;
+  color: var(--color-mid);
+}
+
+.cv-contact-row a {
+  color: var(--color-mid);
+  text-decoration: none;
+}
+
+.cv-contact-row a:hover {
+  text-decoration: underline;
+  color: var(--color-black);
+}
+
+.cv-contact-row .sep {
+  color: var(--color-border);
+}
+
+/* =============================================
+   SECTIONS
+============================================= */
+.cv-section {
+  margin-bottom: 22px;
+}
+
+.cv-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--color-black);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 4px;
+  margin-bottom: 12px;
+}
+
+/* =============================================
+   PROFESSIONAL SUMMARY
+============================================= */
+.cv-summary p {
+  font-size: 13.5px;
+  color: var(--color-mid);
+  line-height: 1.65;
+}
+
+/* =============================================
+   EXPERIENCE / TIMELINE ITEMS
+============================================= */
+.cv-entry {
+  margin-bottom: 16px;
+}
+
+.cv-entry:last-child {
+  margin-bottom: 0;
+}
+
+.cv-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.cv-entry-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.cv-entry-company {
+  font-size: 13px;
+  color: var(--color-gray);
+  font-weight: 400;
+}
+
+.cv-entry-period {
+  font-size: 12px;
+  color: var(--color-gray);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cv-bullets {
+  list-style: none;
+  padding: 0;
+  margin-top: 4px;
+}
+
+.cv-bullets li {
+  position: relative;
+  padding-left: 14px;
+  font-size: 13px;
+  color: var(--color-mid);
+  margin-bottom: 3px;
+  line-height: 1.5;
+}
+
+.cv-bullets li::before {
+  content: '–';
+  position: absolute;
+  left: 0;
+  color: var(--color-gray);
+}
+
+/* =============================================
+   PROJECTS
+============================================= */
+.cv-project {
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-bg-light);
+}
+
+.cv-project:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.cv-project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 3px;
+  gap: 8px;
+}
+
+.cv-project-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.cv-project-links {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.cv-project-links a {
+  font-size: 11.5px;
+  color: var(--color-gray);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cv-project-links a:hover {
+  color: var(--color-black);
+  border-bottom-color: var(--color-black);
+}
+
+.cv-project-desc {
+  font-size: 12.5px;
+  color: var(--color-gray);
+  margin-bottom: 5px;
+  font-style: italic;
+}
+
+.cv-tech-line {
+  font-size: 11.5px;
+  color: var(--color-gray);
+  margin-top: 5px;
+}
+
+.cv-tech-line strong {
+  color: var(--color-mid);
+  font-weight: 600;
+}
+
+/* =============================================
+   SKILLS TABLE LAYOUT
+============================================= */
+.cv-skills-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 32px;
+}
+
+.cv-skill-row {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  font-size: 13px;
+}
+
+.cv-skill-label {
+  font-weight: 600;
+  color: var(--color-dark);
+  white-space: nowrap;
+  min-width: 130px;
+  font-size: 12.5px;
+}
+
+.cv-skill-value {
+  color: var(--color-mid);
+}
+
+/* =============================================
+   EDUCATION & LANGUAGES
+============================================= */
+.cv-edu-entry {
+  margin-bottom: 6px;
+}
+
+.cv-edu-entry .degree {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-black);
+}
+
+.cv-edu-entry .institution {
+  font-size: 12.5px;
+  color: var(--color-gray);
+}
+
+.cv-edu-entry .period {
+  font-size: 12px;
+  color: var(--color-gray);
+}
+
+.cv-lang-row {
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+}
+
+.cv-lang-item strong {
+  color: var(--color-dark);
+  font-weight: 600;
+}
+
+.cv-lang-item span {
+  color: var(--color-gray);
+}
+
+/* =============================================
+   PRINT STYLES
+============================================= */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 14mm;
+  }
+
+  body {
+    background: white !important;
+    padding: 0 !important;
+  }
+
+  .cv-page {
+    box-shadow: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  .cv-section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .cv-project {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
+
+/* =============================================
+   RESPONSIVE
+============================================= */
+@media (max-width: 600px) {
+  .cv-page {
+    padding: 24px 18px;
+  }
+
+  .cv-entry-header {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .cv-project-header {
+    flex-direction: column;
+  }
+
+  .cv-skills-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cv-contact-row {
+    flex-direction: column;
+    gap: 3px;
+  }
+}

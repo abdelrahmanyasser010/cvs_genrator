@@ -1,0 +1,16 @@
+{
+  "profession": "pharmacist",
+  "recommendedTemplates": {
+    "fresh": "classic",
+    "junior": "ats",
+    "mid": "sidebar",
+    "senior": "executive"
+  },
+  "defaultTitle": {
+    "fresh": "Pharmacy Intern",
+    "junior": "Pharmacist",
+    "mid": "Clinical Pharmacist",
+    "senior": "Pharmacy Manager"
+  },
+  "coreSkills": ["Pharmacy", "Medication Management", "Patient Counseling", "Pharmaceutical Knowledge"]
+}

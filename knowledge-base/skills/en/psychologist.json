@@ -1,0 +1,45 @@
+{
+  "coreSkills": ["Psychology", "Counseling", "Assessment", "Therapy"],
+  "questions": [
+    {
+      "id": "clinical-psychology",
+      "label": "Do you practice clinical psychology?",
+      "skills": ["Clinical Psychology", "Diagnosis", "Treatment Planning", "Mental Health Assessment"]
+    },
+    {
+      "id": "counseling",
+      "label": "Do you provide counseling services?",
+      "skills": ["Counseling", "Individual Therapy", "Group Therapy", "Crisis Intervention"]
+    },
+    {
+      "id": "assessment",
+      "label": "Do you conduct psychological assessments?",
+      "skills": ["Psychological Assessment", "Testing", "Psychometrics", "Report Writing"]
+    },
+    {
+      "id": "research",
+      "label": "Do you conduct psychological research?",
+      "skills": ["Research Methods", "Statistical Analysis", "Academic Writing", "Grant Writing"]
+    },
+    {
+      "id": "cbt",
+      "label": "Do you use CBT techniques?",
+      "skills": ["Cognitive Behavioral Therapy", "CBT", "Evidence-based Practice", "Intervention"]
+    },
+    {
+      "id": "child-psychology",
+      "label": "Do you work with children?",
+      "skills": ["Child Psychology", "Developmental Psychology", "Play Therapy", "Family Therapy"]
+    },
+    {
+      "id": "forensic",
+      "label": "Do you work in forensic psychology?",
+      "skills": ["Forensic Psychology", "Risk Assessment", "Legal Evaluation", "Expert Testimony"]
+    },
+    {
+      "id": "case-management",
+      "label": "Do you manage client cases?",
+      "skills": ["Case Management", "Documentation", "Treatment Planning", "Coordination of Care"]
+    }
+  ]
+}

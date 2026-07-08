@@ -1,0 +1,45 @@
+{
+  "coreSkills": ["Digital Marketing", "SEO", "Social Media Marketing", "Content Marketing"],
+  "questions": [
+    {
+      "id": "seo",
+      "label": "Do you work with SEO?",
+      "skills": ["SEO", "Keyword Research", "On-page SEO", "Technical SEO"]
+    },
+    {
+      "id": "social-media",
+      "label": "Do you manage social media campaigns?",
+      "skills": ["Social Media Marketing", "Facebook Ads", "Instagram Marketing", "LinkedIn Marketing"]
+    },
+    {
+      "id": "content-marketing",
+      "label": "Do you create marketing content?",
+      "skills": ["Content Marketing", "Copywriting", "Blog Writing", "Email Marketing"]
+    },
+    {
+      "id": "google-ads",
+      "label": "Do you run Google Ads campaigns?",
+      "skills": ["Google Ads", "PPC", "SEM", "Google Analytics"]
+    },
+    {
+      "id": "email-marketing",
+      "label": "Do you manage email marketing campaigns?",
+      "skills": ["Email Marketing", "Mailchimp", "Email Automation", "A/B Testing"]
+    },
+    {
+      "id": "analytics",
+      "label": "Do you analyze marketing data?",
+      "skills": ["Google Analytics", "Data Analysis", "Marketing Analytics", "KPI Tracking"]
+    },
+    {
+      "id": "brand-strategy",
+      "label": "Do you develop brand strategies?",
+      "skills": ["Brand Strategy", "Market Research", "Competitor Analysis", "Positioning"]
+    },
+    {
+      "id": "influencer-marketing",
+      "label": "Do you work with influencer marketing?",
+      "skills": ["Influencer Marketing", "Partnership Management", "Campaign Management"]
+    }
+  ]
+}

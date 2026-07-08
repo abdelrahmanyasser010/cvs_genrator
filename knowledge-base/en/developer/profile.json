@@ -1,0 +1,15 @@
+{
+  "profession": "developer",
+  "recommendedTemplates": {
+    "fresh": "classic",
+    "junior": "modern",
+    "mid": "sidebar",
+    "senior": "corporate"
+  },
+  "defaultTitle": {
+    "fresh": "Junior Developer",
+    "junior": "Software Developer",
+    "mid": "Software Engineer",
+    "senior": "Senior Software Engineer"
+  }
+}

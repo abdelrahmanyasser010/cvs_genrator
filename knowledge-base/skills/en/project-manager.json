@@ -1,0 +1,45 @@
+{
+  "coreSkills": ["Project Management", "Agile", "Scrum", "Team Leadership"],
+  "questions": [
+    {
+      "id": "agile",
+      "label": "Do you use Agile methodologies?",
+      "skills": ["Agile", "Scrum", "Kanban", "Sprint Planning"]
+    },
+    {
+      "id": "team-leadership",
+      "label": "Do you lead project teams?",
+      "skills": ["Team Leadership", "Team Management", "Stakeholder Management", "Conflict Resolution"]
+    },
+    {
+      "id": "planning",
+      "label": "Do you create project plans?",
+      "skills": ["Project Planning", "Resource Allocation", "Timeline Management", "Milestones"]
+    },
+    {
+      "id": "risk-management",
+      "label": "Do you manage project risks?",
+      "skills": ["Risk Management", "Risk Assessment", "Mitigation Planning"]
+    },
+    {
+      "id": "budgeting",
+      "label": "Do you manage project budgets?",
+      "skills": ["Budget Management", "Cost Control", "Financial Planning", "ROI Analysis"]
+    },
+    {
+      "id": "tools",
+      "label": "Do you use project management tools?",
+      "skills": ["Jira", "Asana", "Trello", "Microsoft Project", "Monday.com"]
+    },
+    {
+      "id": "reporting",
+      "label": "Do you create project reports?",
+      "skills": ["Project Reporting", "Status Updates", "Executive Presentations", "KPI Tracking"]
+    },
+    {
+      "id": "quality",
+      "label": "Do you manage project quality?",
+      "skills": ["Quality Assurance", "Quality Control", "Process Improvement", "Standards Compliance"]
+    }
+  ]
+}

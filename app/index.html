@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Studio — Build Your Resume</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/app/assets/app.css">
+  <link rel="stylesheet" href="/templates/shared/base.css">
+  <link rel="stylesheet" href="/templates/layouts/layouts.css">
+</head>
+<body>
+  <main class="wizard-premium">
+    
+    <!-- Left Side: Wizard Interface -->
+    <section class="wizard-left">
+      <div class="wizard-header">
+        <a href="landing.html" class="wizard-back-btn">← <span data-i18n="back">Back</span></a>
+        <div class="wizard-progress-container">
+          <div class="wizard-progress-bar">
+            <div class="wizard-progress-fill" id="wz-progress-fill" style="width: 0%;"></div>
+          </div>
+          <div class="wizard-progress-text" id="wz-progress-text">0%</div>
+        </div>
+      </div>
+
+      <div class="wizard-content-area" id="wz-content-area">
+        <!-- Content gets injected here by wizard.js -->
+      </div>
+      
+      <div class="wizard-footer">
+        <div class="wizard-error" id="wz-error" style="display: none;"></div>
+        <button class="wz-btn-primary" id="wz-next-btn" data-i18n="wz.next">Next</button>
+      </div>
+    </section>
+
+    <!-- Right Side: Live Preview -->
+    <section class="wizard-right">
+      <div class="preview-wrapper">
+        <div class="cv-preview-scale">
+          <div id="cv-render-target" class="cv-document">
+            <!-- CV renders here -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Dependencies -->
+  <script src="/app/assets/safety.js"></script>
+  <script src="/engine/i18n.js"></script>
+  <script src="/engine/normalize-career.js"></script>
+  <script src="/engine/career-storage.js"></script>
+  <script src="/engine/content-picker.js"></script>
+  <script src="/engine/template-selector.js"></script>
+  
+  <!-- Live Preview Dependencies -->
+  <script src="/engine/cv-sections.js"></script>
+  <script src="/engine/layout-engine.js"></script>
+  <script src="/engine/renderers/cv.js"></script>
+  
+  <!-- Wizard Logic -->
+  <script src="/coach/ai-coach.js"></script>
+  <script src="/app/assets/wizard.js"></script>
+</body>
+</html>
+
+

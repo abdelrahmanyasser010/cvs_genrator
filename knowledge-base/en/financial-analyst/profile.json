@@ -1,0 +1,16 @@
+{
+  "profession": "financial-analyst",
+  "recommendedTemplates": {
+    "fresh": "ats",
+    "junior": "sidebar",
+    "mid": "corporate",
+    "senior": "executive"
+  },
+  "defaultTitle": {
+    "fresh": "Junior Financial Analyst",
+    "junior": "Financial Analyst",
+    "mid": "Senior Financial Analyst",
+    "senior": "Finance Manager"
+  },
+  "coreSkills": ["Financial Analysis", "Excel", "Financial Modeling", "Data Analysis"]
+}

@@ -1,0 +1,111 @@
+{
+  "profession": "civil_engineer",
+  "coreSkills": [
+    "Cross-functional Leadership",
+    "Operations",
+    "client relationships",
+    "Leadership",
+    "Planning",
+    "Agile",
+    "Time Management",
+    "Risk Management",
+    "quality assurance",
+    "Time Management",
+    "Planning",
+    "Agile",
+    "Time Management",
+    "Agile",
+    "Risk Management",
+    "MS Office",
+    "Project Management Software",
+    "client relationships",
+    "team workflows",
+    "team workflows",
+    "Critical Thinking",
+    "Problem Solving",
+    "Teamwork",
+    "strategic initiatives",
+    "Agile",
+    "Analytics",
+    "Time Management",
+    "Time Management",
+    "quality assurance",
+    "Communication",
+    "Problem Solving",
+    "Agile",
+    "Data Visualization",
+    "Communication",
+    "Data Visualization",
+    "Project Management Software",
+    "Adaptability",
+    "Data Visualization",
+    "Communication",
+    "client relationships"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Cross-functional Leadership?",
+      "skills": [
+        "Cross-functional Leadership",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Analytics?",
+      "skills": [
+        "Analytics",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with Data Visualization?",
+      "skills": [
+        "Data Visualization",
+        "Teamwork"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with MS Office?",
+      "skills": [
+        "MS Office",
+        "Time Management"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Operations?",
+      "skills": [
+        "Operations",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with MS Office?",
+      "skills": [
+        "MS Office",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with Analytics?",
+      "skills": [
+        "Analytics",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with Operations?",
+      "skills": [
+        "Operations",
+        "Leadership"
+      ]
+    }
+  ]
+}

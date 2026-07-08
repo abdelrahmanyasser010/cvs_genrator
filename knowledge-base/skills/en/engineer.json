@@ -1,0 +1,45 @@
+{
+  "coreSkills": ["Engineering Design", "CAD", "Project Management", "Technical Analysis"],
+  "questions": [
+    {
+      "id": "cad",
+      "label": "Do you use CAD software?",
+      "skills": ["AutoCAD", "SolidWorks", "CATIA", "CAD", "3D Modeling"]
+    },
+    {
+      "id": "project-management",
+      "label": "Do you manage engineering projects?",
+      "skills": ["Project Management", "Agile", "Scrum", "Project Planning"]
+    },
+    {
+      "id": "structural-analysis",
+      "label": "Do you perform structural analysis?",
+      "skills": ["Structural Analysis", "FEA", "ANSYS", "Stress Analysis"]
+    },
+    {
+      "id": "manufacturing",
+      "label": "Do you work with manufacturing processes?",
+      "skills": ["Manufacturing", "CNC", "3D Printing", "Production Design"]
+    },
+    {
+      "id": "quality-control",
+      "label": "Do you handle quality control?",
+      "skills": ["Quality Control", "Six Sigma", "ISO Standards", "Testing"]
+    },
+    {
+      "id": "circuit-design",
+      "label": "Do you design electronic circuits?",
+      "skills": ["Circuit Design", "PCB Design", "Electronics", "Altium"]
+    },
+    {
+      "id": "mechanical-design",
+      "label": "Do you design mechanical systems?",
+      "skills": ["Mechanical Design", "Machine Design", "Thermodynamics", "Fluid Dynamics"]
+    },
+    {
+      "id": "safety-standards",
+      "label": "Do you work with safety standards?",
+      "skills": ["Safety Standards", "Risk Assessment", "OSHA", "Safety Engineering"]
+    }
+  ]
+}

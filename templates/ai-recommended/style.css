@@ -1,0 +1,4 @@
+@import url('../shared/base.css');
+/* AI Recommended — same as ATS (resolved at runtime) */
+.cv-paper { --accent: #111; }
+.cv-header { border-bottom-color: var(--accent); }

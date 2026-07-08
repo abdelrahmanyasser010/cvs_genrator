@@ -1,0 +1,54 @@
+{
+  "summaries": [
+    {
+      "id": "001",
+      "levels": ["mid", "senior"],
+      "text": "Flutter Software Engineer with 2+ years of hands-on experience building cross-platform mobile and desktop applications. Focused on clean architecture, offline-first solutions, and real-world business integrations including POS systems, booking platforms, and service marketplaces."
+    },
+    {
+      "id": "002",
+      "levels": ["mid", "senior"],
+      "text": "Results-driven Flutter developer specializing in production-ready Android, iOS, and Windows applications. Proficient in Bloc state management, RESTful API integration, Firebase, and real-time communication features across diverse industry verticals."
+    },
+    {
+      "id": "003",
+      "levels": ["senior"],
+      "text": "Senior Flutter Engineer with proven expertise in enterprise cross-platform applications, offline-first POS/ERP systems, and hardware-level integrations including ESC/POS thermal printing with Arabic RTL support. Expert in Clean Architecture and modular system design."
+    },
+    {
+      "id": "004",
+      "levels": ["junior", "mid"],
+      "text": "Flutter Mobile Developer with experience delivering production-ready Android and iOS applications. Shipped projects across booking, marketplace, legal consulting, and e-learning categories with strong focus on maintainable code and user experience."
+    },
+    {
+      "id": "005",
+      "levels": ["mid", "senior"],
+      "text": "Flutter Engineer with focused experience in offline-first POS and ERP systems. Designed local relational databases (SQLite), multi-interface thermal printing (USB, Bluetooth, IP), and ZATCA-compliant e-invoicing workflows for the Saudi market."
+    },
+    {
+      "id": "006",
+      "levels": ["fresh", "junior"],
+      "text": "Motivated Flutter Developer with solid foundation in Dart, widget-based UI development, and state management patterns. Eager to contribute to cross-platform mobile projects while growing expertise in clean architecture and API integration."
+    },
+    {
+      "id": "007",
+      "levels": ["mid"],
+      "text": "Cross-platform Flutter developer experienced in building real-time applications with Socket.io, Google Maps integration, and push notification systems. Comfortable working across the full development cycle from architecture to Play Store deployment."
+    },
+    {
+      "id": "008",
+      "levels": ["senior"],
+      "text": "Highly skilled Flutter Software Engineer specializing in engineering enterprise applications (Mobile, Desktop, Web), offline-first business solutions, and real-time synchronization pipelines. Proven track record of refactoring legacy codebases into modular Clean Architecture."
+    },
+    {
+      "id": "009",
+      "levels": ["junior", "mid"],
+      "text": "Flutter developer with hands-on experience in Bloc/Cubit, GetX, and Provider state management. Built and maintained apps integrating Firebase, REST APIs, local databases, and third-party SDKs for maps, payments, and real-time communication."
+    },
+    {
+      "id": "010",
+      "levels": ["mid", "senior"],
+      "text": "Flutter Software Engineer combining strong mobile development skills with desktop and hardware integration experience. Delivered POS systems, ride-hailing platforms, and marketplace applications with emphasis on reliability, performance, and clean code."
+    }
+  ]
+}

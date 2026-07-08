@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abdelrahman Yasser — CV</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="print.css" media="print">
+  <script src="data/career_database.js"></script>
+  <style>
+    #toolbar {
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 12.5px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+    body { flex-direction: column; align-items: stretch; padding-top: 0; }
+    .nav-btn {
+      padding: 6px 14px;
+      font-size: 12.5px;
+      font-family: inherit;
+      border: 1px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+      color: #444;
+      font-weight: 500;
+      transition: all .15s;
+    }
+    .nav-btn:hover   { border-color: #111; color: #111; }
+    .nav-btn.current { background: #111; color: #fff; border-color: #111; }
+    .btn-print {
+      padding: 6px 16px; font-size: 12.5px; font-family: inherit;
+      background: #111; color: #fff; border: none; cursor: pointer; font-weight: 600;
+    }
+    .btn-print:hover { background: #333; }
+    #page-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 28px 16px 48px;
+      width: 100%;
+    }
+    .cv-controls {
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      padding: 16px 24px;
+      margin: 0 auto 16px;
+      max-width: 820px;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: flex-end;
+    }
+    .cv-controls label {
+      font-size: 12px; font-weight: 600; color: #555;
+      display: block; margin-bottom: 4px;
+      text-transform: uppercase; letter-spacing: .4px;
+    }
+    .cv-controls select {
+      border: 1px solid #ccc; padding: 6px 10px; font-size: 13px;
+      font-family: inherit; color: #111; outline: none; min-width: 200px;
+    }
+    .cv-controls select:focus { border-color: #111; }
+    .ctrl-group { display: flex; flex-direction: column; }
+    @media print {
+      #toolbar, .cv-controls { display: none !important; }
+      #page-wrap { padding: 0 !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="toolbar" class="no-print">
+  <div style="display:flex; align-items:center; gap:4px;">
+    <button class="nav-btn current" onclick="location='index.html'">CV</button>
+    <button class="nav-btn"         onclick="location='portfolio.html'">Portfolio</button>
+    <button class="nav-btn"         onclick="location='cover.html'">Cover Letter</button>
+  </div>
+  <div style="display:flex; gap:8px;">
+    <button class="btn-print" onclick="window.print()">Print / Save PDF</button>
+  </div>
+</div>
+
+<div class="cv-controls no-print">
+  <div class="ctrl-group">
+    <label>Project focus</label>
+    <select id="ctrl-filter" onchange="renderCV()">
+      <option value="full">Full portfolio</option>
+      <option value="mobile">Mobile apps</option>
+      <option value="erp">POS / ERP</option>
+    </select>
+  </div>
+</div>
+
+<div id="page-wrap">
+  <main class="cv-page" id="cv-root"></main>
+</div>
+
+<script>
+const db = careerDatabase;
+
+function validLink(url) {
+  return url && url !== '#' && String(url).trim() !== '';
+}
+
+function filterProjects(filter) {
+  let list = db.projects || [];
+  if (filter === 'mobile') {
+    const mobileNames = ['Gear', 'Hogga', 'Zone', 'Feny', 'BuB', 'LearnPress', 'Elbayan'];
+    list = list.filter(p => mobileNames.some(n => p.name.includes(n)));
+  } else if (filter === 'erp') {
+    list = list.filter(p => /tog|pos|erp|canary/i.test((p.name || '') + (p.category || '')));
+  }
+  return list;
+}
+
+function projectLinks(links) {
+  if (!links) return '';
+  const out = [];
+  if (validLink(links.googlePlay)) out.push(`<a href="${links.googlePlay}" target="_blank" rel="noopener">Google Play</a>`);
+  if (validLink(links.appStore)) out.push(`<a href="${links.appStore}" target="_blank" rel="noopener">App Store</a>`);
+  if (validLink(links.github)) out.push(`<a href="${links.github}" target="_blank" rel="noopener">GitHub</a>`);
+  if (validLink(links.website)) out.push(`<a href="${links.website}" target="_blank" rel="noopener">Website</a>`);
+  return out.join('');
+}
+
+function renderCV() {
+  const filter = document.getElementById('ctrl-filter').value;
+  const p = db.personalInfo;
+  const l = p.links || {};
+
+  const contacts = [];
+  if (p.phone) contacts.push(p.phone);
+  if (p.email) contacts.push(`<a href="mailto:${p.email}">${p.email}</a>`);
+  if (p.location) contacts.push(p.location);
+  if (validLink(l.linkedin)) contacts.push(`<a href="${l.linkedin}" target="_blank" rel="noopener">LinkedIn</a>`);
+  if (validLink(l.github)) contacts.push(`<a href="${l.github}" target="_blank" rel="noopener">GitHub</a>`);
+
+  const contactHtml = contacts.map((c, i) =>
+    `<span>${c}</span>${i < contacts.length - 1 ? '<span class="sep">|</span>' : ''}`
+  ).join('');
+
+  const experienceHtml = (db.experience || []).map(e => `
+    <div class="cv-entry">
+      <div class="cv-entry-header">
+        <div>
+          <span class="cv-entry-title">${e.role}</span>
+          <span class="cv-entry-company"> — ${e.company}</span>
+        </div>
+        <span class="cv-entry-period">${e.period}</span>
+      </div>
+      <ul class="cv-bullets">${(e.bullets || []).map(b => `<li>${b}</li>`).join('')}</ul>
+    </div>`).join('');
+
+  const projectsHtml = filterProjects(filter).map(pj => `
+    <div class="cv-project">
+      <div class="cv-project-header">
+        <span class="cv-project-name">${pj.name}</span>
+        <div class="cv-project-links">${projectLinks(pj.links)}</div>
+      </div>
+      <div class="cv-project-desc">${pj.desc || ''}</div>
+      <ul class="cv-bullets">${(pj.bullets || []).map(b => `<li>${b}</li>`).join('')}</ul>
+      ${pj.tech ? `<div class="cv-tech-line"><strong>Tech:</strong> ${pj.tech}</div>` : ''}
+    </div>`).join('');
+
+  const skillsHtml = Object.entries(db.skills || {}).map(([cat, vals]) => `
+    <div class="cv-skill-row">
+      <span class="cv-skill-label">${cat}</span>
+      <span class="cv-skill-value">${vals.join(', ')}</span>
+    </div>`).join('');
+
+  const eduHtml = (db.education || []).map(e => `
+    <div class="cv-edu-entry">
+      <span class="degree">${e.degree}</span>
+      <span class="institution"> — ${e.institution}</span>
+      <span class="period"> (${e.period})</span>
+    </div>`).join('');
+
+  const langHtml = (db.languages || []).map(item => {
+    const lang = typeof item === 'string' ? item : item.lang;
+    const level = typeof item === 'string' ? '' : item.level;
+    return `<span class="cv-lang-item"><strong>${lang}</strong>${level ? `<span> — ${level}</span>` : ''}</span>`;
+  }).join('');
+
+  document.getElementById('cv-root').innerHTML = `
+    <header class="cv-header">
+      <h1>${p.name}</h1>
+      <div class="cv-title">${p.title}</div>
+      <div class="cv-contact-row">${contactHtml}</div>
+    </header>
+
+    <section class="cv-section cv-summary">
+      <h2 class="cv-section-title">Professional Summary</h2>
+      <p>${db.professionalSummary}</p>
+    </section>
+
+    <section class="cv-section">
+      <h2 class="cv-section-title">Experience</h2>
+      ${experienceHtml}
+    </section>
+
+    <section class="cv-section">
+      <h2 class="cv-section-title">Technical Projects</h2>
+      ${projectsHtml}
+    </section>
+
+    <section class="cv-section">
+      <h2 class="cv-section-title">Technical Skills</h2>
+      <div class="cv-skills-grid">${skillsHtml}</div>
+    </section>
+
+    <section class="cv-section">
+      <h2 class="cv-section-title">Education</h2>
+      ${eduHtml}
+    </section>
+
+    <section class="cv-section">
+      <h2 class="cv-section-title">Languages</h2>
+      <div class="cv-lang-row">${langHtml}</div>
+    </section>`;
+}
+
+document.addEventListener('DOMContentLoaded', renderCV);
+</script>
+</body>
+</html>

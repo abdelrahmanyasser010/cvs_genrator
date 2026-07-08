@@ -1,0 +1,38 @@
+@import url('../shared/base.css');
+
+.cv-paper {
+  --accent: #8b5e34;
+  background: #fffaf2;
+  padding: 42px 50px;
+  font-size: 12.8px;
+  line-height: 1.5;
+}
+.layout-corporate .cv-header {
+  background: #f0dfc8;
+  border: 1px solid #dcc3a3;
+  border-radius: 8px;
+  padding: 22px 24px;
+  margin-bottom: 22px;
+  text-align: left;
+}
+[dir="rtl"] .layout-corporate .cv-header { text-align: right; }
+.layout-corporate .cv-header h1 {
+  font-size: 25px;
+  color: #3f2a19;
+}
+.layout-corporate .cv-header .cv-subtitle {
+  color: #6b4423;
+}
+.layout-corporate .corp-grid {
+  display: grid;
+  grid-template-columns: 1.18fr 0.82fr;
+  gap: 24px;
+}
+.cv-section-title {
+  color: #6b4423;
+  border-bottom: 2px solid #d6b98f;
+  letter-spacing: 0;
+}
+.cv-role,
+.cv-proj-name,
+.degree { color: #3f2a19; }

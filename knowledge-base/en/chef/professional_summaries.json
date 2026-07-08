@@ -1,0 +1,25 @@
+{
+  "profession": "chef",
+  "summaries": [
+    {
+      "id": "chef-1",
+      "text": "Sous Chef with 4+ years of experience in high-volume kitchen operations. Skilled in menu development, cost control, and team leadership. Expert in French and Mediterranean cuisine with strong focus on fresh, locally-sourced ingredients. Proven ability to maintain quality standards during peak service.",
+      "levels": ["junior", "mid"]
+    },
+    {
+      "id": "chef-2",
+      "text": "Executive Chef with 10+ years of experience leading culinary teams and managing kitchen operations for fine dining establishments. Expert in menu engineering, food cost management, and culinary innovation. Track record of achieving consistent food quality ratings and developing successful culinary concepts.",
+      "levels": ["senior"]
+    },
+    {
+      "id": "chef-3",
+      "text": "Chef specializing in pastry and baking arts. Experienced in creating desserts, breads, and confectionery items. Strong background in food science, recipe development, and large-scale production for hotels and catering operations.",
+      "levels": ["mid", "senior"]
+    },
+    {
+      "id": "chef-4",
+      "text": "Line Cook with solid foundation in culinary techniques and kitchen operations. Proficient in various cooking methods and food safety standards. Eager to develop expertise in menu planning and advance to leadership roles within the culinary team.",
+      "levels": ["fresh"]
+    }
+  ]
+}

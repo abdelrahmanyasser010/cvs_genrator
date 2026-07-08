@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://cv-studio.local/career-schema.json",
+  "title": "CV Profile",
+  "type": "object",
+  "required": ["personalInfo", "careerProfile", "meta"],
+  "properties": {
+    "personalInfo": {
+      "type": "object",
+      "required": ["name", "email", "phone", "title"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "title": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "location": { "type": "string" },
+        "links": {
+          "type": "object",
+          "properties": {
+            "linkedin": { "type": "string" },
+            "github": { "type": "string" }
+          }
+        }
+      }
+    },
+    "careerProfile": {
+      "type": "object",
+      "required": ["field", "level"],
+      "properties": {
+        "field": { "type": "string", "enum": ["developer", "designer", "accountant", "teacher", "doctor", "engineer", "hr", "marketing", "lawyer", "other"] },
+        "specialization": { "type": "string" },
+        "level": { "type": "string", "enum": ["fresh", "junior", "mid", "senior"] }
+      }
+    },
+    "professionalSummary": { "type": "string" },
+    "experience": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["company", "role", "period"],
+        "properties": {
+          "company": { "type": "string" },
+          "role": { "type": "string" },
+          "period": { "type": "string" },
+          "bullets": { "type": "array", "items": { "type": "string" } },
+          "achievements": { "type": "array", "items": { "type": "string" } },
+          "rawDescription": { "type": "string" }
+        }
+      }
+    },
+    "projects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "category": { "type": "string" },
+          "desc": { "type": "string" },
+          "bullets": { "type": "array", "items": { "type": "string" } },
+          "tech": { "type": "string" },
+          "role": { "type": "string" },
+          "challenge": { "type": "string" },
+          "achievement": { "type": "string" },
+          "links": {
+            "type": "object",
+            "properties": {
+              "googlePlay": { "type": "string" },
+              "appStore": { "type": "string" },
+              "github": { "type": "string" },
+              "website": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    },
+    "education": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "degree": { "type": "string" },
+          "institution": { "type": "string" },
+          "period": { "type": "string" }
+        }
+      }
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "properties": {
+              "lang": { "type": "string" },
+              "level": { "type": "string" }
+            }
+          }
+        ]
+      }
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "templateId": { "type": "string" },
+        "locale": { "type": "string" },
+        "selectedSummaryId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

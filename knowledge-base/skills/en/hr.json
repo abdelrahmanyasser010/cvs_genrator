@@ -1,0 +1,111 @@
+{
+  "profession": "hr",
+  "coreSkills": [
+    "Operations",
+    "Problem Solving",
+    "Teamwork",
+    "Communication",
+    "project deliverables",
+    "Critical Thinking",
+    "strategic initiatives",
+    "data analysis",
+    "CRM Systems",
+    "quality assurance",
+    "data analysis",
+    "CRM Systems",
+    "CRM Systems",
+    "MS Office",
+    "Risk Management",
+    "Operations",
+    "Teamwork",
+    "Cross-functional Leadership",
+    "Adaptability",
+    "process improvements",
+    "project deliverables",
+    "Risk Management",
+    "Operations",
+    "Project Management Software",
+    "Agile",
+    "Planning",
+    "Data Visualization",
+    "Analytics",
+    "Risk Management",
+    "Critical Thinking",
+    "quality assurance",
+    "team workflows",
+    "Leadership",
+    "Project Management Software",
+    "client relationships",
+    "CRM Systems",
+    "MS Office",
+    "quality assurance",
+    "Risk Management",
+    "MS Office"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Project Management Software?",
+      "skills": [
+        "Project Management Software",
+        "Adaptability"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Project Management Software?",
+      "skills": [
+        "Project Management Software",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with Planning?",
+      "skills": [
+        "Planning",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with Data Visualization?",
+      "skills": [
+        "Data Visualization",
+        "Time Management"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Risk Management?",
+      "skills": [
+        "Risk Management",
+        "Adaptability"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with Operations?",
+      "skills": [
+        "Operations",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with Data Visualization?",
+      "skills": [
+        "Data Visualization",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with Communication?",
+      "skills": [
+        "Communication",
+        "Adaptability"
+      ]
+    }
+  ]
+}

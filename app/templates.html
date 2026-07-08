@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Studio — Template Gallery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/app/assets/app.css">
+</head>
+<body>
+  <header class="gallery-header">
+    <div class="gallery-logo">
+      <a href="landing.html" style="text-decoration:none;color:inherit">CV Studio</a>
+    </div>
+    <div class="gallery-nav">
+      <a href="landing.html" class="gallery-nav-link">Home</a>
+      <a href="index.html" class="gallery-nav-link">Create CV</a>
+      <a href="editor.html" class="gallery-nav-link">Editor</a>
+    </div>
+  </header>
+
+  <main class="gallery-main">
+    <div class="gallery-hero">
+      <h1>Choose Your Perfect Template</h1>
+      <p>Professional designs for every career path. Select a template to get started.</p>
+    </div>
+
+    <div class="gallery-filters">
+      <button class="filter-btn active" data-filter="all">All Templates</button>
+      <button class="filter-btn" data-filter="classic">Classic</button>
+      <button class="filter-btn" data-filter="modern">Modern</button>
+      <button class="filter-btn" data-filter="creative">Creative</button>
+      <button class="filter-btn" data-filter="ats">ATS Optimized</button>
+    </div>
+
+    <div class="gallery-grid" id="gallery-grid">
+      <!-- Templates will be loaded dynamically -->
+    </div>
+  </main>
+
+  <footer class="gallery-footer">
+    <p>© 2024 CV Studio. All rights reserved.</p>
+  </footer>
+
+  <script src="/app/assets/safety.js"></script>
+  <script src="/engine/template-selector.js"></script>
+  <script src="/engine/normalize-career.js"></script>
+  <script src="/engine/career-storage.js"></script>
+  <script>
+    const templates = [
+      { id: 'classic', name: 'Classic', category: 'classic', description: 'Timeless design for any profession', color: '#2c3e50' },
+      { id: 'ats', name: 'ATS Optimized', category: 'ats', description: 'Beat the bots, get hired', color: '#27ae60' },
+      { id: 'modern', name: 'Modern', category: 'modern', description: 'Clean and contemporary', color: '#3498db' },
+      { id: 'sidebar', name: 'Sidebar', category: 'modern', description: 'Two-column layout', color: '#9b59b6' },
+      { id: 'timeline', name: 'Timeline', category: 'modern', description: 'Visual career progression', color: '#1abc9c' },
+      { id: 'corporate', name: 'Corporate', category: 'classic', description: 'Executive level design', color: '#34495e' },
+      { id: 'creative', name: 'Creative', category: 'creative', description: 'Stand out from the crowd', color: '#e74c3c' },
+      { id: 'academic', name: 'Academic', category: 'classic', description: 'Research and education focus', color: '#7f8c8d' },
+      { id: 'minimal', name: 'Minimal', category: 'modern', description: 'Less is more', color: '#95a5a6' },
+      { id: 'executive', name: 'Executive', category: 'classic', description: 'Leadership and management', color: '#2c3e50' },
+      { id: 'elegant', name: 'Elegant', category: 'creative', description: 'Sophisticated and refined', color: '#8e44ad' },
+      { id: 'tech', name: 'Tech Dark', category: 'modern', description: 'Dark mode for developers', color: '#1a1a2e' },
+      { id: 'startup', name: 'Startup', category: 'creative', description: 'Bold and energetic', color: '#f39c12' },
+      { id: 'compact', name: 'Compact', category: 'ats', description: 'Space-efficient design', color: '#16a085' },
+      { id: 'vibrant', name: 'Vibrant', category: 'creative', description: 'Colorful and eye-catching', color: '#667eea' }
+    ];
+
+    function renderGallery(filter = 'all') {
+      const grid = document.getElementById('gallery-grid');
+      const filtered = filter === 'all' ? templates : templates.filter(t => t.category === filter);
+      
+      grid.innerHTML = filtered.map(template => `
+        <div class="gallery-card" data-category="${template.category}">
+          <div class="gallery-card-preview" style="background: ${template.color}">
+            <div class="gallery-card-placeholder">
+              <div class="placeholder-header"></div>
+              <div class="placeholder-body">
+                <div class="placeholder-line"></div>
+                <div class="placeholder-line short"></div>
+                <div class="placeholder-line"></div>
+              </div>
+            </div>
+          </div>
+          <div class="gallery-card-info">
+            <h3>${template.name}</h3>
+            <p>${template.description}</p>
+            <button class="gallery-card-btn" onclick="selectTemplate('${template.id}')">Use This Template</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectTemplate(templateId) {
+      const career = CareerStorage.load() || {};
+      career.meta = career.meta || {};
+      career.meta.templateId = templateId;
+      CareerStorage.save(career);
+      
+      if (career.personalInfo && career.personalInfo.name) {
+        window.location.href = 'editor.html';
+      } else {
+        window.location.href = 'index.html';
+      }
+    }
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderGallery(btn.dataset.filter);
+      });
+    });
+
+    // Initial render
+    renderGallery();
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,111 @@
+{
+  "profession": "project_manager",
+  "coreSkills": [
+    "Agile",
+    "Planning",
+    "Project Management Software",
+    "Communication",
+    "team workflows",
+    "Leadership",
+    "MS Office",
+    "Critical Thinking",
+    "Operations",
+    "Time Management",
+    "Leadership",
+    "Adaptability",
+    "client relationships",
+    "Planning",
+    "Operations",
+    "Communication",
+    "quality assurance",
+    "Adaptability",
+    "process improvements",
+    "Planning",
+    "Data Visualization",
+    "process improvements",
+    "project deliverables",
+    "Cross-functional Leadership",
+    "Cross-functional Leadership",
+    "Communication",
+    "Cross-functional Leadership",
+    "CRM Systems",
+    "data analysis",
+    "Planning",
+    "Analytics",
+    "project deliverables",
+    "Communication",
+    "Time Management",
+    "Data Visualization",
+    "MS Office",
+    "Data Visualization",
+    "Project Management Software",
+    "CRM Systems",
+    "CRM Systems"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Risk Management?",
+      "skills": [
+        "Risk Management",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Agile?",
+      "skills": [
+        "Agile",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with Project Management Software?",
+      "skills": [
+        "Project Management Software",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with Cross-functional Leadership?",
+      "skills": [
+        "Cross-functional Leadership",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Project Management Software?",
+      "skills": [
+        "Project Management Software",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with Analytics?",
+      "skills": [
+        "Analytics",
+        "Adaptability"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with MS Office?",
+      "skills": [
+        "MS Office",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with Agile?",
+      "skills": [
+        "Agile",
+        "Adaptability"
+      ]
+    }
+  ]
+}

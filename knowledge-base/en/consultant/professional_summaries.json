@@ -1,0 +1,25 @@
+{
+  "profession": "consultant",
+  "summaries": [
+    {
+      "id": "consultant-1",
+      "text": "Management Consultant with 3+ years of experience in business transformation and process improvement. Skilled in strategic analysis, stakeholder management, and change implementation. Proven ability to deliver measurable results for clients across various industries.",
+      "levels": ["junior", "mid"]
+    },
+    {
+      "id": "consultant-2",
+      "text": "Principal Consultant with 10+ years of experience leading complex engagements and advising C-level executives. Expert in digital transformation, organizational design, and growth strategy. Track record of managing multi-million dollar projects and building lasting client partnerships.",
+      "levels": ["senior"]
+    },
+    {
+      "id": "consultant-3",
+      "text": "Strategy Consultant specializing in market analysis and competitive intelligence. Experienced in conducting due diligence, developing business cases, and supporting M&A transactions. Strong analytical skills and ability to synthesize complex information into actionable recommendations.",
+      "levels": ["mid", "senior"]
+    },
+    {
+      "id": "consultant-4",
+      "text": "Junior Consultant with strong foundation in business analysis and problem-solving methodologies. Proficient in financial modeling, market research, and presentation development. Eager to apply analytical skills to help clients achieve their strategic objectives.",
+      "levels": ["fresh"]
+    }
+  ]
+}

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Studio — Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/app/assets/app.css">
+  <link rel="stylesheet" href="/templates/shared/base.css">
+  <link rel="stylesheet" href="/templates/layouts/layouts.css">
+</head>
+<body class="editor-body">
+
+  <!-- Top Bar -->
+  <header class="editor-topbar no-print">
+    <div class="topbar-left">
+      <a href="landing.html" class="topbar-logo">CV Studio</a>
+      <div class="topbar-divider"></div>
+      <span class="topbar-filename" id="topbar-name" data-i18n="ed.myResume">My Resume</span>
+    </div>
+    <div class="topbar-center">
+      <div class="zoom-controls">
+        <select class="zoom-select" id="zoom-select" onchange="Editor.handleZoomSelect(this.value)">
+          <option value="80">80%</option>
+          <option value="100" selected>100%</option>
+          <option value="120">120%</option>
+          <option value="150">150%</option>
+          <option value="fit-width" data-i18n="ed.zoom.fit_width">Fit Width</option>
+          <option value="fit-page" data-i18n="ed.zoom.fit">Fit Page</option>
+        </select>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="save-indicator" id="save-indicator"></div>
+      <!-- AI Settings hidden for simplified UX: <button class="topbar-btn" onclick="AISettings.openModal()" data-i18n="editor.aiSettings">AI Settings</button> -->
+      <button class="topbar-btn" onclick="Editor.undoAction()" title="Undo (Ctrl+Z)" data-i18n="ed.topbar.undo">↩ Undo</button>
+      <button class="topbar-btn" onclick="Editor.showExportModal()" data-i18n="ed.topbar.download">⬇ Download</button>
+      <a href="landing.html" class="topbar-btn topbar-btn-ghost" data-i18n="ed.topbar.exit">Exit</a>
+    </div>
+  </header>
+
+  <!-- Main Editor Layout -->
+  <div class="editor-layout no-print">
+
+    <!-- LEFT: Sections Panel -->
+    <aside class="editor-panel-left" id="editor-left-panel">
+      <div class="panel-search">
+        <input type="text" class="panel-search-input" id="sections-search" placeholder="🔍 Search sections...">
+      </div>
+      <div class="sections-list" id="sections-list">
+        <!-- Injected by editor.js -->
+      </div>
+    </aside>
+
+    <!-- CENTER: Resume Preview -->
+    <main class="editor-canvas" id="editor-canvas">
+      <div class="a4-wrapper" id="a4-wrapper">
+        <div class="a4-paper" id="preview-frame">
+          <!-- CV Renders here -->
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT: Assistant Panel -->
+    <aside class="editor-panel-right" id="editor-right-panel">
+      <!-- Resume Strength -->
+      <div class="rpanel-block" id="cv-health-panel"></div>
+
+      <!-- AI Coach -->
+      <div class="rpanel-block" id="ai-coach-panel"></div>
+
+      <!-- Templates -->
+      <div class="rpanel-block">
+        <div class="rpanel-label" data-i18n="editor.template">Template</div>
+        <div class="template-chips" id="template-picker"></div>
+        <button class="rpanel-link" onclick="Editor.openGallery()" data-i18n="ed.gallery.browse">Browse all templates →</button>
+      </div>
+
+      <!-- AI Suggestions -->
+      <div class="rpanel-block" id="ai-suggestions-panel"></div>
+
+      <!-- Quick Actions -->
+      <div class="rpanel-block">
+        <div class="rpanel-label">Quick Actions</div>
+        <div class="quick-actions">
+          <button class="action-pill" onclick="Editor.handleAIAction('generate-summary')" data-i18n="ed.ai_panel.gen_summary">✨ Generate Summary</button>
+          <button class="action-pill" onclick="Editor.handleAIAction('improve-summary')" data-i18n="ed.ai_panel.improve_summary">📝 Improve Summary</button>
+          <button class="action-pill" onclick="Editor.handleAIAction('shorten-summary')" data-i18n="ed.ai_panel.shorten_summary">✂ Shorten Summary</button>
+          <button class="action-pill" onclick="Editor.handleAIAction('translate-summary')" data-i18n="ed.ai_panel.translate_summary">🌐 Translate Summary</button>
+          <button class="action-pill" onclick="Editor.handleAIAction('suggest-skills')" data-i18n="ed.ai_panel.sug_skills">💡 Suggest Skills</button>
+          <button class="action-pill" onclick="Editor.handleAIAction('tailor-job')" data-i18n="ed.ai_panel.tailor_job">🎯 Tailor to Job</button>
+          <button class="action-pill" onclick="Editor.handleAIAction('improve-bullets')" data-i18n="ed.ai_panel.improve_experience">🎯 Improve Experience</button>
+          <button class="action-pill" onclick="Editor.handleAIAction('ats-check')" data-i18n="ed.ai_panel.chk_strength">📊 Check Strength</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Section Edit Panel (Slide-over) -->
+  <div class="edit-panel-overlay" id="edit-overlay" style="display:none;" onclick="Editor.closeEditPanel(event)">
+    <div class="edit-panel" id="edit-panel">
+      <div class="edit-panel-header">
+        <h2 class="edit-panel-title" id="edit-panel-title" data-i18n="ed.modal.edit">Edit</h2>
+        <button class="edit-panel-close" onclick="Editor.closeEditPanel()">✕</button>
+      </div>
+      <div class="edit-panel-body" id="edit-panel-body">
+        <!-- Injected per section -->
+      </div>
+      <div class="edit-panel-footer">
+        <div class="ai-pills" id="edit-ai-pills"></div>
+        <div class="edit-panel-actions">
+          <button class="btn-save-panel" id="edit-save-btn" data-i18n="ed.modal.save_changes">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Modal -->
+  <div class="modal-overlay" id="export-modal" style="display:none;" onclick="Editor.closeExportModal(event)">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 data-i18n="ed.modal.download">Download Resume</h3>
+        <button class="modal-close" onclick="Editor.closeExportModal()">✕</button>
+      </div>
+      <div id="export-review"></div>
+      <div class="export-options">
+        <button class="export-card" onclick="Editor.exportPdf()">
+          <span class="export-icon">📄</span>
+          <span class="export-label">PDF</span>
+          <span class="export-hint" data-i18n="ed.modal.best_print">Best for printing</span>
+        </button>
+        <button class="export-card" onclick="Editor.exportPng()">
+          <span class="export-icon">🖼️</span>
+          <span class="export-label">PNG</span>
+          <span class="export-hint" data-i18n="ed.modal.image_ver">Image format</span>
+        </button>
+        <button class="export-card" onclick="Editor.exportDocx()">
+          <span class="export-icon">📝</span>
+          <span class="export-label">DOCX</span>
+          <span class="export-hint" data-i18n="ed.modal.word_ver">Word document</span>
+        </button>
+      </div>
+      <details class="advanced-export">
+        <summary>Advanced</summary>
+        <div class="advanced-export-actions">
+          <button class="topbar-btn" onclick="Editor.exportHtml()">HTML</button>
+          <button class="topbar-btn" onclick="Editor.exportJson()">Backup</button>
+        </div>
+      </details>
+      <label class="import-link advanced-import">
+        <input type="file" id="import-file" accept=".json" style="display:none">
+        <span data-i18n="ed.modal.import_json">Import JSON backup</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://unpkg.com/html-docx-js@0.3.1/dist/html-docx.js"></script>
+  <script src="/app/assets/safety.js"></script>
+  <script src="/engine/i18n.js"></script>
+  <script src="/engine/normalize-career.js"></script>
+  <script src="/engine/career-storage.js"></script>
+  <script src="/engine/content-picker.js"></script>
+  <script src="/engine/template-selector.js"></script>
+  <script src="/engine/cv-sections.js"></script>
+  <script src="/engine/layout-engine.js"></script>
+  <script src="/engine/ats-scorer.js"></script>
+  <script src="/engine/renderers/cv.js"></script>
+  <script src="/engine/ai/offline-helpers.js"></script>
+  <script src="/coach/content-improver.js"></script>
+  <script src="/coach/suggestions.js"></script>
+  <script src="/app/assets/ai-settings.js"></script>
+  <script src="/app/assets/ai-client.js"></script>
+  <script src="/coach/ai-coach.js"></script>
+  <script src="/app/assets/editor.js"></script>
+</body>
+</html>
+
+

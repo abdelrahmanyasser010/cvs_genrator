@@ -1,0 +1,25 @@
+{
+  "profession": "psychologist",
+  "summaries": [
+    {
+      "id": "psychologist-1",
+      "text": "Clinical Psychologist with 3+ years of experience providing evidence-based mental health services. Skilled in cognitive behavioral therapy, psychological assessment, and treatment planning. Committed to creating safe, supportive therapeutic environments that promote client growth and well-being.",
+      "levels": ["junior", "mid"]
+    },
+    {
+      "id": "psychologist-2",
+      "text": "Senior Psychologist with 10+ years of experience in clinical practice and program development. Expert in trauma-informed care, group therapy, and clinical supervision. Track record of implementing innovative mental health programs and training multidisciplinary teams in best practices.",
+      "levels": ["senior"]
+    },
+    {
+      "id": "psychologist-3",
+      "text": "Psychologist specializing in child and adolescent mental health. Experienced in developmental assessments, family therapy, and school-based interventions. Strong background in working with diverse populations and addressing cultural factors in treatment.",
+      "levels": ["mid", "senior"]
+    },
+    {
+      "id": "psychologist-4",
+      "text": "Psychology Intern with solid foundation in psychological theory and assessment techniques. Proficient in intake interviews, test administration, and documentation. Eager to develop clinical skills and contribute to client care under supervision.",
+      "levels": ["fresh"]
+    }
+  ]
+}

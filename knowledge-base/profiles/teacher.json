@@ -1,0 +1,19 @@
+{
+  "id": "teacher",
+  "label": "Teacher",
+  "field": "teacher",
+  "specialization": "general",
+  "tags": ["education", "teaching"],
+  "recommendedTemplates": {
+    "fresh": "minimal",
+    "junior": "classic",
+    "mid": "professional",
+    "senior": "executive"
+  },
+  "defaultTitle": {
+    "fresh": "Assistant Teacher",
+    "junior": "Teacher",
+    "mid": "Senior Teacher",
+    "senior": "Head of Department"
+  }
+}

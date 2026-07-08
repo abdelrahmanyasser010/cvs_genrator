@@ -1,0 +1,45 @@
+{
+  "coreSkills": ["Culinary Skills", "Menu Planning", "Food Safety", "Kitchen Management"],
+  "questions": [
+    {
+      "id": "culinary-skills",
+      "label": "Do you have professional culinary training?",
+      "skills": ["Culinary Skills", "Cooking Techniques", "Knife Skills", "Food Preparation"]
+    },
+    {
+      "id": "menu-planning",
+      "label": "Do you plan menus?",
+      "skills": ["Menu Planning", "Recipe Development", "Cost Control", "Menu Engineering"]
+    },
+    {
+      "id": "food-safety",
+      "label": "Are you certified in food safety?",
+      "skills": ["Food Safety", "HACCP", "Sanitation", "Health Department Compliance"]
+    },
+    {
+      "id": "kitchen-management",
+      "label": "Do you manage kitchen operations?",
+      "skills": ["Kitchen Management", "Inventory Management", "Staff Supervision", "Kitchen Operations"]
+    },
+    {
+      "id": "specialty-cuisine",
+      "label": "Do you specialize in a particular cuisine?",
+      "skills": ["French Cuisine", "Italian Cuisine", "Asian Cuisine", "Fusion", "Pastry"]
+    },
+    {
+      "id": "catering",
+      "label": "Do you handle catering events?",
+      "skills": ["Catering", "Event Planning", "Large-scale Production", "Service Management"]
+    },
+    {
+      "id": "budgeting",
+      "label": "Do you manage kitchen budgets?",
+      "skills": ["Budget Management", "Cost Analysis", "Purchasing", "Vendor Relations"]
+    },
+    {
+      "id": "training",
+      "label": "Do you train kitchen staff?",
+      "skills": ["Staff Training", "Mentoring", "Team Building", "Skill Development"]
+    }
+  ]
+}

@@ -1,0 +1,223 @@
+{
+  "profession": "developer",
+  "locale": "en",
+  "experience_bullets": [
+    "Refactored database schemas saving $81K annually.",
+    "Refactored front-end interfaces increasing efficiency by 23%.",
+    "Refactored front-end interfaces by 13%.",
+    "Optimized CI/CD pipelines saving $55K annually.",
+    "Spearheaded RESTful APIs increasing efficiency by 33%.",
+    "Developed cloud infrastructure increasing efficiency by 38%.",
+    "Refactored CI/CD pipelines for 30+ clients.",
+    "Optimized scalable web applications managing a budget of $3M.",
+    "Refactored cloud infrastructure by 31%.",
+    "Developed RESTful APIs managing a budget of $5M.",
+    "Architected RESTful APIs for 49+ clients.",
+    "Integrated CI/CD pipelines increasing efficiency by 30%.",
+    "Integrated scalable web applications increasing efficiency by 29%.",
+    "Deployed scalable web applications by 28%.",
+    "Developed CI/CD pipelines increasing efficiency by 38%.",
+    "Architected mobile applications managing a budget of $4M.",
+    "Engineered mobile applications reducing errors by 25%.",
+    "Deployed cloud infrastructure managing a budget of $4M.",
+    "Engineered RESTful APIs managing a budget of $2M.",
+    "Engineered front-end interfaces increasing efficiency by 24%.",
+    "Optimized mobile applications increasing efficiency by 23%.",
+    "Refactored scalable web applications saving $30K annually.",
+    "Refactored database schemas reducing errors by 29%.",
+    "Spearheaded mobile applications managing a budget of $4M.",
+    "Engineered mobile applications reducing errors by 28%.",
+    "Spearheaded database schemas reducing errors by 28%.",
+    "Spearheaded database schemas managing a budget of $1M.",
+    "Engineered mobile applications managing a budget of $3M.",
+    "Engineered database schemas reducing errors by 21%.",
+    "Engineered RESTful APIs by 22%."
+  ],
+  "project_examples": [
+    {
+      "name": "Payment Gateway",
+      "description": "Migrated legacy system to microservices.",
+      "tech": "React, Kubernetes, AWS"
+    },
+    {
+      "name": "Payment Gateway",
+      "description": "Migrated legacy system to microservices.",
+      "tech": "GraphQL, AWS, Node.js"
+    },
+    {
+      "name": "E-commerce Platform",
+      "description": "Migrated legacy system to microservices.",
+      "tech": "Python, SQL, Node.js"
+    },
+    {
+      "name": "E-commerce Platform",
+      "description": "Designed responsive UI with React and Tailwind.",
+      "tech": "AWS, TypeScript, Python"
+    },
+    {
+      "name": "Healthcare Portal",
+      "description": "Implemented real-time sync using WebSockets.",
+      "tech": "React, Node.js, Kubernetes"
+    },
+    {
+      "name": "Real-time Chat App",
+      "description": "Implemented real-time sync using WebSockets.",
+      "tech": "Flutter, Python, Docker"
+    },
+    {
+      "name": "Analytics Dashboard",
+      "description": "Designed responsive UI with React and Tailwind.",
+      "tech": "TypeScript, Docker, Flutter"
+    },
+    {
+      "name": "Payment Gateway",
+      "description": "Built a full-stack solution processing 10k+ daily transactions.",
+      "tech": "AWS, Python, Flutter"
+    },
+    {
+      "name": "Inventory Management System",
+      "description": "Implemented real-time sync using WebSockets.",
+      "tech": "TypeScript, AWS, Python"
+    },
+    {
+      "name": "Analytics Dashboard",
+      "description": "Implemented real-time sync using WebSockets.",
+      "tech": "MongoDB, SQL, GraphQL"
+    },
+    {
+      "name": "E-commerce Platform",
+      "description": "Migrated legacy system to microservices.",
+      "tech": "MongoDB, TypeScript, GraphQL"
+    },
+    {
+      "name": "Analytics Dashboard",
+      "description": "Built a full-stack solution processing 10k+ daily transactions.",
+      "tech": "Kubernetes, React, SQL"
+    },
+    {
+      "name": "Inventory Management System",
+      "description": "Migrated legacy system to microservices.",
+      "tech": "Node.js, Docker, TypeScript"
+    },
+    {
+      "name": "Inventory Management System",
+      "description": "Migrated legacy system to microservices.",
+      "tech": "React, Node.js, MongoDB"
+    },
+    {
+      "name": "Healthcare Portal",
+      "description": "Built a full-stack solution processing 10k+ daily transactions.",
+      "tech": "Python, MongoDB, Node.js"
+    },
+    {
+      "name": "E-commerce Platform",
+      "description": "Built a full-stack solution processing 10k+ daily transactions.",
+      "tech": "Python, AWS, GraphQL"
+    },
+    {
+      "name": "Inventory Management System",
+      "description": "Built a full-stack solution processing 10k+ daily transactions.",
+      "tech": "React, MongoDB, GraphQL"
+    },
+    {
+      "name": "Payment Gateway",
+      "description": "Built a full-stack solution processing 10k+ daily transactions.",
+      "tech": "SQL, Python, MongoDB"
+    },
+    {
+      "name": "Healthcare Portal",
+      "description": "Implemented real-time sync using WebSockets.",
+      "tech": "Kubernetes, React, Node.js"
+    },
+    {
+      "name": "Real-time Chat App",
+      "description": "Migrated legacy system to microservices.",
+      "tech": "AWS, Docker, Python"
+    }
+  ],
+  "soft_skills": [
+    "Agile/Scrum",
+    "System Design",
+    "Problem Solving",
+    "Mentoring",
+    "Team Leadership",
+    "Code Review",
+    "Problem Solving",
+    "Agile/Scrum",
+    "Agile/Scrum",
+    "Team Leadership",
+    "Problem Solving",
+    "Problem Solving",
+    "Problem Solving",
+    "System Design",
+    "Code Review"
+  ],
+  "achievements": [
+    "Recognized for outstanding performance, improving key metrics reducing errors by 21%.",
+    "Recognized for outstanding performance, improving key metrics reducing errors by 20%.",
+    "Recognized for outstanding performance, improving key metrics by 33%.",
+    "Recognized for outstanding performance, improving key metrics for 17+ clients.",
+    "Recognized for outstanding performance, improving key metrics saving $73K annually.",
+    "Recognized for outstanding performance, improving key metrics increasing efficiency by 23%.",
+    "Recognized for outstanding performance, improving key metrics saving $82K annually.",
+    "Recognized for outstanding performance, improving key metrics reducing errors by 20%.",
+    "Recognized for outstanding performance, improving key metrics achieving a 95% success rate.",
+    "Recognized for outstanding performance, improving key metrics saving $87K annually.",
+    "Recognized for outstanding performance, improving key metrics increasing efficiency by 18%.",
+    "Recognized for outstanding performance, improving key metrics for 10+ clients.",
+    "Recognized for outstanding performance, improving key metrics increasing efficiency by 15%.",
+    "Recognized for outstanding performance, improving key metrics achieving a 91% success rate.",
+    "Recognized for outstanding performance, improving key metrics managing a budget of $3M."
+  ],
+  "certifications": [
+    "Oracle Certified Professional - Advanced",
+    "Certified Kubernetes Administrator",
+    "Google Cloud Professional",
+    "Oracle Certified Professional - Advanced",
+    "AWS Certified Solutions Architect",
+    "Certified Kubernetes Administrator",
+    "Google Cloud Professional - Advanced",
+    "Certified Kubernetes Administrator",
+    "Google Cloud Professional",
+    "Certified Kubernetes Administrator - Advanced",
+    "AWS Certified Solutions Architect",
+    "Microsoft Certified: Azure Developer",
+    "Certified Kubernetes Administrator - Advanced",
+    "Certified Kubernetes Administrator",
+    "Google Cloud Professional"
+  ],
+  "career_objectives": [
+    "To leverage my expertise in TypeScript and Team Leadership to drive value and growth.",
+    "To leverage my expertise in AWS and Agile/Scrum to drive value and growth.",
+    "To leverage my expertise in React and Code Review to drive value and growth.",
+    "To leverage my expertise in Docker and System Design to drive value and growth.",
+    "To leverage my expertise in Node.js and Cross-functional Collaboration to drive value and growth.",
+    "To leverage my expertise in MongoDB and Cross-functional Collaboration to drive value and growth.",
+    "To leverage my expertise in Docker and Team Leadership to drive value and growth.",
+    "To leverage my expertise in Docker and Mentoring to drive value and growth.",
+    "To leverage my expertise in SQL and Agile/Scrum to drive value and growth.",
+    "To leverage my expertise in Python and System Design to drive value and growth."
+  ],
+  "keywords": [
+    "MongoDB",
+    "Code Review",
+    "Python",
+    "Problem Solving",
+    "TypeScript",
+    "Kubernetes",
+    "Agile/Scrum",
+    "MongoDB",
+    "Mentoring",
+    "Node.js",
+    "Cross-functional Collaboration",
+    "Docker",
+    "Kubernetes",
+    "AWS",
+    "MongoDB",
+    "AWS",
+    "Problem Solving",
+    "Kubernetes",
+    "React",
+    "Agile/Scrum"
+  ]
+}

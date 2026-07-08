@@ -1,0 +1,16 @@
+{
+  "profession": "sales",
+  "recommendedTemplates": {
+    "fresh": "modern",
+    "junior": "sidebar",
+    "mid": "vibrant",
+    "senior": "corporate"
+  },
+  "defaultTitle": {
+    "fresh": "Sales Associate",
+    "junior": "Sales Representative",
+    "mid": "Account Manager",
+    "senior": "Sales Director"
+  },
+  "coreSkills": ["Sales", "Customer Relationship Management", "Negotiation", "Lead Generation"]
+}

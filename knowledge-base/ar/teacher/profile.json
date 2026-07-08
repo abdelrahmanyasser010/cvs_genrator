@@ -1,0 +1,5 @@
+{
+  "profession": "teacher",
+  "recommendedTemplates": { "fresh": "classic", "junior": "modern", "mid": "sidebar", "senior": "corporate" },
+  "defaultTitle": { "fresh": "مساعد معلم", "junior": "معلم", "mid": "معلم أول", "senior": "رئيس قسم" }
+}

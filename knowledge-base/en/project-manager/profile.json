@@ -1,0 +1,16 @@
+{
+  "profession": "project-manager",
+  "recommendedTemplates": {
+    "fresh": "classic",
+    "junior": "sidebar",
+    "mid": "corporate",
+    "senior": "executive"
+  },
+  "defaultTitle": {
+    "fresh": "Junior Project Manager",
+    "junior": "Project Manager",
+    "mid": "Senior Project Manager",
+    "senior": "Program Manager"
+  },
+  "coreSkills": ["Project Management", "Agile", "Scrum", "Team Leadership"]
+}

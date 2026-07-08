@@ -1,0 +1,45 @@
+{
+  "coreSkills": ["Figma", "Adobe Creative Suite", "UI Design", "UX Design"],
+  "questions": [
+    {
+      "id": "figma",
+      "label": "Do you use Figma for design?",
+      "skills": ["Figma", "Prototyping", "Design Systems"]
+    },
+    {
+      "id": "adobe",
+      "label": "Are you proficient in Adobe Creative Suite?",
+      "skills": ["Photoshop", "Illustrator", "InDesign", "Adobe Creative Suite"]
+    },
+    {
+      "id": "ui-design",
+      "label": "Do you design user interfaces?",
+      "skills": ["UI Design", "Wireframing", "Visual Design"]
+    },
+    {
+      "id": "ux-research",
+      "label": "Do you conduct user research?",
+      "skills": ["User Research", "User Testing", "Persona Creation"]
+    },
+    {
+      "id": "motion-design",
+      "label": "Do you create motion graphics or animations?",
+      "skills": ["After Effects", "Motion Design", "Animation"]
+    },
+    {
+      "id": "web-design",
+      "label": "Do you design websites?",
+      "skills": ["Web Design", "Responsive Design", "HTML/CSS"]
+    },
+    {
+      "id": "brand-design",
+      "label": "Do you work on brand identity?",
+      "skills": ["Brand Design", "Logo Design", "Visual Identity"]
+    },
+    {
+      "id": "print-design",
+      "label": "Do you design for print?",
+      "skills": ["Print Design", "Typography", "Layout Design"]
+    }
+  ]
+}

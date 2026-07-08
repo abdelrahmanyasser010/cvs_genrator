@@ -1,0 +1,111 @@
+{
+  "profession": "mechanical_engineer",
+  "coreSkills": [
+    "Project Management Software",
+    "Communication",
+    "data analysis",
+    "Analytics",
+    "Problem Solving",
+    "MS Office",
+    "Communication",
+    "Operations",
+    "team workflows",
+    "Problem Solving",
+    "Teamwork",
+    "Critical Thinking",
+    "Analytics",
+    "Data Visualization",
+    "Project Management Software",
+    "Operations",
+    "Operations",
+    "Operations",
+    "process improvements",
+    "quality assurance",
+    "Problem Solving",
+    "Agile",
+    "Communication",
+    "MS Office",
+    "Problem Solving",
+    "Project Management Software",
+    "Project Management Software",
+    "Time Management",
+    "project deliverables",
+    "Analytics",
+    "Time Management",
+    "Communication",
+    "Adaptability",
+    "Communication",
+    "MS Office",
+    "strategic initiatives",
+    "team workflows",
+    "Time Management",
+    "team workflows",
+    "quality assurance"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Data Visualization?",
+      "skills": [
+        "Data Visualization",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Project Management Software?",
+      "skills": [
+        "Project Management Software",
+        "Adaptability"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with CRM Systems?",
+      "skills": [
+        "CRM Systems",
+        "Teamwork"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with MS Office?",
+      "skills": [
+        "MS Office",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Project Management Software?",
+      "skills": [
+        "Project Management Software",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with Communication?",
+      "skills": [
+        "Communication",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with CRM Systems?",
+      "skills": [
+        "CRM Systems",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with MS Office?",
+      "skills": [
+        "MS Office",
+        "Time Management"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "profession": "chef",
+  "recommendedTemplates": {
+    "fresh": "creative",
+    "junior": "sidebar",
+    "mid": "modern",
+    "senior": "executive"
+  },
+  "defaultTitle": {
+    "fresh": "Line Cook",
+    "junior": "Chef de Partie",
+    "mid": "Sous Chef",
+    "senior": "Executive Chef"
+  },
+  "coreSkills": ["Culinary Skills", "Menu Planning", "Food Safety", "Kitchen Management"]
+}

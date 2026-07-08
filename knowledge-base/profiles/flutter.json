@@ -1,0 +1,19 @@
+{
+  "id": "flutter",
+  "label": "Flutter Developer",
+  "field": "developer",
+  "specialization": "flutter",
+  "tags": ["mobile", "cross-platform", "dart"],
+  "recommendedTemplates": {
+    "fresh": "minimal",
+    "junior": "modern",
+    "mid": "ats",
+    "senior": "executive"
+  },
+  "defaultTitle": {
+    "fresh": "Junior Flutter Developer",
+    "junior": "Flutter Developer",
+    "mid": "Flutter Software Engineer",
+    "senior": "Senior Flutter Software Engineer"
+  }
+}

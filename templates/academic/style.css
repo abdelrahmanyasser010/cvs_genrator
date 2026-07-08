@@ -1,0 +1,5 @@
+@import url('../shared/base.css');
+/* Academic — scholarly, serif fonts */
+.cv-paper { --accent: #7c3aed; font-family: 'Georgia', serif; }
+.cv-header { border-bottom-color: #7c3aed; }
+.cv-section-title { color: #7c3aed; font-style: italic; }

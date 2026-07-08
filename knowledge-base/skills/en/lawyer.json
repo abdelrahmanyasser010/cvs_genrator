@@ -1,0 +1,111 @@
+{
+  "profession": "lawyer",
+  "coreSkills": [
+    "Project Management Software",
+    "Data Visualization",
+    "Data Visualization",
+    "client relationships",
+    "Planning",
+    "Communication",
+    "process improvements",
+    "quality assurance",
+    "Adaptability",
+    "Communication",
+    "Planning",
+    "Planning",
+    "Cross-functional Leadership",
+    "Problem Solving",
+    "process improvements",
+    "Analytics",
+    "Operations",
+    "client relationships",
+    "project deliverables",
+    "Teamwork",
+    "strategic initiatives",
+    "MS Office",
+    "Time Management",
+    "Leadership",
+    "Critical Thinking",
+    "Cross-functional Leadership",
+    "MS Office",
+    "client relationships",
+    "Agile",
+    "strategic initiatives",
+    "Operations",
+    "Risk Management",
+    "Agile",
+    "Risk Management",
+    "Adaptability",
+    "Problem Solving",
+    "Teamwork",
+    "Analytics",
+    "Critical Thinking",
+    "MS Office"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Risk Management?",
+      "skills": [
+        "Risk Management",
+        "Adaptability"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Operations?",
+      "skills": [
+        "Operations",
+        "Teamwork"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with Cross-functional Leadership?",
+      "skills": [
+        "Cross-functional Leadership",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with MS Office?",
+      "skills": [
+        "MS Office",
+        "Adaptability"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Project Management Software?",
+      "skills": [
+        "Project Management Software",
+        "Adaptability"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with Data Visualization?",
+      "skills": [
+        "Data Visualization",
+        "Adaptability"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with Project Management Software?",
+      "skills": [
+        "Project Management Software",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with Risk Management?",
+      "skills": [
+        "Risk Management",
+        "Time Management"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+/* Dark Theme - Modern and Bold */
+
+.dark-cv {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  color: #e0e0e0;
+  background: #1a1a2e;
+}
+
+.dark-cv .cv-header {
+  text-align: center;
+  padding: 40px 0;
+  border-bottom: 2px solid #4a4a6a;
+  margin-bottom: 30px;
+}
+
+.dark-cv .cv-name {
+  font-size: 36px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.dark-cv .cv-title {
+  font-size: 18px;
+  color: #6c6c8c;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.dark-cv .cv-contact {
+  font-size: 14px;
+  color: #8c8cac;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.dark-cv .cv-contact a {
+  color: #8c8cac;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.dark-cv .cv-contact a:hover {
+  color: #ffffff;
+}
+
+.dark-cv .cv-section {
+  margin-bottom: 30px;
+}
+
+.dark-cv .section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-bottom: 2px solid #4a4a6a;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+}
+
+.dark-cv .section-content {
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.dark-cv .cv-item {
+  margin-bottom: 16px;
+  padding-left: 16px;
+  border-left: 3px solid #4a4a6a;
+}
+
+.dark-cv .item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.dark-cv .item-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: #ffffff;
+}
+
+.dark-cv .item-subtitle {
+  color: #8c8cac;
+  font-size: 14px;
+}
+
+.dark-cv .item-date {
+  color: #6c6c8c;
+  font-size: 13px;
+}
+
+.dark-cv .item-description {
+  color: #b0b0c0;
+  margin-top: 4px;
+}
+
+.dark-cv .item-description ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.dark-cv .item-description li {
+  margin-bottom: 4px;
+}
+
+.dark-cv .skills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dark-cv .skill-tag {
+  background: #2a2a4e;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid #4a4a6a;
+}
+
+.dark-cv .cv-summary {
+  color: #b0b0c0;
+  line-height: 1.8;
+  padding: 0 20px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.dark-cv .project-item {
+  background: #2a2a4e;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #4a4a6a;
+}
+
+.dark-cv .project-name {
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.dark-cv .project-tech {
+  color: #8c8cac;
+  font-size: 12px;
+  margin-top: 8px;
+}

@@ -1,0 +1,16 @@
+{
+  "profession": "marketer",
+  "recommendedTemplates": {
+    "fresh": "modern",
+    "junior": "sidebar",
+    "mid": "vibrant",
+    "senior": "corporate"
+  },
+  "defaultTitle": {
+    "fresh": "Marketing Associate",
+    "junior": "Digital Marketer",
+    "mid": "Marketing Manager",
+    "senior": "Marketing Director"
+  },
+  "coreSkills": ["Digital Marketing", "SEO", "Social Media Marketing", "Content Marketing"]
+}

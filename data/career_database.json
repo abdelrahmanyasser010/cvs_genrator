@@ -1,0 +1,334 @@
+{
+  "personalInfo": {
+    "name": "Abdelrahman Yasser",
+    "title": "Senior Flutter Software Engineer",
+    "email": "abdo.yasser.dev@gmail.com",
+    "phone": "+201015694732",
+    "location": "Mansoura, Egypt",
+    "links": {
+      "github": "https://github.com/AbdelrahmanYasserDev",
+      "linkedin": "https://linkedin.com/in/abdelrahmanyasserdev",
+      "portfolio": "https://abdelrahmanyasser.dev"
+    }
+  },
+  "professionalSummary": "Highly skilled Senior Flutter Software Engineer specializing in engineering enterprise cross-platform applications (Mobile, Desktop, and Web), offline-first business solutions, and POS/ERP systems. Proven track record of reverse-engineering legacy systems, designing high-performance relational local databases (SQLite/Hive), and integrating hardware-level features like USB/Bluetooth/IP thermal printing with RTL Arabic shaping. Expert in Clean Architecture, modular system design, and real-time synchronization pipelines.",
+  "skills": {
+    "languages": ["Dart", "JavaScript", "HTML", "CSS", "SQL"],
+    "frameworks": ["Flutter (Android, iOS, Windows, Web)", "Node.js (Express)"],
+    "architecture": [
+      "Clean Architecture",
+      "Feature-based Modular Design",
+      "MVVM",
+      "MVC",
+      "Repository Pattern",
+      "Dependency Injection (GetIt)"
+    ],
+    "stateManagement": ["Bloc", "Cubit", "GetX", "MobX", "Provider"],
+    "localStorage": ["SQLite", "Hive", "Drift", "SharedPreferences", "Secure Storage"],
+    "networking": ["RESTful APIs (Dio/Http)", "Socket.io", "Laravel Echo", "Pusher Client", "WebSockets"],
+    "realtimeAndHardware": [
+      "Agora RTC Engine (Audio/Video Streams)",
+      "ESC/POS Thermal Printing (USB, Bluetooth, IP)",
+      "Background Location Services",
+      "Google Maps APIs",
+      "Mapbox APIs"
+    ],
+    "paymentAndSecurity": [
+      "In-App Purchases (IAP)",
+      "Razorpay",
+      "Payment Gateways Integration",
+      "Screen Protector/DRM protection",
+      "JWT Authentication"
+    ],
+    "tools": [
+      "Git",
+      "GitHub",
+      "VS Code",
+      "Android Studio",
+      "Firebase Console",
+      "Google Play Console",
+      "App Store Connect"
+    ]
+  },
+  "experience": [
+    {
+      "company": "Believe Agency",
+      "role": "Flutter Software Engineer",
+      "period": "Dec 2025 - Present",
+      "achievements": [
+        "Architected and deployed enterprise-grade cross-platform apps for Mobile, Windows Desktop, and Web platforms.",
+        "Refactored high-debt monolithic mobile codebases into modular Clean Architecture features, reducing code coupling by 40%.",
+        "Developed full offline-first engines with robust background data syncing and conflict resolution using Hive and SQLite.",
+        "Built hardware printing modules communicating directly via ESC/POS protocol over USB serial ports and IP/Network connections.",
+        "Implemented secure JWT-based sessions, background coordinate tracking services, and real-time audio/video streaming modules."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "title": "Tog POS & ERP System (Tog v-1 / Tog Offline)",
+      "category": "ERP & POS Offline System",
+      "role": "Lead Flutter Engineer",
+      "overview": "A comprehensive Point of Sale (POS) and electronic invoicing app tailored for the Saudi Arabian market, compliant with ZATCA phase 1 & 2. Designed to operate completely offline on Android and Windows Desktop, syncing local data instantly upon connection.",
+      "techStack": ["Flutter", "SQLite", "Hive", "Provider", "Go Router", "Dio", "window_manager", "excel", "dartarabic"],
+      "features": [
+        "Offline-First Operation",
+        "ZATCA E-Invoicing Compliant",
+        "Multi-interface Thermal Printing (USB, Bluetooth, Network/IP)",
+        "Automatic Inventory Adjustments",
+        "Windows Desktop Optimization",
+        "Excel Data Export/Import"
+      ],
+      "responsibilities": [
+        "Redesigned the offline core, replacing unstable API-only dependencies with a local relational SQLite database consisting of 27 tables, 14 DAOs, 15+ indexes, 3 triggers, and cascading deletions.",
+        "Programmed atomic database transactions for Sales (decreasing stock, registering ledger entries, and saving invoicing details in a single transaction).",
+        "Created an RTL rendering and shaping wrapper (using dartarabic and raw bytes layout) to correctly print Arabic invoices on thermal printers.",
+        "Integrated window_manager to customize desktop windows and optimized execution performance on low-end Windows POS terminals."
+      ],
+      "challengesAndSolutions": [
+        {
+          "challenge": "Maintaining complex transactions (Sales, Returns, Inventory, Customer balances) in an offline state without synchronization latency or data corruption.",
+          "solution": "Implemented the DAO pattern over SQLite with atomic SQL transaction closures, ensuring database constraints and foreign key triggers automatically adjust inventory quantities and customer credits synchronously."
+        },
+        {
+          "challenge": "Rendering right-to-left (RTL) Arabic texts and dynamic QR codes correctly on diverse non-Unicode thermal printers via ESC/POS.",
+          "solution": "Developed a custom text processing middleware that shapes Arabic glyphs and converts them into graphic print buffers (ESC/POS image commands) before dispatching to the hardware."
+        }
+      ],
+      "links": {
+        "googlePlay": "https://play.google.com/store/apps/details?id=com.manaratalasr.apps.tog1_3"
+      }
+    },
+    {
+      "title": "Elbayan Store",
+      "category": "E-Commerce Multi-Vendor Marketplace",
+      "role": "Flutter Developer",
+      "overview": "A high-performance multi-vendor marketplace app that lets users discover nearby stores, browse nested categories, purchase goods, and trace deliveries on dynamic maps.",
+      "techStack": ["Flutter", "Bloc", "GetIt", "Dartz", "Google Maps", "Mapbox Maps", "Geolocator", "Dio", "Skeletonizer", "fl_chart"],
+      "features": [
+        "Multi-Vendor Store Directories",
+        "Dual-engine Mapping (Google Maps & Mapbox)",
+        "Functional Programming Design Pattern",
+        "Real-Time Delivery Tracking",
+        "Order Analytical Charts"
+      ],
+      "responsibilities": [
+        "Engineered the application utilizing strict Clean Architecture layers (data, domain, presentation).",
+        "Integrated the dartz package to enforce functional error-handling patterns, preventing unexpected application runtime crashes.",
+        "Built animated dashboard charts with fl_chart and custom skeleton loaders via Skeletonizer to provide an elite, premium UX feel during API loads."
+      ],
+      "challengesAndSolutions": [
+        {
+          "challenge": "Handling multiple map providers (Google Maps vs. Mapbox) for different regions with varying styling and location accuracy constraints.",
+          "solution": "Built an abstract map interface layer, allowing the UI to interact with a generic MapController, swap map providers dynamically, and share markers/overlays seamlessly."
+        }
+      ],
+      "links": {
+        "googlePlay": "https://play.google.com/store/apps/details?id=com.elbayan.app"
+      }
+    },
+    {
+      "title": "Gear (ZippyGo - Rider & Captain)",
+      "category": "Ride-Hailing Platform",
+      "role": "Lead Mobile Architect",
+      "overview": "A dual-app ride-hailing solution containing Gear Rider (Passenger client) and Gear Captain (Driver client). Operates real-time tracking, routing, background GPS services, dynamic pricing, and push notification dispatches.",
+      "techStack": ["Flutter", "GetX", "Socket.io Client", "Google Maps", "flutter_polyline_points", "flutter_background_service", "OneSignal", "Razorpay", "wakelock_plus"],
+      "features": [
+        "Background Coordinate Tracking",
+        "Real-Time WebSocket Sync",
+        "Dynamic Route Polylines Draw",
+        "Slide-to-Accept Operations",
+        "Secure Payments (Razorpay)",
+        "OneSignal Alert Pipeline"
+      ],
+      "responsibilities": [
+        "Implemented the background tracking pipeline in Gear Captain using flutter_background_service, ensuring coordinates sync to the server even when the app is suspended.",
+        "Established socket.io gateways to dispatch real-time trip alerts to drivers and update passengers' maps with live car coordinates.",
+        "Programmed the routing module using flutter_polyline_points to calculate and render the fastest routes between pick-up and destination points."
+      ],
+      "challengesAndSolutions": [
+        {
+          "challenge": "Battery drainage and operating system suspension of background GPS tracking on driver devices.",
+          "solution": "Optimized location update rates dynamically depending on device speed, configured persistent notification channels, and requested high-accuracy permission exclusions to bypass OS doze states."
+        }
+      ],
+      "links": {
+        "riderGooglePlay": "https://play.google.com/store/apps/details?id=com.gear.app&hl=ar",
+        "captainGooglePlay": "https://play.google.com/store/apps/details?id=com.gearcaptain.app&hl=ar"
+      }
+    },
+    {
+      "title": "Hogga",
+      "category": "Legal Consulting Platform",
+      "role": "Flutter Developer",
+      "overview": "A peer-to-peer legal services app connecting users with certified attorneys, enabling immediate text discussions, document uploads, and live video/audio consultations.",
+      "techStack": ["Flutter", "Bloc", "Agora RTC Engine", "Socket.io Client", "Laravel Echo", "Pusher Client", "flutter_secure_storage"],
+      "features": [
+        "RTC Video & Audio Consulting",
+        "Real-Time Chatting System",
+        "Legal Files Upload Manager",
+        "Encrypted Credentials Storage"
+      ],
+      "responsibilities": [
+        "Integrated the Agora RTC Engine to handle high-fidelity video/audio call streams between clients and attorneys, adjusting bitrates dynamically.",
+        "Set up real-time text channels utilizing Laravel Echo and Pusher client to manage message statuses (sent, delivered, read).",
+        "Applied flutter_secure_storage to encrypt user authentication tokens and sensitive profile details."
+      ],
+      "challengesAndSolutions": [
+        {
+          "challenge": "Maintaining audio/video call quality and handling unexpected dropouts during consultations in weak network zones.",
+          "solution": "Implemented call-state event listeners to automatically fallback to audio-only streaming, trigger auto-reconnection pipelines, and log bandwidth statistics."
+        }
+      ],
+      "links": {
+        "googlePlay": "https://play.google.com/store/apps/details?id=com.hogga.app.hogga"
+      }
+    },
+    {
+      "title": "LearnPress Mobile",
+      "category": "Learning Management System (LMS)",
+      "role": "Flutter Developer",
+      "overview": "A feature-filled learning platform client for LearnPress (WordPress), allowing users to browse courses, test skills with quizzes, stream lectures, and manage certificates.",
+      "techStack": ["Flutter", "GetX", "MobX", "Provider", "just_audio", "syncfusion_flutter_pdfviewer", "in_app_purchase", "screen_protector", "flutter_secure_storage"],
+      "features": [
+        "JWT Session Management",
+        "Audio Lecture Player",
+        "Anti-Screen Recording DRM",
+        "In-App Purchases (Google & Apple)",
+        "PDF Certificate Viewer"
+      ],
+      "responsibilities": [
+        "Integrated the course player supporting audio playback state management with just_audio.",
+        "Secured content from piracy by integrating screen_protector to block screenshots and screen recordings in video/text lecture screens.",
+        "Implemented Google Play and Apple App Store in-app billing routes for course purchasing using in_app_purchase."
+      ],
+      "challengesAndSolutions": [
+        {
+          "challenge": "Enforcing course licensing rules and securing proprietary video lectures from direct recording.",
+          "solution": "Wrote a platform-channel bridge utilizing screen_protector that sets secure layout flags on Android (WindowManager.LayoutParams.FLAG_SECURE) and iOS, blanking screens automatically during recordings."
+        }
+      ]
+    },
+    {
+      "title": "Canary 7",
+      "category": "Classified Ads & Admin Dashboard",
+      "role": "Full-Stack Flutter Engineer",
+      "overview": "A dual-project comprising a mobile classified ads application (similar to OLX) and a back-office administration dashboard to moderate listings, view analytics, and manage reports.",
+      "techStack": ["Flutter", "Bloc", "Firebase Auth", "Cloud Firestore", "Firebase Storage", "fl_chart", "photo_manager", "flutter_image_compress", "sqflite"],
+      "features": [
+        "Dynamic Ads Listing Catalog",
+        "Visual Admin Moderation Board",
+        "Real-Time Statistics Dashboard",
+        "Optimized Image Upload Flow",
+        "Offline Ad Message Caching"
+      ],
+      "responsibilities": [
+        "Created the mobile app and dashboard using Flutter, sharing models and domain rules across both codebases.",
+        "Built the admin dashboard analytics using fl_chart to illustrate daily listing trends and top categories.",
+        "Developed an image pre-processing engine (via photo_manager and flutter_image_compress) that compresses uploaded images by up to 70% before uploading them to Firebase Storage."
+      ],
+      "challengesAndSolutions": [
+        {
+          "challenge": "Dashboard lagging when loading large lists of ads to moderate from Cloud Firestore.",
+          "solution": "Designed a pagination controller in Bloc that retrieves Firestore documents in chunks of 20, caches metadata locally in sqflite, and releases image memories dynamically when items scroll off-screen."
+        }
+      ],
+      "links": {
+        "googlePlay": "https://play.google.com/store/apps/details?id=com.canary.app"
+      }
+    },
+    {
+      "title": "Zone",
+      "category": "Service & Event Booking Platform",
+      "role": "Flutter Developer",
+      "overview": "A custom platform to reserve wedding halls, event venues, and beauty center sessions with scheduling calendars, interactive maps, and payment routes.",
+      "techStack": ["Flutter", "Bloc", "Google Maps", "Table Calendar", "Dio", "shared_preferences"],
+      "features": [
+        "Visual Venue Interactive Maps",
+        "Grid Table Calendar Booking",
+        "Service Categories Selector",
+        "Localized Area Filtering"
+      ],
+      "responsibilities": [
+        "Developed the core booking grid scheduler with Table Calendar, dynamically locking booked dates from the API.",
+        "Implemented area filter queries using Local JSON assets (egypt_locations.json) to let users search venues by governate and city."
+      ],
+      "challengesAndSolutions": [
+        {
+          "challenge": "Handling concurrent booking collisions when two customers choose the same slot simultaneously.",
+          "solution": "Created an optimistic reservation state machine that checks slots with a fast lock API request before launching the billing flow."
+        }
+      ],
+      "links": {
+        "googlePlay": "https://play.google.com/store/apps/details?id=com.zone.app.zone"
+      }
+    },
+    {
+      "title": "My Feny",
+      "category": "Home Services Marketplace",
+      "role": "Flutter Developer",
+      "overview": "An on-demand home maintenance application linking users with licensed technicians. Operates live request status monitoring, chatting, and ratings.",
+      "techStack": ["Flutter", "Bloc", "Dio", "Firebase Messaging", "Geolocator", "Google Maps"],
+      "features": [
+        "Real-Time Request Pipeline",
+        "Technician Location Tracking",
+        "In-App Chat Messaging",
+        "Rating & Feedback Module"
+      ],
+      "responsibilities": [
+        "Constructed the request lifecycle tracker illustrating real-time service updates (Pending, Accepted, In-Progress, Completed) with custom stepper widgets.",
+        "Configured Firebase Messaging notifications to alert users of technician arrivals and messages."
+      ],
+      "links": {
+        "googlePlay": "https://play.google.com/store/search?q=ماي+فني",
+        "appleStore": "https://apps.apple.com/kw/app/ماي-فني/id6746807479"
+      }
+    },
+    {
+      "title": "BuB (Book Your Beauty)",
+      "category": "Beauty Salons Reservation App",
+      "role": "Flutter Developer",
+      "overview": "A beauty appointment scheduler containing salon profiles, stylist bookings, price menus, and instant notifications.",
+      "techStack": ["Flutter", "Dio", "Bloc", "shared_preferences", "firebase_core"],
+      "features": [
+        "Salon Services Catalog",
+        "Stylist Booking Engine",
+        "Instant Notifications Alerts",
+        "Multi-currency Support"
+      ],
+      "responsibilities": [
+        "Built the salon menus listing catalog with smooth filter states in Bloc.",
+        "Configured local caches for user settings and favorite stylist profiles using shared_preferences."
+      ],
+      "links": {
+        "googlePlay": "https://play.google.com/store/apps/details?id=com.bub1.app",
+        "appleStore": "https://apps.apple.com/us/app/bub-book-your-beauty/id6773297044"
+      }
+    },
+    {
+      "title": "History Tell (History Quiz)",
+      "category": "Educational Quiz Application",
+      "role": "Flutter Developer",
+      "overview": "A levels-based history educational quiz application with progress tracking, scoreboards, and challenges.",
+      "techStack": ["Flutter", "Bloc", "sqflite", "shared_preferences", "equatable"],
+      "features": [
+        "Levels Progress System",
+        "SQLite Question Database",
+        "Daily Challenge Scheduler",
+        "Score & Achievement Leaderboard"
+      ],
+      "responsibilities": [
+        "Designed the levels progression engine saving scores and unlocking achievements in a local sqflite database.",
+        "Wrote the JSON parsing controller loading quiz categories and questions dynamically from assets."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Delta University for Science and Technology",
+      "degree": "Bachelor of Science in Computer Science",
+      "period": "2020 - 2024"
+    }
+  ],
+  "languages": ["Arabic (Native)", "English (Professional)"]
+}

@@ -1,0 +1,16 @@
+{
+  "profession": "journalist",
+  "recommendedTemplates": {
+    "fresh": "modern",
+    "junior": "sidebar",
+    "mid": "creative",
+    "senior": "executive"
+  },
+  "defaultTitle": {
+    "fresh": "Junior Reporter",
+    "junior": "Reporter",
+    "mid": "Senior Reporter",
+    "senior": "Editor"
+  },
+  "coreSkills": ["Journalism", "Writing", "Research", "Interviewing"]
+}

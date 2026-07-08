@@ -1,0 +1,5 @@
+{
+  "mvp": ["ai-recommended", "ats", "minimal", "modern", "creative", "executive"],
+  "gallery": ["classic", "google", "apple", "microsoft", "amazon", "meta", "stripe", "linear", "notion", "dark", "professional", "elegant", "compact", "academic", "canva"],
+  "total": 21
+}

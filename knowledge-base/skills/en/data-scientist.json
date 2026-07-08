@@ -1,0 +1,45 @@
+{
+  "coreSkills": ["Python", "Machine Learning", "Data Analysis", "SQL"],
+  "questions": [
+    {
+      "id": "python",
+      "label": "Do you use Python for data science?",
+      "skills": ["Python", "Pandas", "NumPy", "Jupyter"]
+    },
+    {
+      "id": "machine-learning",
+      "label": "Do you work with machine learning?",
+      "skills": ["Machine Learning", "Scikit-learn", "TensorFlow", "PyTorch", "Deep Learning"]
+    },
+    {
+      "id": "data-visualization",
+      "label": "Do you create data visualizations?",
+      "skills": ["Data Visualization", "Matplotlib", "Seaborn", "Tableau", "Power BI"]
+    },
+    {
+      "id": "sql",
+      "label": "Do you work with SQL databases?",
+      "skills": ["SQL", "Database Management", "Query Optimization", "PostgreSQL", "MySQL"]
+    },
+    {
+      "id": "big-data",
+      "label": "Do you work with big data technologies?",
+      "skills": ["Spark", "Hadoop", "Big Data", "Distributed Computing"]
+    },
+    {
+      "id": "statistics",
+      "label": "Do you apply statistical analysis?",
+      "skills": ["Statistics", "Statistical Analysis", "Hypothesis Testing", "A/B Testing"]
+    },
+    {
+      "id": "nlp",
+      "label": "Do you work with natural language processing?",
+      "skills": ["NLP", "Text Mining", "NLTK", "Spacy", "Transformers"]
+    },
+    {
+      "id": "mlops",
+      "label": "Do you deploy ML models to production?",
+      "skills": ["MLOps", "Model Deployment", "MLflow", "Kubernetes", "Docker"]
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "profession": "marketing",
+  "coreSkills": [
+    "data analysis",
+    "project deliverables",
+    "CRM Systems",
+    "Teamwork",
+    "Communication",
+    "Agile",
+    "Time Management",
+    "Critical Thinking",
+    "Problem Solving",
+    "Analytics",
+    "Agile",
+    "Problem Solving",
+    "Communication",
+    "MS Office",
+    "process improvements",
+    "Risk Management",
+    "project deliverables",
+    "Cross-functional Leadership",
+    "Project Management Software",
+    "Operations",
+    "client relationships",
+    "project deliverables",
+    "Project Management Software",
+    "Risk Management",
+    "Data Visualization",
+    "Data Visualization",
+    "Communication",
+    "Adaptability",
+    "Data Visualization",
+    "Leadership",
+    "Teamwork",
+    "Problem Solving",
+    "MS Office",
+    "Cross-functional Leadership",
+    "data analysis",
+    "Communication",
+    "process improvements",
+    "Critical Thinking",
+    "Agile",
+    "Operations"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Agile?",
+      "skills": [
+        "Agile",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Planning?",
+      "skills": [
+        "Planning",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with Project Management Software?",
+      "skills": [
+        "Project Management Software",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with Project Management Software?",
+      "skills": [
+        "Project Management Software",
+        "Teamwork"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Analytics?",
+      "skills": [
+        "Analytics",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with Project Management Software?",
+      "skills": [
+        "Project Management Software",
+        "Teamwork"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with Analytics?",
+      "skills": [
+        "Analytics",
+        "Teamwork"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with Analytics?",
+      "skills": [
+        "Analytics",
+        "Leadership"
+      ]
+    }
+  ]
+}

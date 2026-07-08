@@ -1,0 +1,111 @@
+{
+  "profession": "electrical_engineer",
+  "coreSkills": [
+    "strategic initiatives",
+    "strategic initiatives",
+    "Leadership",
+    "Adaptability",
+    "Communication",
+    "Critical Thinking",
+    "CRM Systems",
+    "Communication",
+    "process improvements",
+    "Risk Management",
+    "Leadership",
+    "Agile",
+    "Risk Management",
+    "team workflows",
+    "project deliverables",
+    "process improvements",
+    "quality assurance",
+    "process improvements",
+    "Planning",
+    "Planning",
+    "Data Visualization",
+    "Data Visualization",
+    "Analytics",
+    "project deliverables",
+    "Cross-functional Leadership",
+    "Communication",
+    "strategic initiatives",
+    "Cross-functional Leadership",
+    "Teamwork",
+    "Critical Thinking",
+    "MS Office",
+    "Analytics",
+    "client relationships",
+    "Teamwork",
+    "Cross-functional Leadership",
+    "Cross-functional Leadership",
+    "Communication",
+    "CRM Systems",
+    "process improvements",
+    "Operations"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Data Visualization?",
+      "skills": [
+        "Data Visualization",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Analytics?",
+      "skills": [
+        "Analytics",
+        "Time Management"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with Cross-functional Leadership?",
+      "skills": [
+        "Cross-functional Leadership",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with Communication?",
+      "skills": [
+        "Communication",
+        "Teamwork"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Risk Management?",
+      "skills": [
+        "Risk Management",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with Cross-functional Leadership?",
+      "skills": [
+        "Cross-functional Leadership",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with Project Management Software?",
+      "skills": [
+        "Project Management Software",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with Analytics?",
+      "skills": [
+        "Analytics",
+        "Teamwork"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+/* Print.css — Supplemental print overrides */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 14mm;
+  }
+
+  body {
+    background: white !important;
+    padding: 0 !important;
+    font-size: 11pt !important;
+  }
+
+  .cv-page {
+    box-shadow: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  .cv-section,
+  .cv-project,
+  .cv-entry {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .cv-header h1 {
+    font-size: 18pt !important;
+  }
+
+  .cv-section-title {
+    font-size: 9pt !important;
+  }
+
+  .cv-bullets li,
+  .cv-project-desc,
+  .cv-tech-line,
+  .cv-skill-row,
+  .cv-summary p {
+    font-size: 9.5pt !important;
+  }
+}

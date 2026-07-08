@@ -1,0 +1,111 @@
+{
+  "profession": "doctor",
+  "coreSkills": [
+    "Patient Care",
+    "Telemedicine",
+    "Leadership",
+    "Communication",
+    "diagnostic tests",
+    "Cerner",
+    "Epic EMR",
+    "Empathy",
+    "Patient Care",
+    "medical records",
+    "multidisciplinary rounds",
+    "Cerner",
+    "diagnostic tests",
+    "preventative care programs",
+    "multidisciplinary rounds",
+    "Patient Care",
+    "BLS/ACLS",
+    "Clinical Pharmacology",
+    "Communication",
+    "Diagnostic Imaging",
+    "Crisis Management",
+    "Decision Making",
+    "multidisciplinary rounds",
+    "BLS/ACLS",
+    "Epic EMR",
+    "Cerner",
+    "Decision Making",
+    "surgical procedures",
+    "Clinical Pharmacology",
+    "Crisis Management",
+    "Cerner",
+    "Empathy",
+    "Epic EMR",
+    "Crisis Management",
+    "multidisciplinary rounds",
+    "treatment plans",
+    "multidisciplinary rounds",
+    "surgical procedures",
+    "preventative care programs",
+    "diagnostic tests"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Clinical Pharmacology?",
+      "skills": [
+        "Clinical Pharmacology",
+        "Decision Making"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Clinical Pharmacology?",
+      "skills": [
+        "Clinical Pharmacology",
+        "Resilience"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with BLS/ACLS?",
+      "skills": [
+        "BLS/ACLS",
+        "Decision Making"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with BLS/ACLS?",
+      "skills": [
+        "BLS/ACLS",
+        "Decision Making"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Clinical Pharmacology?",
+      "skills": [
+        "Clinical Pharmacology",
+        "Empathy"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with Telemedicine?",
+      "skills": [
+        "Telemedicine",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with Cerner?",
+      "skills": [
+        "Cerner",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with Telemedicine?",
+      "skills": [
+        "Telemedicine",
+        "Leadership"
+      ]
+    }
+  ]
+}

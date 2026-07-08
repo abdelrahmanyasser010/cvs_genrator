@@ -1,0 +1,111 @@
+{
+  "profession": "pharmacist",
+  "coreSkills": [
+    "Risk Management",
+    "Cross-functional Leadership",
+    "Project Management Software",
+    "CRM Systems",
+    "Operations",
+    "team workflows",
+    "strategic initiatives",
+    "team workflows",
+    "Communication",
+    "Data Visualization",
+    "CRM Systems",
+    "Risk Management",
+    "Risk Management",
+    "data analysis",
+    "data analysis",
+    "Communication",
+    "Data Visualization",
+    "Project Management Software",
+    "Time Management",
+    "Communication",
+    "Planning",
+    "data analysis",
+    "Time Management",
+    "Adaptability",
+    "Planning",
+    "Planning",
+    "Agile",
+    "quality assurance",
+    "project deliverables",
+    "Operations",
+    "Communication",
+    "Data Visualization",
+    "Project Management Software",
+    "Communication",
+    "data analysis",
+    "Data Visualization",
+    "process improvements",
+    "Adaptability",
+    "team workflows",
+    "Cross-functional Leadership"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Agile?",
+      "skills": [
+        "Agile",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Cross-functional Leadership?",
+      "skills": [
+        "Cross-functional Leadership",
+        "Time Management"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with Agile?",
+      "skills": [
+        "Agile",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with Cross-functional Leadership?",
+      "skills": [
+        "Cross-functional Leadership",
+        "Time Management"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with MS Office?",
+      "skills": [
+        "MS Office",
+        "Teamwork"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with Risk Management?",
+      "skills": [
+        "Risk Management",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with MS Office?",
+      "skills": [
+        "MS Office",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with Analytics?",
+      "skills": [
+        "Analytics",
+        "Teamwork"
+      ]
+    }
+  ]
+}

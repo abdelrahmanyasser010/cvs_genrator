@@ -1,0 +1,25 @@
+{
+  "profession": "journalist",
+  "summaries": [
+    {
+      "id": "journalist-1",
+      "text": "Reporter with 3+ years of experience covering local news and community events. Skilled in investigative journalism, interviewing, and multimedia storytelling. Proficient in AP style and digital content management systems. Strong ability to meet tight deadlines while maintaining accuracy and ethical standards.",
+      "levels": ["junior", "mid"]
+    },
+    {
+      "id": "journalist-2",
+      "text": "Senior Editor with 10+ years of experience in newsroom leadership and content strategy. Expert in editorial decision-making, team management, and digital transformation. Track record of developing award-winning journalism and mentoring emerging reporters in a fast-paced media environment.",
+      "levels": ["senior"]
+    },
+    {
+      "id": "journalist-3",
+      "text": "Journalist specializing in data journalism and investigative reporting. Experienced in analyzing public records, creating data visualizations, and producing in-depth stories on complex issues. Strong background in FOIA requests and database reporting.",
+      "levels": ["mid", "senior"]
+    },
+    {
+      "id": "journalist-4",
+      "text": "Junior Reporter with strong foundation in journalism principles and storytelling. Proficient in writing, photography, and social media for news distribution. Eager to develop expertise in investigative techniques and contribute to meaningful community journalism.",
+      "levels": ["fresh"]
+    }
+  ]
+}

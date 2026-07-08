@@ -1,0 +1,16 @@
+{
+  "profession": "researcher",
+  "recommendedTemplates": {
+    "fresh": "ats",
+    "junior": "classic",
+    "mid": "sidebar",
+    "senior": "executive"
+  },
+  "defaultTitle": {
+    "fresh": "Research Assistant",
+    "junior": "Research Associate",
+    "mid": "Senior Researcher",
+    "senior": "Principal Investigator"
+  },
+  "coreSkills": ["Research", "Data Analysis", "Academic Writing", "Critical Thinking"]
+}

@@ -1,0 +1,16 @@
+{
+  "profession": "data-scientist",
+  "recommendedTemplates": {
+    "fresh": "ats",
+    "junior": "sidebar",
+    "mid": "tech",
+    "senior": "corporate"
+  },
+  "defaultTitle": {
+    "fresh": "Junior Data Scientist",
+    "junior": "Data Scientist",
+    "mid": "Senior Data Scientist",
+    "senior": "Principal Data Scientist"
+  },
+  "coreSkills": ["Python", "Machine Learning", "Data Analysis", "SQL"]
+}

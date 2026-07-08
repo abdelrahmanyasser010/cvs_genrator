@@ -1,0 +1,16 @@
+{
+  "profession": "real-estate-agent",
+  "recommendedTemplates": {
+    "fresh": "modern",
+    "junior": "sidebar",
+    "mid": "vibrant",
+    "senior": "corporate"
+  },
+  "defaultTitle": {
+    "fresh": "Real Estate Agent",
+    "junior": "Real Estate Agent",
+    "mid": "Senior Real Estate Agent",
+    "senior": "Broker"
+  },
+  "coreSkills": ["Real Estate Sales", "Property Showings", "Market Analysis", "Client Relations"]
+}

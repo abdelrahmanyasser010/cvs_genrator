@@ -1,0 +1,111 @@
+{
+  "profession": "ui_ux_designer",
+  "coreSkills": [
+    "Data Visualization",
+    "data analysis",
+    "Teamwork",
+    "Time Management",
+    "Cross-functional Leadership",
+    "strategic initiatives",
+    "Critical Thinking",
+    "Operations",
+    "Operations",
+    "Project Management Software",
+    "Data Visualization",
+    "Planning",
+    "process improvements",
+    "strategic initiatives",
+    "Risk Management",
+    "process improvements",
+    "client relationships",
+    "Operations",
+    "Cross-functional Leadership",
+    "Data Visualization",
+    "Agile",
+    "Critical Thinking",
+    "data analysis",
+    "client relationships",
+    "Problem Solving",
+    "client relationships",
+    "strategic initiatives",
+    "Leadership",
+    "Cross-functional Leadership",
+    "team workflows",
+    "Communication",
+    "Project Management Software",
+    "team workflows",
+    "CRM Systems",
+    "MS Office",
+    "Communication",
+    "process improvements",
+    "team workflows",
+    "CRM Systems",
+    "Communication"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Data Visualization?",
+      "skills": [
+        "Data Visualization",
+        "Time Management"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Planning?",
+      "skills": [
+        "Planning",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with Agile?",
+      "skills": [
+        "Agile",
+        "Critical Thinking"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with Operations?",
+      "skills": [
+        "Operations",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Agile?",
+      "skills": [
+        "Agile",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with CRM Systems?",
+      "skills": [
+        "CRM Systems",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with Risk Management?",
+      "skills": [
+        "Risk Management",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with Communication?",
+      "skills": [
+        "Communication",
+        "Time Management"
+      ]
+    }
+  ]
+}

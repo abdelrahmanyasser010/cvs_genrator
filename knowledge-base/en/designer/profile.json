@@ -1,0 +1,16 @@
+{
+  "profession": "designer",
+  "recommendedTemplates": {
+    "fresh": "creative",
+    "junior": "modern",
+    "mid": "sidebar",
+    "senior": "elegant"
+  },
+  "defaultTitle": {
+    "fresh": "Junior Designer",
+    "junior": "UI/UX Designer",
+    "mid": "Senior Designer",
+    "senior": "Design Lead"
+  },
+  "coreSkills": ["Figma", "Adobe Creative Suite", "UI Design", "UX Design"]
+}

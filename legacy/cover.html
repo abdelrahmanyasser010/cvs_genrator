@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abdelrahman Yasser — Cover Letter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="data/career_database.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      background: #f0f0f0;
+      color: #111;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Toolbar ─────────────────────────────────── */
+    #toolbar {
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 12.5px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-btn {
+      padding: 6px 14px;
+      font-size: 12.5px;
+      font-family: inherit;
+      border: 1px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+      color: #444;
+      font-weight: 500;
+      transition: all .15s;
+    }
+    .nav-btn:hover   { border-color: #111; color: #111; }
+    .nav-btn.current { background: #111; color: #fff; border-color: #111; }
+    .btn-print {
+      padding: 6px 16px; font-size: 12.5px; font-family: inherit;
+      background: #111; color: #fff; border: none; cursor: pointer; font-weight: 600;
+    }
+    .btn-print:hover { background: #333; }
+
+    /* ── Layout ──────────────────────────────────── */
+    #page-wrap { max-width: 860px; margin: 28px auto; padding: 0 16px; }
+
+    /* ── Editable Controls (web-only) ────────────── */
+    .cover-controls {
+      background: #fff;
+      padding: 20px 28px;
+      border: 1px solid #e8e8e8;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: flex-end;
+    }
+    .cover-controls label { font-size: 12px; font-weight: 600; color: #555; display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; }
+    .cover-controls input, .cover-controls select {
+      border: 1px solid #ccc;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-family: inherit;
+      color: #111;
+      outline: none;
+      width: 220px;
+    }
+    .cover-controls input:focus, .cover-controls select:focus { border-color: #111; }
+    .ctrl-group { display: flex; flex-direction: column; }
+    .btn-regen {
+      background: #111; color: #fff; border: none;
+      padding: 8px 20px; font-size: 13px; font-family: inherit;
+      cursor: pointer; font-weight: 600; align-self: flex-end;
+    }
+    .btn-regen:hover { background: #333; }
+
+    /* ── Letter Paper ────────────────────────────── */
+    .letter-paper {
+      background: #fff;
+      padding: 52px 60px;
+      box-shadow: 0 2px 16px rgba(0,0,0,.08);
+    }
+
+    /* Sender block */
+    .letter-sender { margin-bottom: 32px; }
+    .letter-sender h2 { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+    .letter-sender .sender-title { font-size: 13px; color: #666; margin-bottom: 6px; }
+    .letter-sender .sender-contacts { font-size: 12.5px; color: #555; display: flex; flex-wrap: wrap; gap: 0; }
+    .sender-contacts .sc { }
+    .sender-contacts .dot { margin: 0 7px; color: #ccc; }
+
+    /* Date + recipient */
+    .letter-date { font-size: 13px; color: #555; margin-bottom: 20px; }
+    .letter-recipient { margin-bottom: 20px; }
+    .letter-recipient .company-name { font-size: 14px; font-weight: 600; }
+    .letter-recipient .position { font-size: 13px; color: #555; }
+
+    /* Salutation */
+    .letter-salutation { font-size: 14px; margin-bottom: 18px; font-weight: 500; }
+
+    /* Body */
+    .letter-body p {
+      font-size: 13.5px;
+      color: #333;
+      line-height: 1.75;
+      margin-bottom: 16px;
+    }
+
+    /* Closing */
+    .letter-closing {
+      margin-top: 28px;
+      font-size: 13.5px;
+      color: #333;
+    }
+    .letter-closing .sig-name { font-weight: 700; font-size: 15px; margin-top: 28px; }
+    .letter-closing .sig-title { font-size: 12.5px; color: #666; }
+
+    /* ── Print ───────────────────────────────────── */
+    @media print {
+      @page { size: A4 portrait; margin: 14mm 16mm; }
+      body { background: #fff !important; }
+      #toolbar, .cover-controls { display: none !important; }
+      #page-wrap { margin: 0 !important; padding: 0 !important; max-width: 100% !important; }
+      .letter-paper { box-shadow: none !important; padding: 0 !important; }
+    }
+
+    @media (max-width: 640px) {
+      .letter-paper { padding: 28px 20px; }
+      .cover-controls input, .cover-controls select { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Toolbar -->
+<div id="toolbar">
+  <div style="display:flex; align-items:center; gap:4px;">
+    <button class="nav-btn"         onclick="location='index.html'">CV</button>
+    <button class="nav-btn"         onclick="location='portfolio.html'">Portfolio</button>
+    <button class="nav-btn current" onclick="location='cover.html'">Cover Letter</button>
+  </div>
+  <div style="display:flex; gap:8px;">
+    <button class="btn-print" onclick="window.print()">⬇ Print / Save PDF</button>
+  </div>
+</div>
+
+<div id="page-wrap">
+
+  <!-- Controls -->
+  <div class="cover-controls no-print">
+    <div class="ctrl-group">
+      <label>Company Name</label>
+      <input type="text" id="ctrl-company" placeholder="e.g. Acme Tech" oninput="updateLetter()">
+    </div>
+    <div class="ctrl-group">
+      <label>Position / Role</label>
+      <input type="text" id="ctrl-role" placeholder="e.g. Flutter Developer" oninput="updateLetter()">
+    </div>
+    <div class="ctrl-group">
+      <label>Hiring Manager (optional)</label>
+      <input type="text" id="ctrl-manager" placeholder="Hiring Manager" oninput="updateLetter()">
+    </div>
+    <div class="ctrl-group">
+      <label>Focus</label>
+      <select id="ctrl-focus" onchange="updateLetter()">
+        <option value="general">General / Mobile</option>
+        <option value="erp">POS / ERP</option>
+        <option value="desktop">Desktop / Hardware</option>
+      </select>
+    </div>
+    <button class="btn-regen" onclick="updateLetter()">Generate</button>
+  </div>
+
+  <!-- Letter -->
+  <div class="letter-paper" id="letter-paper"></div>
+
+</div>
+
+<script>
+const db = careerDatabase;
+
+/* ── Body paragraphs per focus ─────────────────── */
+const bodies = {
+  general: (company, role) => `
+    <p>I am writing to express my interest in the <strong>${role || 'Flutter Developer'}</strong> position at <strong>${company || 'your company'}</strong>. With hands-on experience delivering cross-platform Flutter applications across mobile (Android &amp; iOS) and desktop platforms, I am confident I can contribute meaningfully to your team from day one.</p>
+    <p>Over the past year I have built and shipped production applications in categories including ride-hailing, legal consulting, home services, event booking, and e-learning. My work has covered the full Flutter development cycle — from architecting Bloc-based state flows and integrating REST APIs and Firebase, to handling real-time WebSocket communication (Socket.io, Agora RTC) and optimizing app performance for the Play Store and App Store.</p>
+    <p>I follow Clean Architecture and feature-first structuring to keep codebases maintainable and scalable. I am comfortable collaborating in team environments, reviewing requirements, and proposing solutions that balance technical correctness with delivery speed.</p>
+    <p>I would welcome the opportunity to discuss how my skills and project experience align with the needs of your team. My full CV and project portfolio are available for reference.</p>
+  `,
+  erp: (company, role) => `
+    <p>I am writing to apply for the <strong>${role || 'Flutter Engineer'}</strong> role at <strong>${company || 'your company'}</strong>. My experience centres on building offline-first POS and ERP systems — an area where I have developed practical, production-proven expertise over the past year.</p>
+    <p>Most notably, I re-architected a Point of Sale application for the Saudi market, replacing fragile API-only data flows with a robust local SQLite database (27 tables, 14 DAOs, indexed and trigger-driven) that supports full offline operation with background synchronisation on reconnection. I also implemented ZATCA-compliant e-invoicing and multi-interface thermal printing (USB, Bluetooth, IP) with correct Arabic RTL receipt rendering — a technically demanding challenge that required deep work at the hardware interface level.</p>
+    <p>I understand that ERP and business systems demand reliability, data integrity, and careful transaction design — not just attractive UI. I design with those constraints in mind, using atomic SQL transactions, cascading foreign keys, and DAO abstraction to ensure correctness even under edge-case conditions.</p>
+    <p>I would be glad to discuss the role further and demonstrate how my experience with offline business systems could benefit your team.</p>
+  `,
+  desktop: (company, role) => `
+    <p>I am applying for the <strong>${role || 'Flutter Developer'}</strong> position at <strong>${company || 'your company'}</strong>. My recent experience includes developing Flutter Windows desktop applications and implementing hardware-level integrations, which I believe directly match the requirements of this role.</p>
+    <p>I have built a Windows-targeted POS application that communicates directly with thermal receipt printers via ESC/POS commands over USB serial ports, Bluetooth, and TCP/IP network connections. A key challenge was correctly rendering Arabic right-to-left text on printers that lack native Unicode support — I solved this by building a custom glyph-shaping middleware that converts Arabic strings into graphics buffers before dispatching them to the printer. I also used window_manager to control desktop window behaviour and optimised the app's performance for low-spec POS hardware.</p>
+    <p>Flutter for Desktop is a space I find genuinely interesting, and I look forward to bringing this experience to a team working on serious desktop software.</p>
+    <p>Please find my CV and portfolio attached for your review. I am happy to arrange a call or technical discussion at your convenience.</p>
+  `
+};
+
+/* ── Main render ──────────────────────────────── */
+function updateLetter() {
+  const company = document.getElementById('ctrl-company').value.trim();
+  const role    = document.getElementById('ctrl-role').value.trim();
+  const manager = document.getElementById('ctrl-manager').value.trim() || 'Hiring Manager';
+  const focus   = document.getElementById('ctrl-focus').value;
+
+  const p  = db.personalInfo;
+  const l  = p.links;
+  const today = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+
+  const contacts = [p.phone, p.email, p.location].filter(Boolean);
+  if (l.linkedin) contacts.push(`linkedin.com/in/${l.linkedin.split('/').pop()}`);
+
+  const contactHtml = contacts.map((c, i) =>
+    `<span class="sc">${c}</span>${i < contacts.length - 1 ? '<span class="dot">·</span>' : ''}`
+  ).join('');
+
+  document.getElementById('letter-paper').innerHTML = `
+    <div class="letter-sender">
+      <h2>${p.name}</h2>
+      <div class="sender-title">${p.title}</div>
+      <div class="sender-contacts">${contactHtml}</div>
+    </div>
+
+    <div class="letter-date">${today}</div>
+
+    <div class="letter-recipient">
+      <div class="company-name">${company || '[Company Name]'}</div>
+      <div class="position">${role   || '[Position]'}</div>
+    </div>
+
+    <div class="letter-salutation">Dear ${manager},</div>
+
+    <div class="letter-body">
+      ${bodies[focus](company, role)}
+    </div>
+
+    <div class="letter-closing">
+      <p>Thank you for your time and consideration.</p>
+      <div class="sig-name">${p.name}</div>
+      <div class="sig-title">${p.title}</div>
+    </div>
+  `;
+}
+
+/* ── Init ─────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', updateLetter);
+</script>
+</body>
+</html>

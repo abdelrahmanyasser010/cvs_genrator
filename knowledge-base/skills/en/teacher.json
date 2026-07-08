@@ -1,0 +1,111 @@
+{
+  "profession": "teacher",
+  "coreSkills": [
+    "Conflict Resolution",
+    "Smart Board",
+    "Public Speaking",
+    "STEM",
+    "classroom management strategies",
+    "interactive learning materials",
+    "parent-teacher communications",
+    "Educational Psychology",
+    "Canvas",
+    "classroom management strategies",
+    "comprehensive lesson plans",
+    "STEM",
+    "Conflict Resolution",
+    "Public Speaking",
+    "Educational Psychology",
+    "parent-teacher communications",
+    "extracurricular activities",
+    "Educational Psychology",
+    "Zoom",
+    "classroom management strategies",
+    "Adaptability",
+    "comprehensive lesson plans",
+    "Smart Board",
+    "Public Speaking",
+    "Patience",
+    "Public Speaking",
+    "Special Education",
+    "Empathy",
+    "curriculum frameworks",
+    "Zoom",
+    "Canvas",
+    "Communication",
+    "STEM",
+    "Zoom",
+    "Special Education",
+    "interactive learning materials",
+    "Active Listening",
+    "Smart Board",
+    "Active Listening",
+    "Moodle"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Educational Psychology?",
+      "skills": [
+        "Educational Psychology",
+        "Conflict Resolution"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Educational Psychology?",
+      "skills": [
+        "Educational Psychology",
+        "Patience"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with Blackboard?",
+      "skills": [
+        "Blackboard",
+        "Patience"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with Smart Board?",
+      "skills": [
+        "Smart Board",
+        "Empathy"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Moodle?",
+      "skills": [
+        "Moodle",
+        "Patience"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with Special Education?",
+      "skills": [
+        "Special Education",
+        "Patience"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with Smart Board?",
+      "skills": [
+        "Smart Board",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with Canvas?",
+      "skills": [
+        "Canvas",
+        "Communication"
+      ]
+    }
+  ]
+}

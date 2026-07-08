@@ -1,0 +1,25 @@
+{
+  "profession": "project-manager",
+  "summaries": [
+    {
+      "id": "pm-1",
+      "text": "Project Manager with 3+ years of experience leading cross-functional teams in Agile environments. Skilled in sprint planning, risk management, and stakeholder communication. Proven track record of delivering projects on time and within budget while maintaining high quality standards.",
+      "levels": ["junior", "mid"]
+    },
+    {
+      "id": "pm-2",
+      "text": "Program Manager with 10+ years of experience overseeing complex multi-project initiatives and strategic programs. Expert in portfolio management, resource allocation, and organizational change management. Successfully managed programs exceeding $10M in value across global teams.",
+      "levels": ["senior"]
+    },
+    {
+      "id": "pm-3",
+      "text": "Scrum Master specializing in Agile transformation and team coaching. Experienced in facilitating ceremonies, removing impediments, and fostering continuous improvement. Strong background in software development lifecycle and DevOps practices.",
+      "levels": ["mid", "senior"]
+    },
+    {
+      "id": "pm-4",
+      "text": "Junior Project Manager with solid foundation in project management methodologies and tools. Proficient in Jira, Asana, and Microsoft Project. Eager to apply organizational skills and leadership potential to drive successful project outcomes.",
+      "levels": ["fresh"]
+    }
+  ]
+}

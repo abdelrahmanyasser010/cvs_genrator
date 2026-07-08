@@ -1,0 +1,63 @@
+@import url('../shared/base.css');
+/* ATS — maximum readability, no decorations, system fonts */
+.cv-paper { 
+  --accent: #000000;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.5;
+}
+.cv-header { 
+  border-bottom: 2px solid #000;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+.cv-header h1 { 
+  font-size: 24px;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+.cv-header h2 { 
+  font-size: 14px;
+  font-weight: 400;
+  color: #000;
+}
+.cv-section { 
+  margin-bottom: 20px;
+}
+.cv-section-title { 
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #000;
+  border-bottom: 1px solid #000;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  letter-spacing: 0;
+}
+.cv-item { 
+  margin-bottom: 12px;
+}
+.cv-item-title { 
+  font-weight: 700;
+  font-size: 14px;
+}
+.cv-item-subtitle { 
+  font-weight: 400;
+  font-size: 13px;
+}
+.cv-contacts { 
+  font-size: 12px;
+  color: #000;
+}
+.cv-contacts .ci-icon {
+  display: none;
+}
+/* Remove all decorative elements */
+.cv-contacts .ci::before { content: none; }
+.cv-skills .skill-tag { 
+  background: none;
+  border: none;
+  padding: 0;
+  color: #000;
+}

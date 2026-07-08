@@ -1,0 +1,145 @@
+{
+  "summaries": [
+    {
+      "id": "001",
+      "levels": [
+        "junior"
+      ],
+      "text": "Dedicated professional with expertise in RESTful APIs. Proven ability to deliver results using React and strong Problem Solving skills."
+    },
+    {
+      "id": "002",
+      "levels": [
+        "junior"
+      ],
+      "text": "Dedicated professional with expertise in front-end interfaces. Proven ability to deliver results using AWS and strong Mentoring skills."
+    },
+    {
+      "id": "003",
+      "levels": [
+        "senior"
+      ],
+      "text": "Dedicated professional with expertise in RESTful APIs. Proven ability to deliver results using Flutter and strong Agile/Scrum skills."
+    },
+    {
+      "id": "004",
+      "levels": [
+        "mid"
+      ],
+      "text": "Dedicated professional with expertise in database schemas. Proven ability to deliver results using SQL and strong Mentoring skills."
+    },
+    {
+      "id": "005",
+      "levels": [
+        "junior"
+      ],
+      "text": "Dedicated professional with expertise in RESTful APIs. Proven ability to deliver results using Node.js and strong Problem Solving skills."
+    },
+    {
+      "id": "006",
+      "levels": [
+        "fresh"
+      ],
+      "text": "Dedicated professional with expertise in cloud infrastructure. Proven ability to deliver results using TypeScript and strong Cross-functional Collaboration skills."
+    },
+    {
+      "id": "007",
+      "levels": [
+        "junior"
+      ],
+      "text": "Dedicated professional with expertise in cloud infrastructure. Proven ability to deliver results using SQL and strong Code Review skills."
+    },
+    {
+      "id": "008",
+      "levels": [
+        "senior"
+      ],
+      "text": "Dedicated professional with expertise in CI/CD pipelines. Proven ability to deliver results using Flutter and strong Cross-functional Collaboration skills."
+    },
+    {
+      "id": "009",
+      "levels": [
+        "junior"
+      ],
+      "text": "Dedicated professional with expertise in scalable web applications. Proven ability to deliver results using React and strong Mentoring skills."
+    },
+    {
+      "id": "010",
+      "levels": [
+        "senior"
+      ],
+      "text": "Dedicated professional with expertise in mobile applications. Proven ability to deliver results using Docker and strong Code Review skills."
+    },
+    {
+      "id": "011",
+      "levels": [
+        "mid",
+        "senior"
+      ],
+      "text": "Dedicated professional with expertise in mobile applications. Proven ability to deliver results using TypeScript and strong Team Leadership skills."
+    },
+    {
+      "id": "012",
+      "levels": [
+        "senior"
+      ],
+      "text": "Dedicated professional with expertise in front-end interfaces. Proven ability to deliver results using Python and strong Mentoring skills."
+    },
+    {
+      "id": "013",
+      "levels": [
+        "mid"
+      ],
+      "text": "Dedicated professional with expertise in front-end interfaces. Proven ability to deliver results using Kubernetes and strong System Design skills."
+    },
+    {
+      "id": "014",
+      "levels": [
+        "junior"
+      ],
+      "text": "Dedicated professional with expertise in CI/CD pipelines. Proven ability to deliver results using AWS and strong System Design skills."
+    },
+    {
+      "id": "015",
+      "levels": [
+        "junior"
+      ],
+      "text": "Dedicated professional with expertise in microservices architecture. Proven ability to deliver results using Python and strong Code Review skills."
+    },
+    {
+      "id": "016",
+      "levels": [
+        "mid"
+      ],
+      "text": "Dedicated professional with expertise in scalable web applications. Proven ability to deliver results using Flutter and strong System Design skills."
+    },
+    {
+      "id": "017",
+      "levels": [
+        "fresh"
+      ],
+      "text": "Dedicated professional with expertise in RESTful APIs. Proven ability to deliver results using Docker and strong Team Leadership skills."
+    },
+    {
+      "id": "018",
+      "levels": [
+        "senior"
+      ],
+      "text": "Dedicated professional with expertise in database schemas. Proven ability to deliver results using AWS and strong Mentoring skills."
+    },
+    {
+      "id": "019",
+      "levels": [
+        "mid"
+      ],
+      "text": "Dedicated professional with expertise in microservices architecture. Proven ability to deliver results using Node.js and strong Team Leadership skills."
+    },
+    {
+      "id": "020",
+      "levels": [
+        "fresh"
+      ],
+      "text": "Dedicated professional with expertise in CI/CD pipelines. Proven ability to deliver results using Kubernetes and strong Cross-functional Collaboration skills."
+    }
+  ]
+}

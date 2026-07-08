@@ -1,0 +1,25 @@
+{
+  "profession": "engineer",
+  "summaries": [
+    {
+      "id": "engineer-1",
+      "text": "Mechanical Engineer with 3+ years of experience in product design and manufacturing. Proficient in CAD software and finite element analysis. Skilled in cross-functional collaboration and bringing products from concept to production. Strong focus on quality, efficiency, and cost optimization.",
+      "levels": ["junior", "mid"]
+    },
+    {
+      "id": "engineer-2",
+      "text": "Principal Engineer with 10+ years of experience leading engineering teams and complex technical projects. Expert in systems engineering, process optimization, and strategic planning. Proven track record of delivering innovative solutions while maintaining rigorous quality standards and regulatory compliance.",
+      "levels": ["senior"]
+    },
+    {
+      "id": "engineer-3",
+      "text": "Civil Engineer specializing in infrastructure design and project management. Experienced in structural analysis, construction supervision, and safety compliance. Strong background in sustainable design practices and environmental impact assessment.",
+      "levels": ["mid", "senior"]
+    },
+    {
+      "id": "engineer-4",
+      "text": "Entry-level Engineer with solid foundation in engineering principles and design software. Proficient in AutoCAD and basic simulation tools. Eager to apply technical knowledge to real-world challenges and grow within a dynamic engineering team.",
+      "levels": ["fresh"]
+    }
+  ]
+}

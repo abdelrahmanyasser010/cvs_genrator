@@ -1,0 +1,35 @@
+@import url('../shared/base.css');
+
+.cv-paper {
+  --accent: #047857;
+  font-size: 13px;
+}
+.cv-header {
+  border-bottom: 2px solid #047857;
+}
+.cv-header h1 {
+  font-size: 24px;
+  color: #111827;
+  letter-spacing: 0;
+}
+.cv-header .cv-subtitle,
+.cv-section-title {
+  color: #047857;
+}
+.cv-section-title {
+  border-bottom: 1px solid #a7f3d0;
+  letter-spacing: 0;
+}
+.cv-timeline {
+  border-left: 2px solid #a7f3d0;
+  padding-left: 18px;
+}
+[dir="rtl"] .cv-timeline {
+  border-left: 0;
+  border-right: 2px solid #a7f3d0;
+  padding-left: 0;
+  padding-right: 18px;
+}
+.cv-timeline-dot {
+  background: #047857;
+}

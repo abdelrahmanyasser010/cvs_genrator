@@ -1,0 +1,111 @@
+{
+  "profession": "speech_therapist",
+  "coreSkills": [
+    "Teamwork",
+    "Adaptability",
+    "Critical Thinking",
+    "Analytics",
+    "Project Management Software",
+    "Planning",
+    "project deliverables",
+    "Communication",
+    "project deliverables",
+    "Communication",
+    "Time Management",
+    "Agile",
+    "Time Management",
+    "Project Management Software",
+    "Agile",
+    "strategic initiatives",
+    "Leadership",
+    "strategic initiatives",
+    "Leadership",
+    "MS Office",
+    "client relationships",
+    "Planning",
+    "Planning",
+    "MS Office",
+    "Adaptability",
+    "Adaptability",
+    "Project Management Software",
+    "process improvements",
+    "Adaptability",
+    "Leadership",
+    "Time Management",
+    "MS Office",
+    "Problem Solving",
+    "CRM Systems",
+    "strategic initiatives",
+    "Teamwork",
+    "Project Management Software",
+    "Risk Management",
+    "data analysis",
+    "Adaptability"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Risk Management?",
+      "skills": [
+        "Risk Management",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with MS Office?",
+      "skills": [
+        "MS Office",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with Cross-functional Leadership?",
+      "skills": [
+        "Cross-functional Leadership",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with Data Visualization?",
+      "skills": [
+        "Data Visualization",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Data Visualization?",
+      "skills": [
+        "Data Visualization",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with Data Visualization?",
+      "skills": [
+        "Data Visualization",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with Risk Management?",
+      "skills": [
+        "Risk Management",
+        "Teamwork"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with Data Visualization?",
+      "skills": [
+        "Data Visualization",
+        "Problem Solving"
+      ]
+    }
+  ]
+}

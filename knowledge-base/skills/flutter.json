@@ -1,0 +1,16 @@
+{
+  "specialization": "flutter",
+  "coreSkills": ["Dart", "Flutter", "Bloc", "Provider", "GetX", "REST API", "Firebase", "SQLite", "Hive", "Git"],
+  "questions": [
+    { "id": "firebase", "label": "Firebase (Auth, Firestore, Messaging)?", "skills": ["Firebase", "Cloud Firestore", "Firebase Messaging", "Firebase Auth"] },
+    { "id": "maps", "label": "Google Maps / Location services?", "skills": ["Google Maps", "Geolocator", "Mapbox"] },
+    { "id": "payment", "label": "Payment gateways / In-App Purchases?", "skills": ["Razorpay", "In-App Purchases", "Payment Integration"] },
+    { "id": "push", "label": "Push Notifications?", "skills": ["Firebase Messaging", "OneSignal", "Push Notifications"] },
+    { "id": "realtime", "label": "Real-time (Socket.io, WebSockets)?", "skills": ["Socket.io", "WebSockets", "Laravel Echo", "Pusher"] },
+    { "id": "localization", "label": "Localization / RTL / Arabic support?", "skills": ["Localization", "RTL", "Arabic RTL", "intl"] },
+    { "id": "offline", "label": "Offline-first / Local databases?", "skills": ["SQLite", "Hive", "Drift", "Offline-first"] },
+    { "id": "printing", "label": "Thermal printing / Hardware integration?", "skills": ["ESC/POS", "USB Printing", "Thermal Printing"] },
+    { "id": "desktop", "label": "Flutter Desktop (Windows)?", "skills": ["Flutter Windows", "window_manager", "Desktop"] },
+    { "id": "clean_arch", "label": "Clean Architecture / Feature modules?", "skills": ["Clean Architecture", "GetIt", "Repository Pattern", "Dartz"] }
+  ]
+}

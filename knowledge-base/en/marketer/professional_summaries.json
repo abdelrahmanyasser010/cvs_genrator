@@ -1,0 +1,25 @@
+{
+  "profession": "marketer",
+  "summaries": [
+    {
+      "id": "marketer-1",
+      "text": "Digital Marketing Specialist with 3+ years of experience driving growth through data-driven campaigns. Expert in SEO, social media marketing, and content strategy. Proven track record of increasing engagement and conversion rates across multiple channels.",
+      "levels": ["junior", "mid"]
+    },
+    {
+      "id": "marketer-2",
+      "text": "Marketing Manager with 5+ years of experience developing comprehensive marketing strategies and leading cross-functional teams. Skilled in brand positioning, market research, and performance analytics. Successfully managed budgets exceeding $500K and delivered measurable ROI.",
+      "levels": ["senior"]
+    },
+    {
+      "id": "marketer-3",
+      "text": "Creative Marketer specializing in content marketing and brand storytelling. Adept at crafting compelling narratives that resonate with target audiences. Strong background in social media management, influencer partnerships, and community building.",
+      "levels": ["mid", "senior"]
+    },
+    {
+      "id": "marketer-4",
+      "text": "Entry-level Marketing Associate with a passion for digital marketing and brand development. Proficient in social media platforms and content creation tools. Eager to apply analytical skills and creative thinking to drive marketing initiatives.",
+      "levels": ["fresh"]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "profession": "developer",
+  "recommendedTemplates": { "fresh": "classic", "junior": "modern", "mid": "sidebar", "senior": "corporate" },
+  "defaultTitle": { "fresh": "مطور مبتدئ", "junior": "مطور برمجيات", "mid": "مهندس برمجيات", "senior": "مهندس برمجيات أول" }
+}

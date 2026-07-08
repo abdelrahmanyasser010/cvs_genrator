@@ -1,0 +1,25 @@
+{
+  "profession": "real-estate-agent",
+  "summaries": [
+    {
+      "id": "realestate-1",
+      "text": "Real Estate Agent with 3+ years of experience in residential and commercial property sales. Skilled in market analysis, property valuation, and negotiation. Proven track record of closing transactions efficiently and maintaining high client satisfaction ratings.",
+      "levels": ["junior", "mid"]
+    },
+    {
+      "id": "realestate-2",
+      "text": "Real Estate Broker with 10+ years of experience leading a successful real estate team. Expert in property management, investment analysis, and business development. Track record of managing multi-million dollar portfolios and mentoring agents to achieve top performance.",
+      "levels": ["senior"]
+    },
+    {
+      "id": "realestate-3",
+      "text": "Real Estate Agent specializing in luxury properties and high-end residential sales. Experienced in working with international clients, conducting virtual tours, and managing complex transactions. Strong background in staging, marketing, and building exclusive client relationships.",
+      "levels": ["mid", "senior"]
+    },
+    {
+      "id": "realestate-4",
+      "text": "Real Estate Agent with strong foundation in property law and market dynamics. Proficient in MLS systems, contract preparation, and client communication. Eager to develop expertise in investment properties and commercial real estate.",
+      "levels": ["fresh"]
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "profession": "architect",
+  "coreSkills": [
+    "Operations",
+    "Problem Solving",
+    "Adaptability",
+    "data analysis",
+    "Project Management Software",
+    "Risk Management",
+    "Agile",
+    "Time Management",
+    "Analytics",
+    "Agile",
+    "Data Visualization",
+    "Data Visualization",
+    "Operations",
+    "quality assurance",
+    "Teamwork",
+    "Operations",
+    "Communication",
+    "Adaptability",
+    "Data Visualization",
+    "Data Visualization",
+    "Adaptability",
+    "data analysis",
+    "CRM Systems",
+    "Adaptability",
+    "Operations",
+    "Risk Management",
+    "client relationships",
+    "quality assurance",
+    "Cross-functional Leadership",
+    "project deliverables",
+    "quality assurance",
+    "Data Visualization",
+    "Problem Solving",
+    "Cross-functional Leadership",
+    "Communication",
+    "Risk Management",
+    "Planning",
+    "Data Visualization",
+    "project deliverables",
+    "Cross-functional Leadership"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Planning?",
+      "skills": [
+        "Planning",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Risk Management?",
+      "skills": [
+        "Risk Management",
+        "Time Management"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with Operations?",
+      "skills": [
+        "Operations",
+        "Time Management"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with MS Office?",
+      "skills": [
+        "MS Office",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Communication?",
+      "skills": [
+        "Communication",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with Operations?",
+      "skills": [
+        "Operations",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with Planning?",
+      "skills": [
+        "Planning",
+        "Time Management"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with CRM Systems?",
+      "skills": [
+        "CRM Systems",
+        "Problem Solving"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "professions": {
+    "developer": { "id": "developer", "name": { "en": "Software Developer", "ar": "مطور برمجيات" }, "icon": "💻", "specializations": ["flutter", "android", "frontend", "backend", "fullstack", "ai"] },
+    "designer": { "id": "designer", "name": { "en": "Graphic Designer", "ar": "مصمم جرافيك" }, "icon": "🎨", "specializations": ["ui", "ux", "branding", "print"] },
+    "accountant": { "id": "accountant", "name": { "en": "Accountant", "ar": "محاسب" }, "icon": "📊", "specializations": ["tax", "audit", "financial"] },
+    "teacher": { "id": "teacher", "name": { "en": "Teacher", "ar": "معلم" }, "icon": "👨‍🏫", "specializations": ["primary", "secondary", "university"] },
+    "doctor": { "id": "doctor", "name": { "en": "Doctor", "ar": "طبيب" }, "icon": "🏥", "specializations": ["general", "specialist", "surgeon"] },
+    "dentist": { "id": "dentist", "name": { "en": "Dentist", "ar": "طبيب أسنان" }, "icon": "🦷", "specializations": [] },
+    "pharmacist": { "id": "pharmacist", "name": { "en": "Pharmacist", "ar": "صيدلي" }, "icon": "💊", "specializations": [] },
+    "nurse": { "id": "nurse", "name": { "en": "Nurse", "ar": "ممرض" }, "icon": "⚕️", "specializations": [] },
+    "lawyer": { "id": "lawyer", "name": { "en": "Lawyer", "ar": "محامي" }, "icon": "⚖️", "specializations": ["corporate", "criminal", "family", "international"] },
+    "hr": { "id": "hr", "name": { "en": "HR Professional", "ar": "موارد بشرية" }, "icon": "👩‍💼", "specializations": ["recruiting", "training", "compensation"] },
+    "marketing": { "id": "marketing", "name": { "en": "Marketing", "ar": "تسويق" }, "icon": "📱", "specializations": ["digital", "content", "social", "seo"] },
+    "sales": { "id": "sales", "name": { "en": "Sales Professional", "ar": "مبيعات" }, "icon": "🤝", "specializations": [] },
+    "customer_service": { "id": "customer_service", "name": { "en": "Customer Service", "ar": "خدمة العملاء" }, "icon": "🎧", "specializations": [] },
+    "graphic_designer": { "id": "graphic_designer", "name": { "en": "Graphic Designer", "ar": "مصمم جرافيك" }, "icon": "🎨", "specializations": [] },
+    "ui_ux_designer": { "id": "ui_ux_designer", "name": { "en": "UI/UX Designer", "ar": "مصمم واجهات" }, "icon": "✨", "specializations": [] },
+    "architect": { "id": "architect", "name": { "en": "Architect", "ar": "مهندس معماري" }, "icon": "📐", "specializations": [] },
+    "civil_engineer": { "id": "civil_engineer", "name": { "en": "Civil Engineer", "ar": "مهندس مدني" }, "icon": "🏗️", "specializations": [] },
+    "mechanical_engineer": { "id": "mechanical_engineer", "name": { "en": "Mechanical Engineer", "ar": "مهندس ميكانيكا" }, "icon": "⚙️", "specializations": [] },
+    "electrical_engineer": { "id": "electrical_engineer", "name": { "en": "Electrical Engineer", "ar": "مهندس كهرباء" }, "icon": "⚡", "specializations": [] },
+    "data_analyst": { "id": "data_analyst", "name": { "en": "Data Analyst", "ar": "محلل بيانات" }, "icon": "📈", "specializations": [] },
+    "project_manager": { "id": "project_manager", "name": { "en": "Project Manager", "ar": "مدير مشروع" }, "icon": "📋", "specializations": [] },
+    "business_analyst": { "id": "business_analyst", "name": { "en": "Business Analyst", "ar": "محلل أعمال" }, "icon": "💼", "specializations": [] },
+    "speech_therapist": { "id": "speech_therapist", "name": { "en": "Speech Therapist", "ar": "أخصائي تخاطب" }, "icon": "🗣️", "specializations": [] },
+    "other": { "id": "other", "name": { "en": "Other", "ar": "أخرى" }, "icon": "✨", "specializations": [] }
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "profession": "developer",
+  "coreSkills": [
+    "Code Review",
+    "MongoDB",
+    "Team Leadership",
+    "SQL",
+    "scalable web applications",
+    "Cross-functional Collaboration",
+    "MongoDB",
+    "Flutter",
+    "AWS",
+    "Mentoring",
+    "Kubernetes",
+    "Code Review",
+    "front-end interfaces",
+    "scalable web applications",
+    "GraphQL",
+    "Kubernetes",
+    "System Design",
+    "Kubernetes",
+    "GraphQL",
+    "front-end interfaces",
+    "Kubernetes",
+    "Mentoring",
+    "TypeScript",
+    "cloud infrastructure",
+    "CI/CD pipelines",
+    "RESTful APIs",
+    "TypeScript",
+    "AWS",
+    "React",
+    "Agile/Scrum",
+    "Problem Solving",
+    "Agile/Scrum",
+    "React",
+    "Node.js",
+    "AWS",
+    "AWS",
+    "Agile/Scrum",
+    "Docker",
+    "Cross-functional Collaboration",
+    "Docker"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Docker?",
+      "skills": [
+        "Docker",
+        "Agile/Scrum"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with SQL?",
+      "skills": [
+        "SQL",
+        "System Design"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with TypeScript?",
+      "skills": [
+        "TypeScript",
+        "Agile/Scrum"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with MongoDB?",
+      "skills": [
+        "MongoDB",
+        "Problem Solving"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with TypeScript?",
+      "skills": [
+        "TypeScript",
+        "Code Review"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with AWS?",
+      "skills": [
+        "AWS",
+        "Team Leadership"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with Kubernetes?",
+      "skills": [
+        "Kubernetes",
+        "Team Leadership"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with TypeScript?",
+      "skills": [
+        "TypeScript",
+        "Agile/Scrum"
+      ]
+    }
+  ]
+}

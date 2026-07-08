@@ -1,0 +1,25 @@
+{
+  "profession": "financial-analyst",
+  "summaries": [
+    {
+      "id": "financial-analyst-1",
+      "text": "Financial Analyst with 3+ years of experience in financial modeling, budgeting, and variance analysis. Proficient in Excel, financial reporting, and data visualization. Skilled in providing actionable insights to support strategic decision-making and improve financial performance.",
+      "levels": ["junior", "mid"]
+    },
+    {
+      "id": "financial-analyst-2",
+      "text": "Finance Manager with 10+ years of experience leading financial planning and analysis functions. Expert in strategic forecasting, capital allocation, and investor relations. Track record of implementing financial systems that improved accuracy and reduced closing cycles by 40%.",
+      "levels": ["senior"]
+    },
+    {
+      "id": "financial-analyst-3",
+      "text": "Financial Analyst specializing in investment analysis and portfolio management. Experienced in equity research, valuation modeling, and risk assessment. Strong background in financial markets and regulatory compliance.",
+      "levels": ["mid", "senior"]
+    },
+    {
+      "id": "financial-analyst-4",
+      "text": "Junior Financial Analyst with solid foundation in accounting principles and financial analysis. Proficient in Excel, financial statements, and basic modeling. Eager to develop expertise in strategic finance and contribute to organizational financial goals.",
+      "levels": ["fresh"]
+    }
+  ]
+}

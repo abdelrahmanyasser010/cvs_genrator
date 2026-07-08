@@ -1,0 +1,16 @@
+{
+  "profession": "engineer",
+  "recommendedTemplates": {
+    "fresh": "ats",
+    "junior": "classic",
+    "mid": "sidebar",
+    "senior": "corporate"
+  },
+  "defaultTitle": {
+    "fresh": "Junior Engineer",
+    "junior": "Engineer",
+    "mid": "Senior Engineer",
+    "senior": "Principal Engineer"
+  },
+  "coreSkills": ["Engineering Design", "CAD", "Project Management", "Technical Analysis"]
+}

@@ -1,0 +1,111 @@
+{
+  "profession": "data_analyst",
+  "coreSkills": [
+    "data analysis",
+    "Risk Management",
+    "Agile",
+    "Time Management",
+    "Communication",
+    "Communication",
+    "team workflows",
+    "process improvements",
+    "Communication",
+    "Time Management",
+    "Project Management Software",
+    "Data Visualization",
+    "Time Management",
+    "Time Management",
+    "Project Management Software",
+    "client relationships",
+    "CRM Systems",
+    "Time Management",
+    "CRM Systems",
+    "Adaptability",
+    "Adaptability",
+    "Time Management",
+    "Adaptability",
+    "project deliverables",
+    "CRM Systems",
+    "project deliverables",
+    "Time Management",
+    "team workflows",
+    "Teamwork",
+    "Critical Thinking",
+    "Teamwork",
+    "MS Office",
+    "client relationships",
+    "Time Management",
+    "data analysis",
+    "Leadership",
+    "Teamwork",
+    "data analysis",
+    "CRM Systems",
+    "Cross-functional Leadership"
+  ],
+  "questions": [
+    {
+      "id": "q0",
+      "label": "Experience with Risk Management?",
+      "skills": [
+        "Risk Management",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q1",
+      "label": "Experience with Operations?",
+      "skills": [
+        "Operations",
+        "Adaptability"
+      ]
+    },
+    {
+      "id": "q2",
+      "label": "Experience with Operations?",
+      "skills": [
+        "Operations",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q3",
+      "label": "Experience with Risk Management?",
+      "skills": [
+        "Risk Management",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q4",
+      "label": "Experience with Project Management Software?",
+      "skills": [
+        "Project Management Software",
+        "Leadership"
+      ]
+    },
+    {
+      "id": "q5",
+      "label": "Experience with Project Management Software?",
+      "skills": [
+        "Project Management Software",
+        "Communication"
+      ]
+    },
+    {
+      "id": "q6",
+      "label": "Experience with CRM Systems?",
+      "skills": [
+        "CRM Systems",
+        "Adaptability"
+      ]
+    },
+    {
+      "id": "q7",
+      "label": "Experience with Communication?",
+      "skills": [
+        "Communication",
+        "Teamwork"
+      ]
+    }
+  ]
+}

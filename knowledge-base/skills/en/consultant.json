@@ -1,0 +1,45 @@
+{
+  "coreSkills": ["Strategic Planning", "Business Analysis", "Client Management", "Problem Solving"],
+  "questions": [
+    {
+      "id": "strategy",
+      "label": "Do you develop business strategies?",
+      "skills": ["Strategic Planning", "Business Strategy", "Market Analysis", "Competitive Analysis"]
+    },
+    {
+      "id": "business-analysis",
+      "label": "Do you perform business analysis?",
+      "skills": ["Business Analysis", "Process Improvement", "Requirements Gathering", "Gap Analysis"]
+    },
+    {
+      "id": "client-management",
+      "label": "Do you manage client relationships?",
+      "skills": ["Client Management", "Account Management", "Stakeholder Management", "Client Presentations"]
+    },
+    {
+      "id": "change-management",
+      "label": "Do you manage organizational change?",
+      "skills": ["Change Management", "Organizational Development", "Change Communication", "Training"]
+    },
+    {
+      "id": "financial-analysis",
+      "label": "Do you perform financial analysis?",
+      "skills": ["Financial Analysis", "Financial Modeling", "Cost Analysis", "ROI Analysis"]
+    },
+    {
+      "id": "operations",
+      "label": "Do you optimize business operations?",
+      "skills": ["Operations Consulting", "Process Optimization", "Efficiency Improvement", "Lean"]
+    },
+    {
+      "id": "digital-transformation",
+      "label": "Do you help with digital transformation?",
+      "skills": ["Digital Transformation", "Technology Strategy", "Digital Strategy", "Innovation"]
+    },
+    {
+      "id": "implementation",
+      "label": "Do you implement consulting solutions?",
+      "skills": ["Implementation", "Project Delivery", "Solution Deployment", "Change Adoption"]
+    }
+  ]
+}

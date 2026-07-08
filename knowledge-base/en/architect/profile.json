@@ -1,0 +1,16 @@
+{
+  "profession": "architect",
+  "recommendedTemplates": {
+    "fresh": "creative",
+    "junior": "sidebar",
+    "mid": "elegant",
+    "senior": "executive"
+  },
+  "defaultTitle": {
+    "fresh": "Junior Architect",
+    "junior": "Architect",
+    "mid": "Senior Architect",
+    "senior": "Principal Architect"
+  },
+  "coreSkills": ["Architectural Design", "AutoCAD", "Building Codes", "Project Coordination"]
+}

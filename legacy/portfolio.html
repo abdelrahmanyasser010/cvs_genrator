@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abdelrahman Yasser — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="data/career_database.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      background: #f0f0f0;
+      color: #111;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Toolbar ─────────────────────────────────── */
+    #toolbar {
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 12.5px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-btn {
+      padding: 6px 14px;
+      font-size: 12.5px;
+      font-family: inherit;
+      border: 1px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+      color: #444;
+      font-weight: 500;
+      transition: all .15s;
+    }
+    .nav-btn:hover   { border-color: #111; color: #111; }
+    .nav-btn.current { background: #111; color: #fff; border-color: #111; }
+    .sep-v { width: 1px; height: 20px; background: #ddd; }
+
+    /* ── Layout ──────────────────────────────────── */
+    #page-wrap { max-width: 920px; margin: 32px auto; padding: 0 16px; }
+
+    /* ── Portfolio Hero ───────────────────────────── */
+    .port-hero {
+      background: #fff;
+      padding: 40px 48px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid #111;
+    }
+    .port-hero h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+    .port-hero .hero-title { font-size: 14px; color: #666; margin-bottom: 16px; }
+    .port-hero p  { font-size: 13.5px; color: #555; max-width: 620px; line-height: 1.7; margin-bottom: 16px; }
+    .hero-links { display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero-link {
+      font-size: 12.5px;
+      color: #444;
+      border: 1px solid #ccc;
+      padding: 5px 14px;
+      font-weight: 500;
+    }
+    .hero-link:hover { border-color: #111; color: #111; }
+
+    /* ── Filter row ──────────────────────────────── */
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-row span { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+
+    /* ── Project Cards ───────────────────────────── */
+    .proj-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 16px;
+    }
+
+    .proj-card {
+      background: #fff;
+      padding: 24px 28px;
+      border: 1px solid #e8e8e8;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color .18s;
+    }
+    .proj-card:hover { border-color: #aaa; }
+
+    .proj-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .proj-card-name { font-size: 14px; font-weight: 700; color: #111; }
+    .proj-card-cat  { font-size: 10.5px; text-transform: uppercase; letter-spacing: .8px; color: #888; font-weight: 600; }
+
+    .proj-card-desc { font-size: 13px; color: #444; font-style: normal; }
+
+    .proj-card ul { list-style: none; padding: 0; }
+    .proj-card ul li {
+      position: relative;
+      padding-left: 13px;
+      font-size: 12.5px;
+      color: #555;
+      margin-bottom: 3px;
+      line-height: 1.5;
+    }
+    .proj-card ul li::before { content: '–'; position: absolute; left: 0; color: #bbb; }
+
+    .proj-tech { font-size: 11.5px; color: #777; border-top: 1px solid #f0f0f0; padding-top: 8px; }
+    .proj-tech strong { color: #444; }
+
+    .proj-links { display: flex; gap: 10px; flex-wrap: wrap; }
+    .proj-link {
+      font-size: 11.5px;
+      color: #0056b3;
+      border: 1px solid #cce5ff;
+      padding: 4px 10px;
+      font-weight: 500;
+      transition: all .15s;
+    }
+    .proj-link:hover   { border-color: #003d82; color: #003d82; }
+    .proj-link.ph      { opacity: .4; cursor: default; color: #777; border-color: #ddd; }
+
+    /* ── Skills Summary ──────────────────────────── */
+    .skills-wrap {
+      background: #fff;
+      padding: 28px 32px;
+      margin-top: 24px;
+      border: 1px solid #e8e8e8;
+    }
+    .skills-wrap h2 {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1.2px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 6px; margin-bottom: 14px;
+    }
+    .skills-grid-port {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px 20px;
+    }
+    .sg-cat  { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #888; margin-bottom: 4px; }
+    .sg-vals { font-size: 12.5px; color: #444; }
+
+    @media (max-width: 600px) {
+      .proj-grid { grid-template-columns: 1fr; }
+      .port-hero { padding: 24px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Toolbar -->
+<div id="toolbar">
+  <div style="display:flex; align-items:center; gap:4px;">
+    <button class="nav-btn"         onclick="location='index.html'">CV</button>
+    <button class="nav-btn current" onclick="location='portfolio.html'">Portfolio</button>
+    <button class="nav-btn"         onclick="location='cover.html'">Cover Letter</button>
+  </div>
+  <span style="font-size:12px; color:#888;">Abdelrahman Yasser · Flutter Software Engineer</span>
+</div>
+
+<div id="page-wrap">
+
+  <!-- Hero -->
+  <div class="port-hero" id="port-hero"></div>
+
+  <!-- Category filter -->
+  <div class="filter-row">
+    <span>Filter:</span>
+    <button class="nav-btn current" onclick="filterCards('all')">All</button>
+    <button class="nav-btn"         onclick="filterCards('pos')">POS / ERP</button>
+    <button class="nav-btn"         onclick="filterCards('booking')">Booking</button>
+    <button class="nav-btn"         onclick="filterCards('marketplace')">Marketplace</button>
+    <button class="nav-btn"         onclick="filterCards('realtime')">Real-time</button>
+  </div>
+
+  <!-- Cards -->
+  <div class="proj-grid" id="proj-grid"></div>
+
+  <!-- Skills -->
+  <div class="skills-wrap" id="skills-wrap">
+    <h2>Technical Skills</h2>
+    <div class="skills-grid-port" id="skills-grid"></div>
+  </div>
+
+</div>
+
+<script>
+const db = careerDatabase;
+
+// Category tags for each project (for filtering)
+const projCategories = {
+  "Tog v-1 — POS & E-Invoicing":          ["pos","all"],
+  "Gear — Rider":                         ["realtime","all"],
+  "Gear — Captain":                       ["realtime","all"],
+  "Hogga — Legal Consulting":             ["realtime","all"],
+  "Elbayan — Multi-Vendor Marketplace":    ["marketplace","all"],
+  "LearnPress Mobile — LMS":              ["marketplace","all"],
+  "Canary 7 — Classified Ads & Dashboard":["marketplace","all"],
+  "Zone — Event & Venue Booking":          ["booking","all"],
+  "My Feny — Home Services":              ["booking","all"],
+  "BuB — Beauty Booking":                 ["booking","all"],
+  "History Tell — Quiz App":              ["all"]
+};
+
+/* ── Hero ─────────────────────────────────────── */
+function renderHero() {
+  const p = db.personalInfo;
+  const l = p.links;
+  document.getElementById('port-hero').innerHTML = `
+    <h1>${p.name}</h1>
+    <div class="hero-title">${p.title} · ${p.location}</div>
+    <p>${db.professionalSummary}</p>
+    <div class="hero-links">
+      ${l.linkedin ? `<a class="hero-link" href="${l.linkedin}" target="_blank">LinkedIn</a>` : ''}
+      ${l.github   ? `<a class="hero-link" href="${l.github}"   target="_blank">GitHub</a>`   : ''}
+      <a class="hero-link" href="index.html">View CV</a>
+      <a class="hero-link" href="cover.html">Cover Letter</a>
+    </div>
+  `;
+}
+
+/* ── Cards ────────────────────────────────────── */
+function renderCards(filter) {
+  const grid = document.getElementById('proj-grid');
+  const projects = db.projects.filter(p => {
+    const cats = projCategories[p.name] || ['all'];
+    return filter === 'all' ? true : cats.includes(filter);
+  });
+
+  grid.innerHTML = projects.map(p => {
+    const links = [];
+    if (p.links.googlePlay && p.links.googlePlay !== '#' && p.links.googlePlay !== '')
+      links.push(`<a class="proj-link" href="${p.links.googlePlay}" target="_blank">Google Play</a>`);
+    else
+      links.push(`<a class="proj-link ph" onclick="return false">Google Play</a>`);
+
+    if (p.links.appStore && p.links.appStore !== '#' && p.links.appStore !== '')
+      links.push(`<a class="proj-link" href="${p.links.appStore}" target="_blank">App Store</a>`);
+    if (p.links.github && p.links.github !== '')
+      links.push(`<a class="proj-link" href="${p.links.github}" target="_blank">GitHub</a>`);
+
+    return `
+      <div class="proj-card">
+        <div class="proj-card-header">
+          <div>
+            <div class="proj-card-cat">${p.category || ''}</div>
+            <div class="proj-card-name">${p.name}</div>
+          </div>
+        </div>
+        <div class="proj-card-desc">${p.desc}</div>
+        <ul>${p.bullets.map(b => `<li>${b}</li>`).join('')}</ul>
+        <div class="proj-tech"><strong>Tech:</strong> ${p.tech}</div>
+        <div class="proj-links">${links.join('')}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ── Skills ───────────────────────────────────── */
+function renderSkills() {
+  document.getElementById('skills-grid').innerHTML =
+    Object.entries(db.skills).map(([cat, vals]) => `
+      <div>
+        <div class="sg-cat">${cat}</div>
+        <div class="sg-vals">${vals.join(' · ')}</div>
+      </div>
+    `).join('');
+}
+
+/* ── Filter ───────────────────────────────────── */
+function filterCards(filter) {
+  document.querySelectorAll('.filter-row .nav-btn').forEach(b => b.classList.remove('current'));
+  event.target.classList.add('current');
+  renderCards(filter);
+}
+
+/* ── Init ─────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  renderHero();
+  renderCards('all');
+  renderSkills();
+});
+</script>
+</body>
+</html>

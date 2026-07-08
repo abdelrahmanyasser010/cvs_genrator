@@ -1,0 +1,223 @@
+{
+  "profession": "accountant",
+  "locale": "en",
+  "experience_bullets": [
+    "Forecasted month-end closings by 13%.",
+    "Optimized financial statements increasing efficiency by 19%.",
+    "Optimized budget variance analyses reducing errors by 18%.",
+    "Forecasted payroll processing for 15+ clients.",
+    "Analyzed internal controls saving $22K annually.",
+    "Forecasted financial statements for 18+ clients.",
+    "Forecasted month-end closings increasing efficiency by 19%.",
+    "Optimized financial statements for 25+ clients.",
+    "Analyzed internal controls saving $21K annually.",
+    "Optimized general ledgers by 20%.",
+    "Audited tax returns achieving a 93% success rate.",
+    "Analyzed month-end closings achieving a 95% success rate.",
+    "Prepared financial statements managing a budget of $5M.",
+    "Managed tax returns for 49+ clients.",
+    "Audited payroll processing saving $60K annually.",
+    "Reconciled payroll processing saving $76K annually.",
+    "Prepared tax returns reducing errors by 25%.",
+    "Managed internal controls achieving a 96% success rate.",
+    "Prepared internal controls saving $54K annually.",
+    "Analyzed budget variance analyses managing a budget of $5M.",
+    "Reconciled tax returns by 12%.",
+    "Audited budget variance analyses achieving a 95% success rate.",
+    "Analyzed budget variance analyses achieving a 95% success rate.",
+    "Optimized month-end closings managing a budget of $2M.",
+    "Audited financial statements by 20%.",
+    "Optimized tax returns increasing efficiency by 19%.",
+    "Analyzed month-end closings by 44%.",
+    "Streamlined financial statements saving $97K annually.",
+    "Reconciled tax returns for 27+ clients.",
+    "Analyzed internal controls achieving a 92% success rate."
+  ],
+  "project_examples": [
+    {
+      "name": "Tax Compliance Review",
+      "description": "Led the transition to a new ERP system.",
+      "tech": "GAAP, QuickBooks, Xero"
+    },
+    {
+      "name": "Audit Process Overhaul",
+      "description": "Led the transition to a new ERP system.",
+      "tech": "GAAP, NetSuite, IFRS"
+    },
+    {
+      "name": "Audit Process Overhaul",
+      "description": "Identified discrepancies leading to significant savings.",
+      "tech": "Xero, NetSuite, Oracle Financials"
+    },
+    {
+      "name": "Audit Process Overhaul",
+      "description": "Prepared comprehensive annual tax filings.",
+      "tech": "Oracle Financials, NetSuite, Xero"
+    },
+    {
+      "name": "Automated Payroll System",
+      "description": "Automated manual data entry workflows.",
+      "tech": "NetSuite, IFRS, QuickBooks"
+    },
+    {
+      "name": "Cost Reduction Initiative",
+      "description": "Identified discrepancies leading to significant savings.",
+      "tech": "NetSuite, Xero, TaxSlayer"
+    },
+    {
+      "name": "Audit Process Overhaul",
+      "description": "Identified discrepancies leading to significant savings.",
+      "tech": "QuickBooks, NetSuite, IFRS"
+    },
+    {
+      "name": "Automated Payroll System",
+      "description": "Automated manual data entry workflows.",
+      "tech": "Xero, NetSuite, Oracle Financials"
+    },
+    {
+      "name": "Automated Payroll System",
+      "description": "Automated manual data entry workflows.",
+      "tech": "TaxSlayer, Xero, SAP ERP"
+    },
+    {
+      "name": "Cost Reduction Initiative",
+      "description": "Automated manual data entry workflows.",
+      "tech": "Excel (Advanced), GAAP, Xero"
+    },
+    {
+      "name": "ERP Migration",
+      "description": "Led the transition to a new ERP system.",
+      "tech": "SAP ERP, QuickBooks, IFRS"
+    },
+    {
+      "name": "Tax Compliance Review",
+      "description": "Identified discrepancies leading to significant savings.",
+      "tech": "Oracle Financials, NetSuite, Excel (Advanced)"
+    },
+    {
+      "name": "ERP Migration",
+      "description": "Prepared comprehensive annual tax filings.",
+      "tech": "SAP ERP, Oracle Financials, IFRS"
+    },
+    {
+      "name": "Automated Payroll System",
+      "description": "Prepared comprehensive annual tax filings.",
+      "tech": "GAAP, Xero, IFRS"
+    },
+    {
+      "name": "Audit Process Overhaul",
+      "description": "Led the transition to a new ERP system.",
+      "tech": "Excel (Advanced), TaxSlayer, QuickBooks"
+    },
+    {
+      "name": "Cost Reduction Initiative",
+      "description": "Prepared comprehensive annual tax filings.",
+      "tech": "Xero, Oracle Financials, GAAP"
+    },
+    {
+      "name": "Tax Compliance Review",
+      "description": "Prepared comprehensive annual tax filings.",
+      "tech": "IFRS, Xero, SAP ERP"
+    },
+    {
+      "name": "Tax Compliance Review",
+      "description": "Automated manual data entry workflows.",
+      "tech": "QuickBooks, Xero, IFRS"
+    },
+    {
+      "name": "Audit Process Overhaul",
+      "description": "Automated manual data entry workflows.",
+      "tech": "GAAP, IFRS, Xero"
+    },
+    {
+      "name": "Audit Process Overhaul",
+      "description": "Led the transition to a new ERP system.",
+      "tech": "NetSuite, GAAP, Xero"
+    }
+  ],
+  "soft_skills": [
+    "Critical Thinking",
+    "Attention to Detail",
+    "Critical Thinking",
+    "Attention to Detail",
+    "Problem Solving",
+    "Critical Thinking",
+    "Time Management",
+    "Analytical Thinking",
+    "Confidentiality",
+    "Time Management",
+    "Problem Solving",
+    "Time Management",
+    "Problem Solving",
+    "Attention to Detail",
+    "Problem Solving"
+  ],
+  "achievements": [
+    "Recognized for outstanding performance, improving key metrics increasing efficiency by 28%.",
+    "Recognized for outstanding performance, improving key metrics saving $19K annually.",
+    "Recognized for outstanding performance, improving key metrics by 45%.",
+    "Recognized for outstanding performance, improving key metrics saving $90K annually.",
+    "Recognized for outstanding performance, improving key metrics by 20%.",
+    "Recognized for outstanding performance, improving key metrics achieving a 94% success rate.",
+    "Recognized for outstanding performance, improving key metrics reducing errors by 16%.",
+    "Recognized for outstanding performance, improving key metrics saving $18K annually.",
+    "Recognized for outstanding performance, improving key metrics for 45+ clients.",
+    "Recognized for outstanding performance, improving key metrics by 23%.",
+    "Recognized for outstanding performance, improving key metrics saving $18K annually.",
+    "Recognized for outstanding performance, improving key metrics by 31%.",
+    "Recognized for outstanding performance, improving key metrics managing a budget of $5M.",
+    "Recognized for outstanding performance, improving key metrics managing a budget of $2M.",
+    "Recognized for outstanding performance, improving key metrics managing a budget of $1M."
+  ],
+  "certifications": [
+    "Certified Internal Auditor (CIA) - Advanced",
+    "Certified Internal Auditor (CIA)",
+    "Certified Management Accountant (CMA)",
+    "Certified Management Accountant (CMA) - Advanced",
+    "Certified Management Accountant (CMA)",
+    "Certified Public Accountant (CPA)",
+    "Certified Management Accountant (CMA) - Advanced",
+    "Chartered Financial Analyst (CFA)",
+    "Certified Public Accountant (CPA)",
+    "Certified Public Accountant (CPA) - Advanced",
+    "Certified Management Accountant (CMA)",
+    "Certified Internal Auditor (CIA)",
+    "Certified Internal Auditor (CIA) - Advanced",
+    "Certified Management Accountant (CMA)",
+    "Certified Internal Auditor (CIA)"
+  ],
+  "career_objectives": [
+    "To leverage my expertise in GAAP and Analytical Thinking to drive value and growth.",
+    "To leverage my expertise in Oracle Financials and Critical Thinking to drive value and growth.",
+    "To leverage my expertise in TaxSlayer and Confidentiality to drive value and growth.",
+    "To leverage my expertise in GAAP and Problem Solving to drive value and growth.",
+    "To leverage my expertise in TaxSlayer and Problem Solving to drive value and growth.",
+    "To leverage my expertise in Xero and Critical Thinking to drive value and growth.",
+    "To leverage my expertise in Xero and Time Management to drive value and growth.",
+    "To leverage my expertise in SAP ERP and Time Management to drive value and growth.",
+    "To leverage my expertise in SAP ERP and Confidentiality to drive value and growth.",
+    "To leverage my expertise in SAP ERP and Attention to Detail to drive value and growth."
+  ],
+  "keywords": [
+    "NetSuite",
+    "Time Management",
+    "SAP ERP",
+    "Problem Solving",
+    "IFRS",
+    "QuickBooks",
+    "Attention to Detail",
+    "Xero",
+    "TaxSlayer",
+    "Confidentiality",
+    "NetSuite",
+    "Analytical Thinking",
+    "Analytical Thinking",
+    "Oracle Financials",
+    "Confidentiality",
+    "Analytical Thinking",
+    "SAP ERP",
+    "Attention to Detail",
+    "Analytical Thinking",
+    "QuickBooks"
+  ]
+}

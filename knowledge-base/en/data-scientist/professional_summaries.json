@@ -1,0 +1,25 @@
+{
+  "profession": "data-scientist",
+  "summaries": [
+    {
+      "id": "data-scientist-1",
+      "text": "Data Scientist with 3+ years of experience in machine learning and predictive analytics. Proficient in Python, SQL, and deep learning frameworks. Skilled in transforming complex datasets into actionable insights that drive business decisions. Strong background in statistical analysis and data visualization.",
+      "levels": ["junior", "mid"]
+    },
+    {
+      "id": "data-scientist-2",
+      "text": "Principal Data Scientist with 8+ years of experience leading data science initiatives and building ML infrastructure. Expert in natural language processing, computer vision, and large-scale data processing. Proven track record of deploying production ML systems that improve operational efficiency and customer experience.",
+      "levels": ["senior"]
+    },
+    {
+      "id": "data-scientist-3",
+      "text": "Data Scientist specializing in marketing analytics and customer segmentation. Experienced in A/B testing, cohort analysis, and recommendation systems. Strong communication skills for presenting technical findings to non-technical stakeholders.",
+      "levels": ["mid", "senior"]
+    },
+    {
+      "id": "data-scientist-4",
+      "text": "Junior Data Scientist with strong foundation in statistics, programming, and machine learning concepts. Proficient in Python libraries including pandas, scikit-learn, and TensorFlow. Eager to apply analytical skills to real-world problems and contribute to data-driven decision making.",
+      "levels": ["fresh"]
+    }
+  ]
+}

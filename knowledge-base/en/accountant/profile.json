@@ -1,0 +1,15 @@
+{
+  "profession": "accountant",
+  "recommendedTemplates": {
+    "fresh": "classic",
+    "junior": "modern",
+    "mid": "sidebar",
+    "senior": "corporate"
+  },
+  "defaultTitle": {
+    "fresh": "Junior Accountant",
+    "junior": "Accountant",
+    "mid": "Senior Accountant",
+    "senior": "Finance Manager"
+  }
+}

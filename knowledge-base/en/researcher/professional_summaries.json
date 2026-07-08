@@ -1,0 +1,25 @@
+{
+  "profession": "researcher",
+  "summaries": [
+    {
+      "id": "researcher-1",
+      "text": "Research Associate with 3+ years of experience conducting academic and industry research. Skilled in experimental design, data analysis using R and Python, and academic writing. Published multiple peer-reviewed papers and presented findings at international conferences.",
+      "levels": ["junior", "mid"]
+    },
+    {
+      "id": "researcher-2",
+      "text": "Principal Investigator with 10+ years of experience leading research programs and securing competitive funding. Expert in study design, regulatory compliance, and multidisciplinary collaboration. Track record of mentoring junior researchers and producing high-impact publications.",
+      "levels": ["senior"]
+    },
+    {
+      "id": "researcher-3",
+      "text": "Researcher specializing in data science and computational research. Experienced in machine learning applications, big data analysis, and statistical modeling. Strong background in translating complex research findings into practical applications.",
+      "levels": ["mid", "senior"]
+    },
+    {
+      "id": "researcher-4",
+      "text": "Research Assistant with solid foundation in research methodologies and laboratory techniques. Proficient in data collection, literature review, and basic statistical analysis. Eager to develop expertise in advanced research methods and contribute to scientific discovery.",
+      "levels": ["fresh"]
+    }
+  ]
+}

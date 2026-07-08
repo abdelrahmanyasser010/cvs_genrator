@@ -1,0 +1,15 @@
+{
+  "profession": "teacher",
+  "recommendedTemplates": {
+    "fresh": "classic",
+    "junior": "modern",
+    "mid": "sidebar",
+    "senior": "corporate"
+  },
+  "defaultTitle": {
+    "fresh": "Assistant Teacher",
+    "junior": "Teacher",
+    "mid": "Senior Teacher",
+    "senior": "Head of Department"
+  }
+}

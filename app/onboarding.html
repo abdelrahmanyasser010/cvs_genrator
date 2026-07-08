@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Studio — Welcome</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/app/assets/app.css">
+</head>
+<body>
+  <main class="wizard-wrap">
+    <div class="onboarding-card">
+      <h1 data-i18n="onboarding.title" style="font-size: 32px; margin-bottom: 12px; font-weight: 600; color: var(--text);">Let's build your resume</h1>
+      <p data-i18n="onboarding.subtitle" style="color: var(--muted); margin-bottom: 40px; font-size: 16px; line-height: 1.6;">
+        Choose how you'd like to get started
+      </p>
+      
+      <div style="display: flex; flex-direction: column; gap: 16px; max-width: 320px; margin: 0 auto;">
+        <button class="btn btn-primary onboarding-btn" onclick="startNewCV()">
+          <span style="font-size: 18px; margin-right: 8px;">✨</span>
+          <span data-i18n="onboarding.createNew">Create New Resume</span>
+        </button>
+        <button class="btn onboarding-btn-secondary" onclick="openEditor()">
+          <span style="font-size: 18px; margin-right: 8px;">📝</span>
+          <span data-i18n="onboarding.openExisting">Open Existing</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script src="/app/assets/safety.js"></script>
+  <script src="/engine/i18n.js"></script>
+  <script>
+    function startNewCV() {
+      localStorage.removeItem('cv_studio_career');
+      window.location.href = 'index.html';
+    }
+    
+    function openEditor() {
+      window.location.href = 'editor.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof I18n !== 'undefined') {
+        I18n.init().then(() => I18n.translateDom());
+      }
+    });
+  </script>
+</body>
+</html>
+
+
