@@ -13,7 +13,7 @@
 </head>
 <body class="editor-body">
 
-  <!-- Top Bar -->
+  <!-- Top Bar (desktop) -->
   <header class="editor-topbar no-print">
     <div class="topbar-left">
       <a href="landing.html" class="topbar-logo">CV Studio</a>
@@ -34,12 +34,23 @@
     </div>
     <div class="topbar-right">
       <div class="save-indicator" id="save-indicator"></div>
-      <!-- AI Settings hidden for simplified UX: <button class="topbar-btn" onclick="AISettings.openModal()" data-i18n="editor.aiSettings">AI Settings</button> -->
       <button class="topbar-btn" onclick="Editor.undoAction()" title="Undo (Ctrl+Z)" data-i18n="ed.topbar.undo">↩ Undo</button>
       <button class="topbar-btn" onclick="Editor.showExportModal()" data-i18n="ed.topbar.download">⬇ Download</button>
       <a href="landing.html" class="topbar-btn topbar-btn-ghost" data-i18n="ed.topbar.exit">Exit</a>
     </div>
+    <!-- Mobile: compact topbar -->
+    <div class="mob-topbar">
+      <a href="landing.html" class="mob-topbar-back">←</a>
+      <span class="mob-topbar-title" id="mob-topbar-name">My Resume</span>
+      <button class="mob-topbar-menu" onclick="Editor.showExportModal()">⬇</button>
+    </div>
   </header>
+
+  <!-- Mobile: ATS Score Bar (under topbar) -->
+  <div class="mob-score-bar no-print" id="mob-score-bar">
+    <div class="mob-score-fill" id="mob-score-fill" style="width:0%"></div>
+    <span class="mob-score-label" id="mob-score-label">0%</span>
+  </div>
 
   <!-- Main Editor Layout -->
   <div class="editor-layout no-print">
@@ -63,38 +74,75 @@
       </div>
     </main>
 
-    <!-- RIGHT: Assistant Panel -->
+    <!-- RIGHT: Career Coach Panel -->
     <aside class="editor-panel-right" id="editor-right-panel">
-      <!-- Resume Strength -->
-      <div class="rpanel-block" id="cv-health-panel"></div>
 
-      <!-- AI Coach -->
-      <div class="rpanel-block" id="ai-coach-panel"></div>
-
-      <!-- Templates -->
-      <div class="rpanel-block">
-        <div class="rpanel-label" data-i18n="editor.template">Template</div>
-        <div class="template-chips" id="template-picker"></div>
-        <button class="rpanel-link" onclick="Editor.openGallery()" data-i18n="ed.gallery.browse">Browse all templates →</button>
+      <!-- Coach Tab Navigation -->
+      <div class="coach-tabs no-print">
+        <button class="coach-tab active" id="coach-tab-score" onclick="Editor.switchCoachTab('score')">📊 Score</button>
+        <button class="coach-tab" id="coach-tab-quality" onclick="Editor.switchCoachTab('quality')">⭐ Quality</button>
+        <button class="coach-tab" id="coach-tab-ats" onclick="Editor.switchCoachTab('ats')">🔍 ATS</button>
+        <button class="coach-tab" id="coach-tab-advice" onclick="Editor.switchCoachTab('advice')">🎯 Coach</button>
+        <button class="coach-tab" id="coach-tab-plan" onclick="Editor.switchCoachTab('plan')">🗺️ Plan</button>
       </div>
 
-      <!-- AI Suggestions -->
-      <div class="rpanel-block" id="ai-suggestions-panel"></div>
-
-      <!-- Quick Actions -->
-      <div class="rpanel-block">
-        <div class="rpanel-label">Quick Actions</div>
-        <div class="quick-actions">
-          <button class="action-pill" onclick="Editor.handleAIAction('generate-summary')" data-i18n="ed.ai_panel.gen_summary">✨ Generate Summary</button>
-          <button class="action-pill" onclick="Editor.handleAIAction('improve-summary')" data-i18n="ed.ai_panel.improve_summary">📝 Improve Summary</button>
-          <button class="action-pill" onclick="Editor.handleAIAction('shorten-summary')" data-i18n="ed.ai_panel.shorten_summary">✂ Shorten Summary</button>
-          <button class="action-pill" onclick="Editor.handleAIAction('translate-summary')" data-i18n="ed.ai_panel.translate_summary">🌐 Translate Summary</button>
-          <button class="action-pill" onclick="Editor.handleAIAction('suggest-skills')" data-i18n="ed.ai_panel.sug_skills">💡 Suggest Skills</button>
-          <button class="action-pill" onclick="Editor.handleAIAction('tailor-job')" data-i18n="ed.ai_panel.tailor_job">🎯 Tailor to Job</button>
-          <button class="action-pill" onclick="Editor.handleAIAction('improve-bullets')" data-i18n="ed.ai_panel.improve_experience">🎯 Improve Experience</button>
-          <button class="action-pill" onclick="Editor.handleAIAction('ats-check')" data-i18n="ed.ai_panel.chk_strength">📊 Check Strength</button>
+      <!-- Tab: Score (Level 1) -->
+      <div class="coach-tab-pane active" id="coach-pane-score">
+        <div class="rpanel-block" id="cv-health-panel"></div>
+        <!-- Templates -->
+        <div class="rpanel-block">
+          <div class="rpanel-label" data-i18n="editor.template">Template</div>
+          <div class="template-chips" id="template-picker"></div>
+          <button class="rpanel-link" onclick="Editor.openGallery()" data-i18n="ed.gallery.browse">Browse all templates →</button>
         </div>
       </div>
+
+      <!-- Tab: Quality (Level 2) -->
+      <div class="coach-tab-pane" id="coach-pane-quality">
+        <div class="rpanel-block" id="coach-quality-panel">
+          <div class="rpanel-label">⭐ Quality Analysis</div>
+          <div class="coach-loading">Analyzing…</div>
+        </div>
+      </div>
+
+      <!-- Tab: ATS (Level 3) -->
+      <div class="coach-tab-pane" id="coach-pane-ats">
+        <div class="rpanel-block" id="coach-ats-panel">
+          <div class="rpanel-label">🔍 ATS Keyword Check</div>
+          <div class="coach-loading">Analyzing…</div>
+        </div>
+      </div>
+
+      <!-- Tab: Career Advice (Level 4) -->
+      <div class="coach-tab-pane" id="coach-pane-advice">
+        <div class="rpanel-block" id="coach-advice-panel">
+          <div class="rpanel-label">🎯 Career Coach</div>
+          <div class="coach-loading">Analyzing…</div>
+        </div>
+        <!-- Quick Actions -->
+        <div class="rpanel-block">
+          <div class="rpanel-label">Quick Actions</div>
+          <div class="quick-actions">
+            <button class="action-pill" onclick="Editor.handleAIAction('generate-summary')" data-i18n="ed.ai_panel.gen_summary">✨ Generate Summary</button>
+            <button class="action-pill" onclick="Editor.handleAIAction('improve-bullets')" data-i18n="ed.ai_panel.improve_experience">💪 Improve Bullets</button>
+            <button class="action-pill" onclick="Editor.handleAIAction('suggest-skills')" data-i18n="ed.ai_panel.sug_skills">💡 Suggest Skills</button>
+            <button class="action-pill" onclick="Editor.handleAIAction('tailor-job')" data-i18n="ed.ai_panel.tailor_job">🎯 Tailor to Job</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Action Plan (Level 5) -->
+      <div class="coach-tab-pane" id="coach-pane-plan">
+        <div class="rpanel-block" id="coach-plan-panel">
+          <div class="rpanel-label">🗺️ Action Plan</div>
+          <div class="coach-loading">Building your roadmap…</div>
+        </div>
+        <!-- AI Suggestions -->
+        <div class="rpanel-block" id="ai-suggestions-panel"></div>
+        <!-- AI Coach Panel -->
+        <div class="rpanel-block" id="ai-coach-panel"></div>
+      </div>
+
     </aside>
   </div>
 
@@ -156,19 +204,19 @@
     </div>
   </div>
 
-  <!-- Mobile Bottom Action Bar (visible only on screens < 768px) -->
-  <nav class="mobile-bottom-bar no-print">
-    <button type="button" class="mob-bar-btn" onclick="document.getElementById('sections-list')?.scrollIntoView({behavior:'smooth'})">
-      <span>✏️</span>
-      <span>الأقسام</span>
+  <!-- Mobile Bottom Navigation (Edit / Preview / Export) -->
+  <nav class="mobile-bottom-bar no-print" id="mob-bottom-nav">
+    <button type="button" class="mob-bar-btn active" id="mob-btn-edit" onclick="Editor.setMobileView('edit')">
+      <span class="mob-btn-icon">✏️</span>
+      <span class="mob-btn-label">تعديل</span>
     </button>
-    <button type="button" class="mob-bar-btn" onclick="document.getElementById('preview-frame')?.scrollIntoView({behavior:'smooth'})">
-      <span>👁️</span>
-      <span>المعاينة</span>
+    <button type="button" class="mob-bar-btn" id="mob-btn-preview" onclick="Editor.setMobileView('preview')">
+      <span class="mob-btn-icon">👁</span>
+      <span class="mob-btn-label">معاينة</span>
     </button>
-    <button type="button" class="mob-bar-btn mob-bar-btn-primary" onclick="Editor.showExportModal()">
-      <span>⬇️</span>
-      <span>تحميل PDF</span>
+    <button type="button" class="mob-bar-btn mob-bar-btn-export" onclick="Editor.showExportModal()">
+      <span class="mob-btn-icon">⬇</span>
+      <span class="mob-btn-label">تصدير</span>
     </button>
   </nav>
 
@@ -191,6 +239,7 @@
   <script src="/coach/suggestions.js"></script>
   <script src="/app/assets/ai-settings.js"></script>
   <script src="/app/assets/ai-client.js"></script>
+  <script src="/coach/career-coach.js"></script>
   <script src="/coach/ai-coach.js"></script>
   <script src="/app/assets/editor.js"></script>
 </body>

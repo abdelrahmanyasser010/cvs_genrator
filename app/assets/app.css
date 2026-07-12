@@ -3068,11 +3068,10 @@ a { color: inherit; text-decoration: none; }
   flex-shrink: 0;
   background: white;
   border-left: 1px solid var(--border);
-  overflow-y: auto;
-  padding: 16px 0;
   display: flex;
   flex-direction: column;
   gap: 0;
+  overflow: hidden;
 }
 
 .rpanel-block {
@@ -3102,6 +3101,210 @@ a { color: inherit; text-decoration: none; }
   text-align: left;
 }
 .rpanel-link:hover { text-decoration: underline; }
+
+/* ── Career Coach Tabs ── */
+.coach-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--gray-100);
+  background: #f8fafc;
+  flex-shrink: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.coach-tab {
+  flex: 1;
+  padding: 10px 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--gray-400);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.coach-tab:hover { color: var(--primary); }
+.coach-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background: #fff;
+}
+.coach-tab-pane { display: none; overflow-y: auto; flex: 1; }
+.coach-tab-pane.active { display: block; }
+
+/* ── Coach Shared ── */
+.coach-loading {
+  padding: 16px;
+  text-align: center;
+  color: var(--gray-400);
+  font-size: 12px;
+}
+.coach-success {
+  text-align: center;
+  padding: 20px 16px;
+  color: var(--gray-600);
+  font-size: 12.5px;
+}
+
+/* ── Coach Quality Issue Cards ── */
+.coach-issue {
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border-left: 3px solid #cbd5e1;
+  background: #f8fafc;
+}
+.coach-issue-error { border-left-color: #dc2626; background: #fef2f2; }
+.coach-issue-warning { border-left-color: #d97706; background: #fffbeb; }
+.coach-issue-info { border-left-color: #2563eb; background: #eff6ff; }
+.coach-issue-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+.coach-issue-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.coach-issue-detail {
+  font-size: 11.5px;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.coach-example {
+  background: #fff;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  border: 1px solid #e2e8f0;
+}
+.coach-ex-bad { color: #b91c1c; margin-bottom: 4px; }
+.coach-ex-good { color: #15803d; }
+.coach-fix-btn {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary);
+  background: none;
+  border: 1px solid var(--primary);
+  padding: 3px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.coach-fix-btn:hover { background: var(--primary); color: #fff; }
+
+/* ── ATS Keyword Bar ── */
+.coach-ats-coverage { margin-bottom: 14px; }
+.coach-ats-bar-wrap {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.coach-ats-bar {
+  height: 100%;
+  border-radius: 20px;
+  transition: width 0.6s ease;
+}
+.coach-kw-section { margin-bottom: 8px; }
+.coach-kw-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.coach-kw-chip {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+.coach-kw-missing { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+.coach-kw-present { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+
+/* ── Coach Advice Cards ── */
+.coach-advice-card {
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.coach-advice-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 5px;
+}
+.coach-advice-detail {
+  font-size: 11.5px;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+.coach-advice-list {
+  margin: 6px 0 8px 14px;
+  padding: 0;
+  font-size: 11.5px;
+  color: #334155;
+  line-height: 1.7;
+}
+.coach-advice-list li { margin-bottom: 2px; }
+
+/* ── Action Plan Roadmap ── */
+.coach-roadmap { display: flex; flex-direction: column; }
+.coach-roadmap-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  transition: all 0.15s;
+}
+.coach-roadmap-step:hover { background: #eff6ff; border-color: #bfdbfe; }
+.coach-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary, #2563eb);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.coach-step-body { flex: 1; min-width: 0; }
+.coach-step-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 3px;
+}
+.coach-step-detail {
+  font-size: 11px;
+  color: #64748b;
+  margin-bottom: 4px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+.coach-step-impact {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #16a34a;
+  background: #dcfce7;
+  padding: 1px 7px;
+  border-radius: 20px;
+  display: inline-block;
+}
+.coach-roadmap-arrow {
+  text-align: center;
+  font-size: 16px;
+  color: #94a3b8;
+  margin: 4px 0;
+}
 
 /* Health Panel */
 .health-score-row {
@@ -3634,117 +3837,135 @@ a { color: inherit; text-decoration: none; }
 }
 
 @media (max-width: 768px) {
-  .editor-topbar {
-    padding: 8px 12px !important;
-    flex-wrap: wrap !important;
-    height: auto !important;
-    gap: 8px !important;
-  }
-  .topbar-left {
-    flex: 1 1 auto !important;
-  }
-  .topbar-center {
+  /* Hide desktop panels */
+  .editor-topbar, .editor-panel-right {
     display: none !important;
   }
-  .topbar-right {
-    flex: 0 0 auto !important;
-    gap: 6px !important;
-  }
-  .topbar-btn {
-    padding: 6px 10px !important;
-    font-size: 12px !important;
-  }
+
+  /* Editor Layout */
   .editor-layout {
-    display: flex !important;
-    flex-direction: column !important;
+    display: block !important;
     height: auto !important;
     overflow: visible !important;
   }
+
+  /* ── Mobile Topbar ── */
+  .mob-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    padding: 0 14px;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .mob-topbar-back {
+    font-size: 20px;
+    color: var(--gray-600);
+    text-decoration: none;
+    padding: 4px;
+  }
+  .mob-topbar-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gray-900);
+  }
+  .mob-topbar-menu {
+    font-size: 18px;
+    background: none;
+    border: none;
+    color: var(--gray-600);
+    padding: 4px;
+  }
+
+  /* ── ATS Score Bar ── */
+  .mob-score-bar {
+    height: 18px;
+    background: #f1f5f9;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+  .mob-score-fill {
+    height: 100%;
+    background: var(--primary);
+    transition: width 0.3s;
+  }
+  .mob-score-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  /* ── View Modes Switching ── */
+  body.mobile-edit-mode .editor-canvas { display: none !important; }
+  body.mobile-preview-mode .editor-panel-left { display: none !important; }
+
+  /* ── Left Panel (Edit Mode) ── */
   .editor-panel-left {
     display: block !important;
     width: 100% !important;
     border-right: none !important;
-    border-bottom: 2px solid var(--border) !important;
     max-height: none !important;
+    padding-bottom: 80px;
   }
   .sections-list {
+    padding: 12px !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 12px !important;
-    padding: 14px 12px !important;
-  }
-  .section-group {
-    width: 100% !important;
+    gap: 8px !important;
   }
   .section-row {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-    padding: 14px 16px !important;
-    margin-bottom: 8px !important;
+    padding: 10px 14px !important;
+    min-height: 52px;
+    margin-bottom: 0 !important;
     border: 1px solid var(--border) !important;
     border-radius: 10px !important;
-    background: #fff !important;
-    box-sizing: border-box !important;
   }
+  .section-row-preview {
+    display: none !important; /* Hide long preview text on mobile */
+  }
+
+  /* ── Canvas (Preview Mode) ── */
   .editor-canvas {
-    padding: 20px 10px !important;
+    padding: 16px 8px !important;
     width: 100% !important;
-    overflow-x: auto !important;
+    overflow-x: hidden !important;
     box-sizing: border-box !important;
+    padding-bottom: 80px !important;
   }
   .a4-wrapper {
-    width: 100% !important;
-    max-width: 100% !important;
-    transform: none !important;
-  }
-  .a4-paper, .cv-preview-scale {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-height: auto !important;
-    transform: none !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
-    border-radius: 12px !important;
+    /* Kept full size, scaled via JS applyMobileScale() */
     margin: 0 auto !important;
-    box-sizing: border-box !important;
   }
-  /* Full screen slide-over edit modal on mobile */
-  .edit-panel {
-    width: 100vw !important;
-    max-width: 100vw !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
-    border-radius: 0 !important;
+  .a4-paper {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
+    border-radius: 4px !important;
+    margin: 0 auto !important;
   }
-  .edit-panel-header {
-    padding: 16px 18px !important;
-  }
-  .edit-panel-body {
-    padding: 16px 14px !important;
-    overflow-y: auto !important;
-  }
-  .edit-panel-footer {
-    padding: 12px 14px !important;
-  }
-  .modal-box {
-    width: 95% !important;
-    max-width: 100% !important;
-    border-radius: 14px !important;
-  }
+
+  /* ── Mobile Bottom Bar ── */
   .mobile-bottom-bar {
     display: flex !important;
     position: fixed !important;
     bottom: 0 !important;
     left: 0 !important;
-    right: 0 !important;
-    background: #0f172a !important;
-    box-shadow: 0 -4px 16px rgba(0,0,0,0.25) !important;
-    z-index: 450 !important;
-    padding: 8px 12px !important;
+    width: 100% !important;
+    background: #fff !important;
+    border-top: 1px solid var(--border) !important;
+    padding: 6px 12px 14px !important;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.06) !important;
+    z-index: 99 !important;
     gap: 8px !important;
-    align-items: center !important;
-    justify-content: space-around !important;
+    height: auto !important;
+    box-sizing: border-box !important;
   }
   .mob-bar-btn {
     flex: 1 !important;
@@ -3752,22 +3973,66 @@ a { color: inherit; text-decoration: none; }
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 3px !important;
-    padding: 8px 6px !important;
+    gap: 4px !important;
+    padding: 8px 4px !important;
+    border: none !important;
     border-radius: 8px !important;
-    border: 1px solid rgba(255,255,255,0.15) !important;
-    background: rgba(255,255,255,0.08) !important;
-    color: #fff !important;
-    font-size: 11.5px !important;
-    font-weight: 700 !important;
+    background: transparent !important;
+    color: var(--gray-500) !important;
     cursor: pointer !important;
+    transition: all 0.2s !important;
   }
-  .mob-bar-btn-primary {
+  .mob-bar-btn.active {
+    background: #eff6ff !important;
+    color: var(--primary) !important;
+  }
+  .mob-btn-icon { font-size: 20px !important; line-height: 1 !important; }
+  .mob-btn-label { font-size: 11px !important; font-weight: 700 !important; }
+
+  /* Export button distinct styling */
+  .mob-bar-btn-export {
     background: #2563eb !important;
-    border-color: #3b82f6 !important;
+    color: #fff !important;
   }
-  .editor-body {
-    padding-bottom: 74px !important;
+  .mob-bar-btn-export .mob-btn-icon,
+  .mob-bar-btn-export .mob-btn-label {
+    color: #fff !important;
+  }
+
+  /* ── Full screen edit panel (Modals) ── */
+  .edit-panel {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    transform: translateX(100%);
+  }
+  .edit-panel.open {
+    transform: translateX(0);
+  }
+  .edit-panel-header {
+    padding: 14px 16px !important;
+  }
+  .edit-panel-body {
+    padding: 16px 12px 100px !important; /* Space for footer */
+    overflow-y: auto !important;
+  }
+  .edit-panel-footer {
+    padding: 10px 14px 20px !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    background: #fff !important;
+    border-top: 1px solid var(--border) !important;
+    z-index: 10;
+  }
+  .modal-box {
+    width: 95% !important;
+    max-width: 100% !important;
+    border-radius: 12px !important;
   }
 }
 

@@ -57,6 +57,17 @@ const Editor = (function () {
     
     renderAll();
     updateTopbarName();
+
+    // Mobile init: start in edit mode, show score bar
+    if (window.innerWidth < 768) {
+      document.body.classList.add('mobile-edit-mode');
+      updateMobScoreBar();
+      // Re-apply scale on resize/orientation change
+      window.addEventListener('resize', () => {
+        if (currentMobileView === 'preview') applyMobileScale();
+        updateMobScoreBar();
+      });
+    }
   }
 
   function resolveStyles() {
@@ -1341,6 +1352,60 @@ const Editor = (function () {
     setZoom(fit);
   }
 
+  // ── Mobile: Edit/Preview view switching ──────────────────────────────────
+  let currentMobileView = 'edit';
+
+  function setMobileView(view) {
+    currentMobileView = view;
+    const body = document.body;
+
+    if (view === 'edit') {
+      body.classList.remove('mobile-preview-mode');
+      body.classList.add('mobile-edit-mode');
+    } else {
+      body.classList.remove('mobile-edit-mode');
+      body.classList.add('mobile-preview-mode');
+      // Apply A4 scale so preview looks pixel-perfect
+      applyMobileScale();
+    }
+
+    // Update bottom nav active state
+    const editBtn = el('mob-btn-edit');
+    const prevBtn = el('mob-btn-preview');
+    if (editBtn) editBtn.classList.toggle('active', view === 'edit');
+    if (prevBtn) prevBtn.classList.toggle('active', view === 'preview');
+
+    // Sync mobile topbar title
+    const mobName = el('mob-topbar-name');
+    const topbarName = el('topbar-name');
+    if (mobName && topbarName) mobName.textContent = topbarName.textContent;
+  }
+
+  function applyMobileScale() {
+    if (window.innerWidth >= 768) return; // desktop: skip
+    const canvas = el('editor-canvas');
+    const paper = el('a4-wrapper');
+    if (!canvas || !paper) return;
+    const availW = canvas.clientWidth - 16; // 8px padding each side
+    const scale = availW / 794;
+    paper.style.transform = `scale(${scale})`;
+    paper.style.transformOrigin = 'top center';
+    paper.style.marginBottom = `${-(1123 * (1 - scale))}px`; // collapse whitespace
+  }
+
+  function updateMobScoreBar() {
+    if (window.innerWidth >= 768) return;
+    try {
+      const result = ATSScorer.score(career);
+      const pct = result.percent || 0;
+      const fill = el('mob-score-fill');
+      const label = el('mob-score-label');
+      if (fill) fill.style.width = `${pct}%`;
+      if (fill) fill.style.background = pct >= 75 ? '#16a34a' : pct >= 50 ? '#d97706' : '#dc2626';
+      if (label) label.textContent = `${pct}% CV Score`;
+    } catch(e) {}
+  }
+
   // ─────────────────────────────────────────────────
   // UNDO / REDO
   // ─────────────────────────────────────────────────
@@ -1373,6 +1438,11 @@ const Editor = (function () {
     showSaveIndicator(t('ed.saving', 'Saving...'));
     CareerStorage.save(career);
     renderAll();
+    updateMobScoreBar();
+    // Sync mobile topbar title
+    const mobName = el('mob-topbar-name');
+    const topbarName = el('topbar-name');
+    if (mobName && topbarName) mobName.textContent = topbarName.textContent;
     clearTimeout(autosaveTimer);
     autosaveTimer = setTimeout(() => showSaveIndicator(t('ed.saved', 'Saved ✓'), true), 400);
   }
@@ -1907,6 +1977,177 @@ const Editor = (function () {
     saveAndRender();
   }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // CAREER COACH — 5-Level Analysis Rendering
+  // ─────────────────────────────────────────────────────────────────────────
+
+  function switchCoachTab(tab) {
+    ['score', 'quality', 'ats', 'advice', 'plan'].forEach(t => {
+      const btn = el(`coach-tab-${t}`);
+      const pane = el(`coach-pane-${t}`);
+      if (btn) btn.classList.toggle('active', t === tab);
+      if (pane) pane.classList.toggle('active', t === tab);
+    });
+    // Render the selected tab's content on demand
+    if (tab === 'quality') renderCoachQuality();
+    else if (tab === 'ats') renderCoachATS();
+    else if (tab === 'advice') renderCoachAdvice();
+    else if (tab === 'plan') renderCoachPlan();
+  }
+
+  // Level 2 — Quality Analysis
+  function renderCoachQuality() {
+    const panel = el('coach-quality-panel');
+    if (!panel || typeof CareerCoach === 'undefined') return;
+    const { issues, quality } = CareerCoach.analyzeQuality(career);
+
+    const qualityColor = { excellent: '#16a34a', good: '#2563eb', needs_work: '#dc2626' };
+    const qualityLabel = { excellent: '🏆 Excellent', good: '✅ Good', needs_work: '⚠️ Needs Work' };
+
+    if (issues.length === 0) {
+      panel.innerHTML = `
+        <div class="rpanel-label">⭐ Quality Analysis</div>
+        <div class="coach-success">
+          <div style="font-size:32px;margin-bottom:8px;">🏆</div>
+          <div style="font-weight:700;color:#16a34a;margin-bottom:4px;">Excellent Quality!</div>
+          <div style="font-size:12px;color:#475569;">Your bullets are strong, measurable, and well-written.</div>
+        </div>`;
+      return;
+    }
+
+    panel.innerHTML = `
+      <div class="rpanel-label">⭐ Quality Analysis
+        <span style="float:right;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:${qualityColor[quality]}20;color:${qualityColor[quality]};">${qualityLabel[quality]}</span>
+      </div>
+      ${issues.map(issue => `
+        <div class="coach-issue coach-issue-${issue.type}">
+          <div class="coach-issue-header">
+            <span>${issue.icon}</span>
+            <span class="coach-issue-title">${h(issue.title)}</span>
+          </div>
+          <div class="coach-issue-detail">${h(issue.detail)}</div>
+          ${issue.example ? `
+            <div class="coach-example">
+              <div class="coach-ex-bad">❌ ${h(issue.example.bad)}</div>
+              <div class="coach-ex-good">✅ ${h(issue.example.good)}</div>
+            </div>` : ''}
+          ${issue.action ? `<button class="coach-fix-btn" onclick="Editor.openEditPanel('${issue.action.replace('edit-', '')}')">Fix Now →</button>` : ''}
+        </div>
+      `).join('')}`;
+  }
+
+  // Level 3 — ATS Keyword Gap
+  function renderCoachATS() {
+    const panel = el('coach-ats-panel');
+    if (!panel || typeof CareerCoach === 'undefined') return;
+    const { present, missing, coverage, total } = CareerCoach.analyzeATS(career);
+    const field = career.careerProfile?.field || 'other';
+
+    const barColor = coverage >= 70 ? '#16a34a' : coverage >= 40 ? '#d97706' : '#dc2626';
+
+    panel.innerHTML = `
+      <div class="rpanel-label">🔍 ATS Keyword Check</div>
+      <div class="coach-ats-coverage">
+        <div class="coach-ats-bar-wrap">
+          <div class="coach-ats-bar" style="width:${coverage}%;background:${barColor};"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:4px;">
+          <span style="color:${barColor};font-weight:700;">${coverage}% keyword match</span>
+          <span style="color:#94a3b8;">${present.length}/${total} found</span>
+        </div>
+      </div>
+
+      ${missing.length > 0 ? `
+        <div class="coach-kw-section">
+          <div style="font-size:11px;font-weight:700;color:#dc2626;margin-bottom:6px;">❌ Missing Keywords</div>
+          <div class="coach-kw-chips">
+            ${missing.map(kw => `<span class="coach-kw-chip coach-kw-missing">${h(kw)}</span>`).join('')}
+          </div>
+          <div style="font-size:11px;color:#64748b;margin-top:8px;">Add these to your Skills or Experience section to improve ATS score.</div>
+        </div>` : ''}
+
+      ${present.length > 0 ? `
+        <div class="coach-kw-section" style="margin-top:10px;">
+          <div style="font-size:11px;font-weight:700;color:#16a34a;margin-bottom:6px;">✅ Keywords Found</div>
+          <div class="coach-kw-chips">
+            ${present.map(kw => `<span class="coach-kw-chip coach-kw-present">${h(kw)}</span>`).join('')}
+          </div>
+        </div>` : ''}`;
+  }
+
+  // Level 4 — Career Advice
+  function renderCoachAdvice() {
+    const panel = el('coach-advice-panel');
+    if (!panel || typeof CareerCoach === 'undefined') return;
+    const { advice, levelLabel } = CareerCoach.analyzeCareer(career);
+    const field = career.careerProfile?.field || 'other';
+
+    const typeColor = { critical: '#dc2626', warning: '#d97706', info: '#2563eb', path: '#7c3aed' };
+    const typeBg = { critical: '#fef2f2', warning: '#fffbeb', info: '#eff6ff', path: '#f5f3ff' };
+
+    panel.innerHTML = `
+      <div class="rpanel-label">🎯 Career Coach
+        <span style="float:right;font-size:11px;padding:2px 8px;border-radius:20px;background:#e0e7ff;color:#4338ca;font-weight:700;">${h(levelLabel)}</span>
+      </div>
+      ${advice.length === 0 ? `
+        <div class="coach-success">
+          <div style="font-size:28px;margin-bottom:6px;">🎯</div>
+          <div style="font-weight:700;color:#16a34a;">Strong Profile!</div>
+          <div style="font-size:12px;color:#475569;margin-top:4px;">Your CV is well-aligned with your career level.</div>
+        </div>` :
+        advice.map(item => `
+          <div class="coach-advice-card" style="border-left:3px solid ${typeColor[item.type] || '#2563eb'};background:${typeBg[item.type] || '#eff6ff'};">
+            <div class="coach-advice-title">${item.icon} ${h(item.title)}</div>
+            <div class="coach-advice-detail">${h(item.detail)}</div>
+            ${item.items ? `
+              <ul class="coach-advice-list">
+                ${item.items.map(i => `<li>${h(i)}</li>`).join('')}
+              </ul>` : ''}
+            ${item.action ? `<button class="coach-fix-btn" onclick="Editor.openEditPanel('${item.action.replace('edit-', '')}')">Fix Now →</button>` : ''}
+          </div>
+        `).join('')
+      }`;
+  }
+
+  // Level 5 — Action Plan
+  function renderCoachPlan() {
+    const panel = el('coach-plan-panel');
+    if (!panel || typeof CareerCoach === 'undefined') return;
+    const steps = CareerCoach.buildActionPlan(career);
+    const { structural } = CareerCoach.analyzeStructure(career);
+    const currentScore = ATSScorer ? ATSScorer.score(career).percent : 0;
+
+    if (steps.length === 0) {
+      panel.innerHTML = `
+        <div class="rpanel-label">🗺️ Action Plan</div>
+        <div class="coach-success">
+          <div style="font-size:32px;margin-bottom:8px;">🏆</div>
+          <div style="font-weight:700;color:#16a34a;margin-bottom:4px;">Roadmap Complete!</div>
+          <div style="font-size:12px;color:#475569;">Your CV is strong. Keep it updated!</div>
+        </div>`;
+      return;
+    }
+
+    panel.innerHTML = `
+      <div class="rpanel-label">🗺️ Action Plan
+        <span style="float:right;font-size:11px;padding:2px 8px;border-radius:20px;background:#fef3c7;color:#b45309;font-weight:700;">Score: ${currentScore}%</span>
+      </div>
+      <div style="font-size:11.5px;color:#64748b;margin-bottom:12px;">Follow these steps to improve your resume score:</div>
+      <div class="coach-roadmap">
+        ${steps.map((step, idx) => `
+          <div class="coach-roadmap-step" ${step.sectionKey ? `onclick="Editor.openEditPanel('${step.sectionKey.replace('edit-', '')}')"` : ''} style="cursor:${step.sectionKey ? 'pointer' : 'default'};">
+            <div class="coach-step-num">${idx + 1}</div>
+            <div class="coach-step-body">
+              <div class="coach-step-title">${step.icon} ${h(step.label)}</div>
+              ${step.detail ? `<div class="coach-step-detail">${h(step.detail)}</div>` : ''}
+              <div class="coach-step-impact">${h(step.impact)}</div>
+            </div>
+          </div>
+          ${idx < steps.length - 1 ? '<div class="coach-roadmap-arrow">↓</div>' : ''}
+        `).join('')}
+      </div>`;
+  }
+
   return {
     init, setTemplate, pickGalleryTemplate, openGallery,
     openEditPanel, closeEditPanel,
@@ -1922,6 +2163,7 @@ const Editor = (function () {
     saveAndRender, renderPreview, handleZoomSelect, toggleGroup,
     showExportModal, closeExportModal,
     exportPdf, exportJson, exportHtml, exportPng, exportDocx,
+    switchCoachTab,
   };
 })();
 
