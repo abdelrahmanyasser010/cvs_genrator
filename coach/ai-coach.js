@@ -390,9 +390,9 @@ const AICoach = (function () {
     
     // Status Logic
     const score = review.score;
-    let scoreLabel = isAr ? 'تحتاج تحسينًا' : 'Needs Improvement';
-    if (score >= 80) scoreLabel = isAr ? 'ممتازة' : 'Excellent';
-    else if (score >= 60) scoreLabel = isAr ? 'جيدة' : 'Good';
+    let scoreLabel = typeof I18n !== 'undefined' ? I18n.t('coach.overview.needs_work', 'Needs Improvement') : 'Needs Improvement';
+    if (score >= 80) scoreLabel = typeof I18n !== 'undefined' ? I18n.t('coach.overview.excellent', 'Excellent') : 'Excellent';
+    else if (score >= 60) scoreLabel = typeof I18n !== 'undefined' ? I18n.t('coach.overview.good', 'Good') : 'Good';
 
     // Prioritization: max 3 priorities
     const priorities = review.items
@@ -421,23 +421,23 @@ const AICoach = (function () {
     const completed = [];
     const p = career.personalInfo || {};
     if (p.name?.trim() && p.email?.trim() && p.phone?.trim()) {
-      completed.push({ title: isAr ? 'البيانات الشخصية' : 'Personal Info', sectionKey: 'personalInfo' });
+      completed.push({ title: typeof I18n !== 'undefined' ? I18n.t('coach.overview.personal_info', 'Personal Info') : 'Personal Info', sectionKey: 'personalInfo' });
     }
     const hasSummary = career.professionalSummary?.trim().length > 20;
     if (hasSummary && !review.items.find(i => i.section === 'summary')) {
-      completed.push({ title: isAr ? 'النبذة المهنية' : 'Summary', sectionKey: 'summary' });
+      completed.push({ title: typeof I18n !== 'undefined' ? I18n.t('coach.overview.summary', 'Summary') : 'Summary', sectionKey: 'summary' });
     }
     const hasExp = (career.experience || []).length > 0;
     if (hasExp && !review.items.find(i => i.section === 'experience' && i.severity === 'high')) {
-      completed.push({ title: isAr ? 'الخبرة' : 'Experience', sectionKey: 'experience' });
+      completed.push({ title: typeof I18n !== 'undefined' ? I18n.t('coach.overview.experience', 'Experience') : 'Experience', sectionKey: 'experience' });
     }
     const hasEdu = (career.education || []).length > 0;
     if (hasEdu && !review.items.find(i => i.section === 'education' && i.severity === 'high')) {
-      completed.push({ title: isAr ? 'التعليم' : 'Education', sectionKey: 'education' });
+      completed.push({ title: typeof I18n !== 'undefined' ? I18n.t('coach.overview.education', 'Education') : 'Education', sectionKey: 'education' });
     }
     const hasSkills = Object.values(career.skills || {}).flat().length > 0;
     if (hasSkills && !review.items.find(i => i.section === 'skills' && i.severity === 'high')) {
-      completed.push({ title: isAr ? 'المهارات' : 'Skills', sectionKey: 'skills' });
+      completed.push({ title: typeof I18n !== 'undefined' ? I18n.t('coach.overview.skills', 'Skills') : 'Skills', sectionKey: 'skills' });
     }
 
     // Role-Aware Mentor
@@ -448,38 +448,32 @@ const AICoach = (function () {
     const mentorNextSteps = [];
 
     const jobTitle = career.careerProfile?.jobTitle || industry(career);
-    const levelStr = l === 'fresh' ? (isAr ? 'حديث التخرج' : 'Fresh Graduate') : (isAr ? 'ذو خبرة' : 'Experienced');
-    mentorHeadline = isAr ? `أنت ${jobTitle} ${levelStr}.` : `You are a ${levelStr} ${jobTitle}.`;
+    const levelStr = typeof I18n !== 'undefined' ? (l === 'fresh' ? I18n.t('coach.mentor.roles.fresh_graduate', 'Fresh Graduate') : I18n.t('coach.mentor.roles.experienced', 'Experienced')) : (l === 'fresh' ? 'Fresh Graduate' : 'Experienced');
+    mentorHeadline = typeof I18n !== 'undefined' ? I18n.t('coach.mentor.greetings.you_are', 'You are a {levelStr} {jobTitle}.').replace('{levelStr}', levelStr).replace('{jobTitle}', jobTitle) : `You are a ${levelStr} ${jobTitle}.`;
 
     // Role-aware logic
     if (f === 'accountant') {
-      mentorExplanation = isAr 
-        ? 'في المحاسبة، التدريب العملي وإجادة الأنظمة المحاسبية أهم بكثير من المشاريع المستقلة.'
-        : 'In accounting, practical training and ERP proficiency are much more important than independent projects.';
-      if (!hasExp) mentorNextSteps.push(isAr ? 'أضف تدريباً عملياً أو فترة Internship' : 'Add an internship or practical training');
-      if (!flatSkills(career).some(s => /excel|erp|sap|oracle/i.test(s))) mentorNextSteps.push(isAr ? 'أضف إجادة Excel أو ERP إن توفرت' : 'Add Excel or ERP proficiency if available');
-      mentorNextSteps.push(isAr ? 'حوّل المسؤوليات إلى إنجازات رقمية' : 'Turn responsibilities into numeric achievements');
+      mentorExplanation = typeof I18n !== 'undefined' ? I18n.t('coach.mentor.greetings.accountant', 'In accounting, practical training and ERP proficiency are much more important than independent projects.') : 'In accounting, practical training and ERP proficiency are much more important than independent projects.';
+      if (!hasExp) mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.add_internship', 'Add an internship or practical training') : 'Add an internship or practical training');
+      if (!flatSkills(career).some(s => /excel|erp|sap|oracle/i.test(s))) mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.add_excel_erp', 'Add Excel or ERP proficiency if available') : 'Add Excel or ERP proficiency if available');
+      mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.turn_resp_to_achieve', 'Turn responsibilities into numeric achievements') : 'Turn responsibilities into numeric achievements');
     } else if (f === 'developer' || f === 'designer' || f === 'ui_ux_designer' || f === 'graphic_designer') {
-      mentorExplanation = isAr
-        ? 'في مجالك، معرض الأعمال والمشاريع العملية هي ما يميزك عن البقية.'
-        : 'In your field, a portfolio and practical projects are what sets you apart.';
-      if ((career.projects || []).length === 0) mentorNextSteps.push(isAr ? 'أضف مشروعاً واحداً على الأقل (ومعه رابط)' : 'Add at least one project (with a link)');
-      if (!p.links?.github && !p.links?.portfolio && !p.links?.behance) mentorNextSteps.push(isAr ? 'أضف رابط لمعرض أعمالك (GitHub, Behance)' : 'Add a portfolio link (GitHub, Behance)');
+      mentorExplanation = typeof I18n !== 'undefined' ? I18n.t('coach.mentor.greetings.developer', 'In your field, a portfolio and practical projects are what sets you apart.') : 'In your field, a portfolio and practical projects are what sets you apart.';
+      if ((career.projects || []).length === 0) mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.add_project', 'Add at least one project (with a link)') : 'Add at least one project (with a link)');
+      if (!p.links?.github && !p.links?.portfolio && !p.links?.behance) mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.add_portfolio', 'Add a portfolio link (GitHub, Behance)') : 'Add a portfolio link (GitHub, Behance)');
     } else {
-      mentorExplanation = isAr
-        ? 'في مرحلتك الحالية، إبراز المهارات المتخصصة بوضوح هو مفتاح النجاح.'
-        : 'At your current level, highlighting specialized skills clearly is the key to success.';
-      if (!hasExp && l === 'fresh') mentorNextSteps.push(isAr ? 'ركّز على إبراز التدريب والأنشطة الطلابية' : 'Focus on highlighting training and student activities');
-      if (hasExp) mentorNextSteps.push(isAr ? 'استخدم أفعالاً قوية مثل "أدرت" أو "طوّرت" في الخبرة' : 'Use strong action verbs like "Managed" or "Developed" in experience');
-      mentorNextSteps.push(isAr ? 'تأكد من شمول المهارات المطلوبة في مجالك' : 'Ensure you include in-demand skills in your field');
+      mentorExplanation = typeof I18n !== 'undefined' ? I18n.t('coach.mentor.greetings.default', 'At your current level, highlighting specialized skills clearly is the key to success.') : 'At your current level, highlighting specialized skills clearly is the key to success.';
+      if (!hasExp && l === 'fresh') mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.focus_activities', 'Focus on highlighting training and student activities') : 'Focus on highlighting training and student activities');
+      if (hasExp) mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.use_action_verbs', 'Use strong action verbs like "Managed" or "Developed" in experience') : 'Use strong action verbs like "Managed" or "Developed" in experience');
+      mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.include_skills', 'Ensure you include in-demand skills in your field') : 'Ensure you include in-demand skills in your field');
     }
 
     // Quick Actions Priority
     const quickActions = [
-      { id: 'edit-summary', label: isAr ? '⭐ أنشئ نبذة مهنية' : '⭐ Write Summary', condition: !hasSummary },
-      { id: 'improve-experience', label: isAr ? '🔥 طوّر نقاط الخبرة' : '🔥 Improve Experience', condition: hasExp && priorities.some(p => p.sectionKey === 'experience') },
-      { id: 'tailor-job', label: isAr ? '🎯 خصص لوظيفة معينة' : '🎯 Tailor to Job', condition: true },
-      { id: 'suggest-skills', label: isAr ? '💡 اقترح مهارات' : '💡 Suggest Skills', condition: true }
+      { id: 'edit-summary', label: typeof I18n !== 'undefined' ? I18n.t('coach.mentor.write_summary', '⭐ Write Summary') : '⭐ Write Summary', condition: !hasSummary },
+      { id: 'improve-experience', label: typeof I18n !== 'undefined' ? I18n.t('coach.mentor.improve_experience', '🔥 Improve Experience') : '🔥 Improve Experience', condition: hasExp && priorities.some(p => p.sectionKey === 'experience') },
+      { id: 'tailor-job', label: typeof I18n !== 'undefined' ? I18n.t('coach.mentor.tailor_job', '🎯 Tailor to Job') : '🎯 Tailor to Job', condition: true },
+      { id: 'suggest-skills', label: typeof I18n !== 'undefined' ? I18n.t('coach.mentor.suggest_skills', '💡 Suggest Skills') : '💡 Suggest Skills', condition: true }
     ].filter(a => a.condition).slice(0, 4); // return up to 4 applicable actions
 
     return {

@@ -465,5 +465,68 @@
       "pre_export": "AI Pre-export Review"
     },
     "search": "🔍 Search sections..."
+  },
+  "coach": {
+    "tabs": {
+      "overview": "📋 Overview",
+      "mentor": "🎯 Mentor",
+      "ats": "🔍 ATS"
+    },
+    "overview": {
+      "score": "Resume Score",
+      "excellent": "Excellent",
+      "good": "Good",
+      "needs_work": "Needs Improvement",
+      "critical": "Critical",
+      "recommended": "Recommended",
+      "completed": "Completed",
+      "personal_info": "Personal Info",
+      "summary": "Summary",
+      "experience": "Experience",
+      "education": "Education",
+      "skills": "Skills"
+    },
+    "mentor": {
+      "next_steps": "Next Steps:",
+      "quick_actions": "Quick Actions",
+      "write_summary": "⭐ Write Summary",
+      "improve_experience": "🔥 Improve Experience",
+      "tailor_job": "🎯 Tailor to Job",
+      "suggest_skills": "💡 Suggest Skills",
+      "roles": {
+        "fresh_graduate": "Fresh Graduate",
+        "experienced": "Experienced"
+      },
+      "greetings": {
+        "you_are": "You are a {levelStr} {jobTitle}.",
+        "accountant": "In accounting, practical training and ERP proficiency are much more important than independent projects.",
+        "developer": "In your field, a portfolio and practical projects are what sets you apart.",
+        "default": "At your current level, highlighting specialized skills clearly is the key to success."
+      },
+      "advice": {
+        "add_internship": "Add an internship or practical training",
+        "add_excel_erp": "Add Excel or ERP proficiency if available",
+        "turn_resp_to_achieve": "Turn responsibilities into numeric achievements",
+        "add_project": "Add at least one project (with a link)",
+        "add_portfolio": "Add a portfolio link (GitHub, Behance)",
+        "focus_activities": "Focus on highlighting training and student activities",
+        "use_action_verbs": "Use strong action verbs like \"Managed\" or \"Developed\" in experience",
+        "include_skills": "Ensure you include in-demand skills in your field"
+      }
+    },
+    "ats": {
+      "job_match": "Job Match",
+      "readiness": "ATS Readiness",
+      "readable_template": "Template is readable",
+      "clear_headings": "Headings are clear",
+      "contact_present": "Contact info present",
+      "common_skills": "Common skills in your field (add what you know):",
+      "all_good": "Great! You have added most common skills.",
+      "add": "+ Add",
+      "do_you_have_exp": "Do you have actual experience with {keyword}?",
+      "yes_add": "Yes, add",
+      "no": "No",
+      "added": "Added"
+    }
   }
 }

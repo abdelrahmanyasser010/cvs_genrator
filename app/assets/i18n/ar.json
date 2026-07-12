@@ -465,5 +465,68 @@
       "pre_export": "مراجعة قبل التصدير"
     },
     "search": "🔍 ابحث في الأقسام..."
+  },
+  "coach": {
+    "tabs": {
+      "overview": "📋 نظرة عامة",
+      "mentor": "🎯 المدرب",
+      "ats": "🔍 ATS"
+    },
+    "overview": {
+      "score": "قوة السيرة الذاتية",
+      "excellent": "ممتازة",
+      "good": "جيدة",
+      "needs_work": "تحتاج تحسينًا",
+      "critical": "عاجل",
+      "recommended": "موصى به",
+      "completed": "مكتمل",
+      "personal_info": "البيانات الشخصية",
+      "summary": "النبذة المهنية",
+      "experience": "الخبرة",
+      "education": "التعليم",
+      "skills": "المهارات"
+    },
+    "mentor": {
+      "next_steps": "خطوتك التالية:",
+      "quick_actions": "إجراءات سريعة",
+      "write_summary": "⭐ أنشئ نبذة مهنية",
+      "improve_experience": "🔥 طوّر نقاط الخبرة",
+      "tailor_job": "🎯 خصص لوظيفة معينة",
+      "suggest_skills": "💡 اقترح مهارات",
+      "roles": {
+        "fresh_graduate": "حديث التخرج",
+        "experienced": "ذو خبرة"
+      },
+      "greetings": {
+        "you_are": "أنت {jobTitle} {levelStr}.",
+        "accountant": "في المحاسبة، التدريب العملي وإجادة الأنظمة المحاسبية أهم بكثير من المشاريع المستقلة.",
+        "developer": "في مجالك، معرض الأعمال والمشاريع العملية هي ما يميزك عن البقية.",
+        "default": "في مرحلتك الحالية، إبراز المهارات المتخصصة بوضوح هو مفتاح النجاح."
+      },
+      "advice": {
+        "add_internship": "أضف تدريباً عملياً أو فترة Internship",
+        "add_excel_erp": "أضف إجادة Excel أو ERP إن توفرت",
+        "turn_resp_to_achieve": "حوّل المسؤوليات إلى إنجازات رقمية",
+        "add_project": "أضف مشروعاً واحداً على الأقل (ومعه رابط)",
+        "add_portfolio": "أضف رابط لمعرض أعمالك (GitHub, Behance)",
+        "focus_activities": "ركّز على إبراز التدريب والأنشطة الطلابية",
+        "use_action_verbs": "استخدم أفعالاً قوية مثل \"أدرت\" أو \"طوّرت\" في الخبرة",
+        "include_skills": "تأكد من شمول المهارات المطلوبة في مجالك"
+      }
+    },
+    "ats": {
+      "job_match": "التطابق مع الوظيفة",
+      "readiness": "جاهزية ATS",
+      "readable_template": "القالب قابل للقراءة",
+      "clear_headings": "العناوين واضحة",
+      "contact_present": "بيانات الاتصال موجودة",
+      "common_skills": "مهارات شائعة في مجالك (أضف ما تتقنه فقط):",
+      "all_good": "ممتاز! لقد أضفت معظم المهارات الشائعة.",
+      "add": "+ إضافة",
+      "do_you_have_exp": "هل تمتلك خبرة فعلية في {keyword}؟",
+      "yes_add": "نعم، أضفها",
+      "no": "لا",
+      "added": "تمت الإضافة"
+    }
   }
 }
