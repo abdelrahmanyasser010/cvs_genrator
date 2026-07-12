@@ -238,7 +238,6 @@ const Wizard = (function () {
         }
         break;
     }
-
     if (!valid) return;
 
     saveAndPreview();
@@ -250,6 +249,25 @@ const Wizard = (function () {
     } else if (step === 'done') {
       window.location.href = 'editor.html';
     }
+  }
+
+  function handlePrev() {
+    hideError();
+    if (stepIndex === 0) {
+      window.location.href = 'landing.html';
+      return;
+    }
+    
+    do {
+      stepIndex--;
+    } while (stepIndex > 0 && shouldSkipStep(STEPS[stepIndex]));
+    
+    if (stepIndex < 0) {
+      window.location.href = 'landing.html';
+      return;
+    }
+    
+    renderStep();
   }
 
   // Bind live preview to input
@@ -550,7 +568,7 @@ const Wizard = (function () {
     updatePreview();
   }
 
-  return { init, setLang, setField, setLevel, setTemplate, skipExperienceFresh };
+  return { init, setLang, setField, setLevel, setTemplate, skipExperienceFresh, prevStep: handlePrev };
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
