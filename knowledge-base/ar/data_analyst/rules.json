@@ -1,0 +1,25 @@
+{
+  "role": "data_analyst",
+  "category": "tech",
+  "required_sections": [
+    "summary",
+    "experience",
+    "skills",
+    "projects"
+  ],
+  "recommended_sections": [
+    "education",
+    "languages"
+  ],
+  "section_weights": {
+    "summary": 15,
+    "experience": 35,
+    "projects": 25,
+    "skills": 15,
+    "education": 10
+  },
+  "coach_rules": [
+    "GitHub/Portfolio is highly recommended.",
+    "Focus on tech stack and measurable impact."
+  ]
+}

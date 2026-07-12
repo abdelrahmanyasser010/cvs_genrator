@@ -1,0 +1,23 @@
+{
+  "role": "hr",
+  "category": "business",
+  "required_sections": [
+    "summary",
+    "experience",
+    "education",
+    "skills"
+  ],
+  "recommended_sections": [
+    "certifications",
+    "languages"
+  ],
+  "section_weights": {
+    "summary": 20,
+    "experience": 45,
+    "skills": 20,
+    "education": 15
+  },
+  "coach_rules": [
+    "Quantify achievements (e.g., increased sales by X%, managed budget of Y)."
+  ]
+}

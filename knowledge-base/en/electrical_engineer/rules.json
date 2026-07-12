@@ -1,0 +1,24 @@
+{
+  "role": "electrical_engineer",
+  "category": "engineering",
+  "required_sections": [
+    "summary",
+    "experience",
+    "education",
+    "projects"
+  ],
+  "recommended_sections": [
+    "skills",
+    "certifications"
+  ],
+  "section_weights": {
+    "summary": 15,
+    "experience": 35,
+    "education": 15,
+    "projects": 20,
+    "skills": 15
+  },
+  "coach_rules": [
+    "Highlight project scale, budgets, and safety standards."
+  ]
+}

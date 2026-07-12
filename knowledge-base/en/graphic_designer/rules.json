@@ -1,0 +1,24 @@
+{
+  "role": "graphic_designer",
+  "category": "creative",
+  "required_sections": [
+    "summary",
+    "experience",
+    "projects",
+    "skills"
+  ],
+  "recommended_sections": [
+    "education"
+  ],
+  "section_weights": {
+    "summary": 15,
+    "projects": 40,
+    "experience": 25,
+    "skills": 15,
+    "education": 5
+  },
+  "coach_rules": [
+    "Portfolio link is mandatory.",
+    "Projects should highlight design process and tools."
+  ]
+}

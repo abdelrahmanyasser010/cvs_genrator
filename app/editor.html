@@ -61,6 +61,11 @@
       <div class="panel-search">
         <input type="text" class="panel-search-input" id="sections-search" placeholder="🔍 Search sections...">
       </div>
+      <div id="resume-score-header" style="padding: 16px 16px 0 16px;"></div>
+      <div id="global-settings" style="padding: 12px; padding-bottom: 0;"></div>
+      <div class="sections-list-title" style="padding: 12px; font-size: 13px; font-weight: 800; color: var(--gray-500); text-transform: uppercase;">
+        محتوى السيرة (CV Content)
+      </div>
       <div class="sections-list" id="sections-list">
         <!-- Injected by editor.js -->
       </div>
@@ -87,61 +92,30 @@
         <button class="coach-tab" id="coach-tab-plan" onclick="Editor.switchCoachTab('plan')">🗺️ Plan</button>
       </div>
 
-      <!-- Tab: Score (Level 1) -->
-      <div class="coach-tab-pane active" id="coach-pane-score">
-        <div class="rpanel-block" id="cv-health-panel"></div>
-        <!-- Templates -->
-        <div class="rpanel-block">
+      <!-- Tab: Overview -->
+      <div class="coach-tab-pane active" id="coach-pane-overview">
+        <div class="rpanel-block" id="coach-overview-panel">
+          <div class="coach-loading">Analyzing...</div>
+        </div>
+        <div class="rpanel-block" id="coach-overview-templates-panel" style="display: none;">
           <div class="rpanel-label" data-i18n="editor.template">Template</div>
           <div class="template-chips" id="template-picker"></div>
           <button class="rpanel-link" onclick="Editor.openGallery()" data-i18n="ed.gallery.browse">Browse all templates →</button>
         </div>
       </div>
 
-      <!-- Tab: Quality (Level 2) -->
-      <div class="coach-tab-pane" id="coach-pane-quality">
-        <div class="rpanel-block" id="coach-quality-panel">
-          <div class="rpanel-label">⭐ Quality Analysis</div>
-          <div class="coach-loading">Analyzing…</div>
+      <!-- Tab: Mentor -->
+      <div class="coach-tab-pane" id="coach-pane-mentor">
+        <div class="rpanel-block" id="coach-mentor-panel">
+          <div class="coach-loading">Analyzing...</div>
         </div>
       </div>
 
-      <!-- Tab: ATS (Level 3) -->
+      <!-- Tab: ATS -->
       <div class="coach-tab-pane" id="coach-pane-ats">
         <div class="rpanel-block" id="coach-ats-panel">
-          <div class="rpanel-label">🔍 ATS Keyword Check</div>
-          <div class="coach-loading">Analyzing…</div>
+          <div class="coach-loading">Analyzing...</div>
         </div>
-      </div>
-
-      <!-- Tab: Career Advice (Level 4) -->
-      <div class="coach-tab-pane" id="coach-pane-advice">
-        <div class="rpanel-block" id="coach-advice-panel">
-          <div class="rpanel-label">🎯 Career Coach</div>
-          <div class="coach-loading">Analyzing…</div>
-        </div>
-        <!-- Quick Actions -->
-        <div class="rpanel-block">
-          <div class="rpanel-label">Quick Actions</div>
-          <div class="quick-actions">
-            <button class="action-pill" onclick="Editor.handleAIAction('generate-summary')" data-i18n="ed.ai_panel.gen_summary">✨ Generate Summary</button>
-            <button class="action-pill" onclick="Editor.handleAIAction('improve-bullets')" data-i18n="ed.ai_panel.improve_experience">💪 Improve Bullets</button>
-            <button class="action-pill" onclick="Editor.handleAIAction('suggest-skills')" data-i18n="ed.ai_panel.sug_skills">💡 Suggest Skills</button>
-            <button class="action-pill" onclick="Editor.handleAIAction('tailor-job')" data-i18n="ed.ai_panel.tailor_job">🎯 Tailor to Job</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab: Action Plan (Level 5) -->
-      <div class="coach-tab-pane" id="coach-pane-plan">
-        <div class="rpanel-block" id="coach-plan-panel">
-          <div class="rpanel-label">🗺️ Action Plan</div>
-          <div class="coach-loading">Building your roadmap…</div>
-        </div>
-        <!-- AI Suggestions -->
-        <div class="rpanel-block" id="ai-suggestions-panel"></div>
-        <!-- AI Coach Panel -->
-        <div class="rpanel-block" id="ai-coach-panel"></div>
       </div>
 
     </aside>

@@ -44,6 +44,22 @@ const Editor = (function () {
     if (typeof I18n.translateDom === 'function') I18n.translateDom();
     ensureJobTitle();
 
+    // Fetch Career Rules Engine
+    const field = career.careerProfile?.field || 'other';
+    const lang = career.meta?.locale || 'en';
+    try {
+      const resp = await fetch(`/knowledge-base/${lang}/${field}/rules.json`);
+      if (resp.ok) {
+        career.meta.rules = await resp.json();
+      } else {
+        // Fallback to english if arabic rules not found (or vice versa), though we generated both
+        const fbResp = await fetch(`/knowledge-base/en/${field}/rules.json`);
+        if (fbResp.ok) career.meta.rules = await fbResp.json();
+      }
+    } catch (e) {
+      console.warn('Failed to load career rules engine', e);
+    }
+
     pushUndo();
     resolveStyles();
     bindEvents();
@@ -151,8 +167,30 @@ const Editor = (function () {
   // ─────────────────────────────────────────────────
   // RENDER ALL
   // ─────────────────────────────────────────────────
+  function updateScoreHeader() {
+    if (typeof AICoach === 'undefined') return;
+    const header = el('resume-score-header');
+    if (!header) return;
+    const review = AICoach.getPreExportReview(career);
+    const isAr = career.meta?.locale === 'ar' || document.documentElement.lang === 'ar';
+    let color = '#22c55e';
+    if (review.score < 60) color = '#ef4444';
+    else if (review.score < 80) color = '#f59e0b';
+    
+    header.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span style="font-size: 13px; font-weight: 800; color: #1e293b;">${isAr ? 'قوة السيرة الذاتية' : 'Resume Strength'}</span>
+        <span style="font-size: 16px; font-weight: 800; color: ${color};">${review.score}%</span>
+      </div>
+      <div style="height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
+        <div style="height: 100%; width: ${review.score}%; background: ${color}; border-radius: 3px; transition: width 0.3s;"></div>
+      </div>
+    `;
+  }
+
   function renderAll() {
     renderSectionsList();
+    updateScoreHeader();
     renderHealthPanel();
     renderCoachPanel();
     renderAISuggestions();
@@ -303,14 +341,14 @@ const Editor = (function () {
     { key: 'education', icon: '🎓', labelKey: 'ed.sections.education', defaultLabel: 'Education', group: 'extras' },
     { key: 'languages', icon: '🌐', labelKey: 'ed.sections.languages', defaultLabel: 'Languages', group: 'extras' },
     { key: 'certificates', icon: '🏆', labelKey: 'ed.sections.certificates', defaultLabel: 'Certifications', group: 'extras' },
-    { key: 'awards', icon: '⭐', labelKey: 'ed.sections.awards', defaultLabel: 'Awards', group: 'extras' },
-    { key: 'references', icon: '🤝', labelKey: 'ed.sections.references', defaultLabel: 'References', group: 'extras' },
+    { key: 'awards', icon: '⭐', labelKey: 'ed.sections.awards', defaultLabel: 'Awards', group: 'extras' }
   ];
 
   function getSectionStatus(key) {
     const issue = getSectionIssue(key);
-    if (issue?.severity === 'blocker') return 'missing';
-    if (issue?.severity === 'warn') return 'warn';
+    if (issue?.severity === 'high') return 'missing';
+    if (issue?.severity === 'medium') return 'warn';
+    if (issue?.severity === 'low') return 'tip';
     switch (key) {
       case 'personalInfo': return career.personalInfo?.name && career.personalInfo?.email ? 'done' : 'warn';
       case 'summary': return career.professionalSummary?.trim() ? 'done' : 'missing';
@@ -325,7 +363,7 @@ const Editor = (function () {
   function getSectionIssue(key) {
     if (typeof AICoach === 'undefined') return null;
     const review = AICoach.getPreExportReview(career);
-    const priority = { blocker: 3, warn: 2, tip: 1, good: 0 };
+    const priority = { high: 3, medium: 2, low: 1 };
     return review.items
       .filter(item => item.section === key)
       .sort((left, right) => (priority[right.severity] || 0) - (priority[left.severity] || 0))[0] || null;
@@ -415,7 +453,10 @@ const Editor = (function () {
       { id: 'extras', labelKey: 'ed.groups.extras', defaultLabel: 'Additional' },
     ];
 
-    list.innerHTML = bannerHtml + groups.map(group => {
+    const gs = document.getElementById('global-settings');
+    if (gs) gs.innerHTML = bannerHtml;
+
+    list.innerHTML = groups.map(group => {
       const isCollapsed = career.meta.collapsedGroups.includes(group.id);
       const sections = SECTION_DEFS.filter(s => s.group === group.id && shouldShowSection(s.key));
       return `
@@ -442,9 +483,14 @@ const Editor = (function () {
     const issue = getSectionIssue(s.key);
     const preview = getSectionPreview(s.key);
     const isAr = career.meta?.locale === 'ar' || document.documentElement.lang === 'ar';
-    const statusHtml = status === 'done' ? `<span class="section-status status-done">✓ ${isAr ? 'مكتمل' : 'Done'}</span>` :
-      status === 'warn' ? `<span class="section-status status-warn">! ${isAr ? 'تحسين' : 'Improve'}</span>` :
-        `<span class="section-status status-missing">+ ${isAr ? 'مفقود' : 'Add'}</span>`;
+    let statusHtml = status === 'done' ? `<span class="section-status status-done">✓ ${isAr ? 'مكتمل' : 'Done'}</span>` : '';
+    if (issue) {
+      if (issue.severity === 'high') statusHtml = `<span class="section-status status-missing">↑ ${isAr ? 'أثر عالي' : 'High Impact'}</span>`;
+      else if (issue.severity === 'medium') statusHtml = `<span class="section-status status-warn">↗ ${isAr ? 'أثر متوسط' : 'Med Impact'}</span>`;
+      else statusHtml = `<span class="section-status status-warn">→ ${isAr ? 'تحسين' : 'Low Impact'}</span>`;
+    } else if (status !== 'done') {
+      statusHtml = `<span class="section-status status-missing">+ ${isAr ? 'مفقود' : 'Add'}</span>`;
+    }
 
     return `
       <div class="section-row ${issue ? `needs-attention ${issue.severity}` : ''}" data-key="${s.key}">
@@ -469,7 +515,41 @@ const Editor = (function () {
   // ─────────────────────────────────────────────────
   // EDIT PANEL
   // ─────────────────────────────────────────────────
+
+  function updateExperienceChecklist() {
+    if (currentEditSection !== 'experience') return;
+    const exp = career.experience || [];
+    let hasAction = false;
+    let hasMetrics = false;
+    let hasLength = false;
+    
+    if (exp.length > 0) {
+      hasLength = true; // start true, invalidate if any fails
+      exp.forEach(entry => {
+        const bullets = entry.bullets || [];
+        if (bullets.length < 3) hasLength = false; // "3+ bullets" rule
+        bullets.forEach(b => {
+          if (typeof AICoach !== 'undefined' && AICoach.hasMetric && AICoach.hasMetric(b)) hasMetrics = true;
+          else if (/\d+|%|\$|\+/.test(b)) hasMetrics = true;
+          
+          if (/^(developed|managed|led|created|designed|implemented|improved|increased|reduced|طورت|أدرت|صممت|حققت|أنشأت|نفذت)/i.test(b)) hasAction = true;
+        });
+      });
+      // If no bullets at all, it's not length-compliant
+      if (!exp.some(e => (e.bullets || []).length > 0)) hasLength = false;
+    }
+
+    const chkAction = el('chk-action');
+    const chkMetrics = el('chk-metrics');
+    const chkLength = el('chk-length');
+
+    if (chkAction) chkAction.checked = hasAction;
+    if (chkMetrics) chkMetrics.checked = hasMetrics;
+    if (chkLength) chkLength.checked = hasLength;
+  }
+
   function openEditPanel(sectionKey) {
+
     currentEditSection = sectionKey;
     const def = SECTION_DEFS.find(s => s.key === sectionKey);
     if (!def) return;
@@ -477,6 +557,7 @@ const Editor = (function () {
     el('edit-panel-title').textContent = `${def.icon} ${t(def.labelKey, def.defaultLabel)}`;
     el('edit-panel-body').innerHTML = buildSectionCoach(sectionKey) + buildEditForm(sectionKey);
     el('edit-ai-pills').innerHTML = buildAIPills(sectionKey);
+    updateExperienceChecklist();
 
     // Save button
     el('edit-save-btn').onclick = () => {
@@ -1101,7 +1182,7 @@ const Editor = (function () {
   function buildSectionCoach(sectionKey) {
     if (typeof AICoach === 'undefined') return '';
     const advice = AICoach.getSectionAdvice(career, sectionKey).slice(0, 2);
-    return `
+    let html = `
       <div class="section-coach">
         <div class="section-coach-kicker">${h(coachName())}</div>
         ${advice.map(item => `
@@ -1111,6 +1192,30 @@ const Editor = (function () {
           </div>
         `).join('')}
       </div>`;
+      
+    if (sectionKey === 'experience') {
+      const isAr = career.meta?.locale === 'ar' || document.documentElement.lang === 'ar';
+      html += `
+        <div class="interactive-checklist" id="experience-coach-checklist" style="margin-bottom: 15px; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <div style="font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase;">
+            ${isAr ? 'قائمة فحص الخبرة' : 'Experience Checklist'}
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <input type="checkbox" id="chk-action" disabled style="accent-color: #22c55e; width: 14px; height: 14px;">
+            <label style="font-size: 13px; color: #334155; font-weight: 600;">${isAr ? 'أفعال إنجاز (طورت، أدرت،...)' : 'Action Verbs (Developed, Managed...)'}</label>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <input type="checkbox" id="chk-metrics" disabled style="accent-color: #22c55e; width: 14px; height: 14px;">
+            <label style="font-size: 13px; color: #334155; font-weight: 600;">${isAr ? 'أثر بالأرقام (٪، $، أرقام)' : 'Measured Impact (%, $, numbers)'}</label>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="chk-length" disabled style="accent-color: #22c55e; width: 14px; height: 14px;">
+            <label style="font-size: 13px; color: #334155; font-weight: 600;">${isAr ? '٣ نقط أو أكثر لكل وظيفة' : '3+ bullets per role'}</label>
+          </div>
+        </div>
+      `;
+    }
+    return html;
   }
 
   function renderCoachPanel() {

@@ -1,0 +1,25 @@
+{
+  "role": "speech_therapist",
+  "category": "healthcare",
+  "required_sections": [
+    "summary",
+    "experience",
+    "education",
+    "certifications"
+  ],
+  "recommended_sections": [
+    "languages",
+    "skills"
+  ],
+  "section_weights": {
+    "summary": 15,
+    "experience": 40,
+    "education": 25,
+    "certifications": 15,
+    "skills": 5
+  },
+  "coach_rules": [
+    "Mention patient volume and specialized equipment.",
+    "Ensure licenses/certifications are prominent."
+  ]
+}

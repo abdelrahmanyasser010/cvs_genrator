@@ -1,0 +1,22 @@
+{
+  "role": "customer_service",
+  "category": "other",
+  "required_sections": [
+    "summary",
+    "experience",
+    "education",
+    "skills"
+  ],
+  "recommended_sections": [
+    "languages"
+  ],
+  "section_weights": {
+    "summary": 20,
+    "experience": 45,
+    "education": 20,
+    "skills": 15
+  },
+  "coach_rules": [
+    "Focus on communication and problem-solving skills."
+  ]
+}

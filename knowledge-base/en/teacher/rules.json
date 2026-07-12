@@ -1,0 +1,23 @@
+{
+  "role": "teacher",
+  "category": "education",
+  "required_sections": [
+    "summary",
+    "experience",
+    "education",
+    "certifications"
+  ],
+  "recommended_sections": [
+    "skills",
+    "languages"
+  ],
+  "section_weights": {
+    "summary": 15,
+    "experience": 40,
+    "education": 25,
+    "certifications": 20
+  },
+  "coach_rules": [
+    "Highlight student outcomes, curriculum development, and teaching methodologies."
+  ]
+}
