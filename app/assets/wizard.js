@@ -86,9 +86,28 @@ const Wizard = (function () {
   function updatePreview() {
     if (typeof CVRenderer === 'undefined') return;
     const target = el('cv-render-target');
+    const rightSec = document.querySelector('.wizard-right');
+    const leftSec = document.querySelector('.wizard-left');
     if (!target) return;
+
+    const earlySteps = ['welcome', 'locale', 'name', 'nice_to_meet', 'field', 'experience_years', 'location', 'email', 'phone', 'linkedin', 'github'];
+    const currentStep = STEPS[stepIndex];
+    if (earlySteps.includes(currentStep)) {
+      if (rightSec) rightSec.style.display = 'none';
+      if (leftSec) {
+        leftSec.style.maxWidth = '640px';
+        leftSec.style.margin = '0 auto';
+      }
+      return;
+    } else {
+      if (rightSec) rightSec.style.display = 'flex';
+      if (leftSec) {
+        leftSec.style.maxWidth = '800px';
+        leftSec.style.margin = '0 auto';
+      }
+    }
+
     target.innerHTML = '';
-    // Use fallback if template is ai-recommended
     const tId = career.meta.templateId === 'ai-recommended' ? 'classic' : career.meta.templateId;
     CVRenderer.render(career, tId, target);
   }
@@ -276,6 +295,7 @@ const Wizard = (function () {
     
     hideError();
     updateProgress();
+    updatePreview();
 
     btn.innerText = t('wz.next');
     btn.style.display = 'block';
@@ -344,13 +364,14 @@ const Wizard = (function () {
           <div class="wz-list-options">
             ${LEVELS.map(l => `
               <label class="wz-list-card">
-                <input type="radio" name="wz-level" value="${l.id}" ${career.careerProfile?.level === l.id ? 'checked' : ''}>
+                <input type="radio" name="wz-level" value="${l.id}" ${career.careerProfile?.level === l.id ? 'checked' : ''} onchange="Wizard.setLevel('${l.id}')">
                 <span class="wz-card-icon">${l.icon}</span>
                 <span class="wz-card-label">${t(l.key)}</span>
               </label>
             `).join('')}
           </div>
         `;
+        btn.style.display = 'none';
         break;
 
       case 'location':
@@ -410,6 +431,13 @@ const Wizard = (function () {
         html = `
           <h1 class="wz-title">${t('wz.stepExp')}</h1>
           <input type="text" id="wz-input-exp" class="wz-input-huge" placeholder="${phObj.title || t('wz.stepExpPh')}" value="${a(career.experience?.[0]?.role || '')}" autofocus>
+          ${career.careerProfile?.level === 'fresh' ? `
+            <div style="margin-top:20px;">
+              <button type="button" class="wz-option-btn" style="border: 1.5px solid var(--primary,#2563eb);color:var(--primary,#2563eb);width:100%;text-align:center;font-weight:600;padding:12px;" onclick="Wizard.skipExperienceFresh()">
+                🎯 ${career.meta?.locale === 'ar' ? 'تخطي - أنا حديث التخرج وليس لدي خبرة سابقة' : 'Skip — I am a Fresh Graduate with no experience'}
+              </button>
+            </div>
+          ` : ''}
         `;
         setTimeout(() => bindLiveInput('wz-input-exp', 'experience', '', false), 0);
         btn.innerText = t('wz.skip');
@@ -491,8 +519,26 @@ const Wizard = (function () {
     handleNext();
   }
 
+  function setLevel(levelId) {
+    if (!career.careerProfile) career.careerProfile = {};
+    career.careerProfile.level = levelId;
+    handleNext();
+  }
+
+  function skipExperienceFresh() {
+    career.experience = [];
+    if (!career.careerProfile) career.careerProfile = {};
+    career.careerProfile.years = '0';
+    handleNext();
+  }
+
   function shouldSkipStep(step) {
     const field = career.careerProfile?.field || '';
+    const level = career.careerProfile?.level || '';
+    if (step === 'experience_years' && level === 'fresh') {
+      career.careerProfile.years = '0';
+      return true;
+    }
     if (step === 'github') return !LINK_PROOF_FIELDS.includes(field);
     if (step === 'projects') return !PROJECT_FIELDS.includes(field);
     return false;
@@ -504,7 +550,7 @@ const Wizard = (function () {
     updatePreview();
   }
 
-  return { init, setLang, setField, setTemplate };
+  return { init, setLang, setField, setLevel, setTemplate, skipExperienceFresh };
 })();
 
 document.addEventListener('DOMContentLoaded', () => {

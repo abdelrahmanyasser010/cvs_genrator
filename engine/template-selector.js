@@ -14,11 +14,11 @@ const TemplateSelector = (function () {
     { id: 'corporate', nameKey: 'templates.corporate', featured: true, layoutId: 'corporate', themeId: 'executive' },
     { id: 'executive', nameKey: 'templates.executive', featured: true, layoutId: 'corporate', themeId: 'executive' },
     { id: 'elegant', nameKey: 'templates.elegant', featured: true, layoutId: 'classic', themeId: 'elegant' },
-    { id: 'creative', nameKey: 'templates.creative', featured: true, layoutId: 'sidebar', themeId: 'creative' },
-    { id: 'vibrant', nameKey: 'templates.vibrant', featured: true, layoutId: 'sidebar', themeId: 'vibrant' },
-    { id: 'canva-teal', nameKey: 'templates.canvaTeal', featured: true, layoutId: 'sidebar', themeId: 'canva-teal' },
-    { id: 'canva-navy', nameKey: 'templates.canvaNavy', featured: true, layoutId: 'sidebar', themeId: 'canva-navy' },
-    { id: 'canva-soft', nameKey: 'templates.canvaSoft', featured: true, layoutId: 'corporate', themeId: 'canva-soft' }
+    { id: 'creative', nameKey: 'templates.creative', featured: true, layoutId: 'canva_sidebar', themeId: 'creative' },
+    { id: 'vibrant', nameKey: 'templates.vibrant', featured: true, layoutId: 'canva_header', themeId: 'vibrant' },
+    { id: 'canva-teal', nameKey: 'templates.canvaTeal', featured: true, layoutId: 'canva_sidebar', themeId: 'canva-teal' },
+    { id: 'canva-navy', nameKey: 'templates.canvaNavy', featured: true, layoutId: 'canva_header', themeId: 'canva-navy' },
+    { id: 'canva-soft', nameKey: 'templates.canvaSoft', featured: true, layoutId: 'canva_sidebar', themeId: 'canva-soft' }
   ];
 
   const LEVEL_TEMPLATE_DEFAULTS = { fresh: 'classic', junior: 'ats', mid: 'ats', senior: 'corporate' };

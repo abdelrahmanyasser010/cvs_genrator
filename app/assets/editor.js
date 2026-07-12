@@ -334,12 +334,65 @@ const Editor = (function () {
     const list = el('sections-list');
     if (!list) return;
 
+    const isAr = career.meta?.locale === 'ar' || document.documentElement.lang === 'ar';
+    const bannerHtml = `
+      <div style="margin-bottom:14px;padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;">
+        <div style="font-size:11px;font-weight:800;color:#1d4ed8;margin-bottom:4px;">💡 ${isAr ? 'مش عارف تكتب إيه خالص؟' : 'Not sure what to write?'}</div>
+        <div style="font-size:12px;color:#1e293b;margin-bottom:8px;">${isAr ? 'املأ سيرة ذاتية نموذجية متكاملة لمجالك ومستواك بضغطة واحدة، وعدّل عليها بسهولة!' : 'Generate a complete model resume for your field in 1 click!'}</div>
+        <button type="button" style="width:100%;padding:8px 12px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer;" onclick="Editor.autoFillStarterCV()">
+          🪄 ${isAr ? 'ملء نموذج سيرة ذاتية كامل (1-Click Auto-Fill)' : 'Auto-Fill Complete Sample Resume'}
+        </button>
+      </div>
+
+      <div style="margin-bottom:14px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
+        <div style="font-size:11px;font-weight:700;color:#334155;margin-bottom:6px;">🎨 ${isAr ? 'لون السيرة الذاتية (Accent Color)' : 'Accent Color'}</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          ${[
+            { color: '#2563eb', label: 'أزرق ملكي' },
+            { color: '#059669', label: 'أخضر زمردي' },
+            { color: '#7c3aed', label: 'بنفسجي فاخر' },
+            { color: '#be123c', label: 'عنابي أنيق' },
+            { color: '#1e293b', label: 'كحلي داكن' }
+          ].map(c => `
+            <button type="button" title="${c.label}" style="width:24px;height:24px;border-radius:50%;background:${c.color};border:2.5px solid ${career.meta.accentColor === c.color ? '#0f172a' : '#fff'};box-shadow:0 1px 3px rgba(0,0,0,0.2);cursor:pointer;" onclick="Editor.setAccentColor('${c.color}')"></button>
+          `).join('')}
+        </div>
+
+        <div style="font-size:11px;font-weight:700;color:#334155;margin-bottom:6px;">🔤 ${isAr ? 'الخط العربي (Font Style)' : 'Font Style'}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+          ${['Inter', 'Cairo', 'Tajawal', 'Almarai'].map(f => `
+            <button type="button" style="padding:4px 8px;font-size:11px;border-radius:6px;border:1px solid #cbd5e1;background:${career.meta.fontFamily === f ? '#e2e8f0' : '#fff'};font-family:'${f}',sans-serif;cursor:pointer;font-weight:600;" onclick="Editor.setCvFont('${f}')">${f}</button>
+          `).join('')}
+        </div>
+
+        <div style="font-size:11px;font-weight:700;color:#334155;margin-bottom:6px;">📷 ${isAr ? 'الصورة الشخصية (Profile Photo)' : 'Profile Photo'}</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px;">
+          <button type="button" style="flex:1;padding:6px;font-size:11px;border-radius:6px;border:1px solid #cbd5e1;background:${career.meta.showPhoto ? '#dcfce7' : '#fff'};color:#15803d;font-weight:600;cursor:pointer;" onclick="Editor.togglePhoto(true)">
+            ✅ ${isAr ? 'إظهار الصورة' : 'Show Photo'}
+          </button>
+          <button type="button" style="flex:1;padding:6px;font-size:11px;border-radius:6px;border:1px solid #cbd5e1;background:${!career.meta.showPhoto ? '#fee2e2' : '#fff'};color:#b91c1c;font-weight:600;cursor:pointer;" onclick="Editor.togglePhoto(false)">
+            🚫 ${isAr ? 'إخفاء (لـ ATS)' : 'Hide (ATS)'}
+          </button>
+        </div>
+
+        <div style="font-size:11px;font-weight:700;color:#334155;margin-bottom:6px;">↕️ ${isAr ? 'ترتيب الأقسام (التعليم أولاً أم الخبرة؟)' : 'Section Order'}</div>
+        <div style="display:flex;gap:6px;">
+          <button type="button" style="flex:1;padding:6px;font-size:11px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-weight:600;cursor:pointer;" onclick="Editor.setSectionOrder(['summary', 'education', 'experience', 'projects', 'skills', 'languages'])">
+            🎓 ${isAr ? 'التعليم أولاً' : 'Education First'}
+          </button>
+          <button type="button" style="flex:1;padding:6px;font-size:11px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-weight:600;cursor:pointer;" onclick="Editor.setSectionOrder(['summary', 'experience', 'education', 'projects', 'skills', 'languages'])">
+            💼 ${isAr ? 'الخبرة أولاً' : 'Experience First'}
+          </button>
+        </div>
+      </div>
+    `;
+
     const groups = [
       { id: 'basics', labelKey: 'ed.groups.basics', defaultLabel: 'Resume Sections' },
       { id: 'extras', labelKey: 'ed.groups.extras', defaultLabel: 'Additional' },
     ];
 
-    list.innerHTML = groups.map(group => {
+    list.innerHTML = bannerHtml + groups.map(group => {
       const isCollapsed = career.meta.collapsedGroups.includes(group.id);
       const sections = SECTION_DEFS.filter(s => s.group === group.id && shouldShowSection(s.key));
       return `
@@ -553,13 +606,18 @@ const Editor = (function () {
 
   // ─── SUMMARY ───
   function buildSummaryForm() {
+    const isAr = career.meta?.locale === 'ar' || document.documentElement.lang === 'ar';
     return `
       <div class="form-field form-field-full">
         <label class="form-label">${t('ed.form.summary', 'Professional Summary')}</label>
         <p class="form-hint">${t('ed.form.summary_hint', 'Write 2–3 sentences about your experience and goals. Be specific.')}</p>
         <textarea class="form-textarea" id="f-summary" rows="6" placeholder="${getPh().summary || t('ed.form.ph_summary', 'e.g. Software Engineer with 5+ years...') }">${h(career.professionalSummary || '')}</textarea>
       </div>
-      <button class="btn-generate" onclick="Editor.handleAIAction('generate-summary')">${t('ed.form.generate_ai', '✨ Generate with AI')}</button>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
+        <button type="button" class="btn-generate" style="font-weight:700;padding:12px 18px;background:var(--primary,#2563eb);color:#fff;border-radius:8px;border:none;cursor:pointer;width:100%;text-align:center;" onclick="Editor.handleAIAction('generate-summary')">
+          ✨ ${isAr ? 'توليد نبذة احترافية بضغطة واحدة (AI / مقترحات لمجالي)' : 'Generate Professional Summary (AI / Smart Match)'}
+        </button>
+      </div>
     `;
   }
   function collectSummary() {
@@ -746,10 +804,16 @@ const Editor = (function () {
             <label class="form-label">${t('ed.form.category', 'Category')}</label>
             <input class="form-input" id="f-skill-cat-${i}" type="text" placeholder="${getPh().skillCat || t('ed.form.ph_skill_cat', 'e.g. Frontend')}" value="${a(cat)}">
           </div>
-          <div class="form-field form-field-full">
-            <label class="form-label">${t('ed.form.skills_comma', 'Skills (comma separated)')}</label>
-            <input class="form-input" id="f-skill-vals-${i}" type="text" placeholder="${getPh().skills || t('ed.form.ph_skill_vals', 'React, TypeScript, CSS')}" value="${a((skills || []).join(', '))}">
-            <div style="font-size:11.5px;color:#64748b;margin-top:4px;">💡 <b>نصيحة:</b> افصل بين كل مهارة وأخرى بفاصلة (،) أو اضغط على أي مهارة من المقترحات الجاهزة بالأسفل لإضافتها فوراً!</div>
+            <div class="form-field form-field-full">
+              <label class="form-label">${t('ed.form.skills_comma', 'Skills (comma separated)')}</label>
+              <input class="form-input" id="f-skill-vals-${i}" type="text" placeholder="${getPh().skills || t('ed.form.ph_skill_vals', 'React, TypeScript, CSS')}" value="${a((skills || []).join(', '))}">
+              <div style="font-size:11.5px;color:#64748b;margin-top:6px;">💡 <b>نصيحة:</b> افصل بين كل مهارة وأخرى بفاصلة (،) أو اضغط على المقترحات الجاهزة لإضافتها فوراً:</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+                ${['Excel', 'Word', 'إعداد التقارير المالية', 'التحليل المالي', 'المراجعة والتدقيق', 'أنظمة ERP', 'التواصل الفعال', 'حل المشكلات'].map(sk => `
+                  <button type="button" style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:4px 10px;border-radius:14px;font-size:12px;cursor:pointer;font-weight:500;" onclick="Editor.appendSkillToInput(${i}, '${sk}')">+ ${sk}</button>
+                `).join('')}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -781,6 +845,21 @@ const Editor = (function () {
     if (key) delete career.skills[key];
     saveAndRender();
     openEditPanel('skills');
+  }
+  function appendSkillToInput(index, skill) {
+    const inp = el(`f-skill-vals-${index}`);
+    if (!inp) return;
+    const current = inp.value.trim();
+    if (!current) {
+      inp.value = skill;
+    } else {
+      const parts = current.split(',').map(s => s.trim());
+      if (!parts.includes(skill)) {
+        inp.value = current + ', ' + skill;
+      }
+    }
+    collectSkills();
+    saveAndRender();
   }
 
   // ─── EDUCATION ───
@@ -1710,13 +1789,132 @@ const Editor = (function () {
     if (action.startsWith('edit-')) openEditPanel(action.replace('edit-', ''));
   }
 
+  async function autoFillStarterCV() {
+    pushUndo();
+    const isAr = career.meta?.locale === 'ar' || document.documentElement.lang === 'ar';
+    const level = career.careerProfile?.level || 'fresh';
+
+    // 1. Summary
+    if (!career.professionalSummary || career.professionalSummary.length < 20) {
+      const sumObj = (typeof ContentPicker !== 'undefined' && await ContentPicker.getSummary(career));
+      career.professionalSummary = sumObj?.text || (isAr ?
+        'مهني طموح وحديث التخرج، أمتلك أساساً أكاديمياً متيناً ومهارات تقنية عالية في استخدام الأدوات الحديثة وتحليل البيانات. أتطلع لتوظيف قدراتي في بيئة عمل احترافية تدعم التطور وتساهم في تحقيق أهداف المؤسسة.' :
+        'Motivated professional possessing strong foundational knowledge, technical proficiency, and analytical problem-solving skills. Dedicated to adding measurable value within a growth-oriented organization.');
+    }
+
+    // 2. Skills
+    if (!career.skills || Object.keys(career.skills).length === 0) {
+      career.skills = isAr ? {
+        'المهارات الأساسية': ['Excel المتقدم', 'إعداد التقارير', 'تحليل البيانات', 'تنظيم العمل'],
+        'المهارات الشخصية': ['التواصل الفعال', 'حل المشكلات', 'العمل الجماعي', 'إدارة الوقت']
+      } : {
+        'Core Skills': ['Advanced Excel', 'Data Analysis', 'Reporting', 'Process Organization'],
+        'Soft Skills': ['Effective Communication', 'Problem Solving', 'Teamwork', 'Time Management']
+      };
+    }
+
+    // 3. Experience / Internship
+    if (!career.experience || career.experience.length === 0) {
+      if (level === 'fresh') {
+        career.experience = [{
+          role: isAr ? 'تدريب عملي / مشروع تطبيقي' : 'Practical Training / Capstone Project',
+          company: isAr ? 'برنامج التدريب المهني' : 'Professional Development Program',
+          period: isAr ? '2024' : '2024',
+          bullets: isAr ? [
+            'تطبيق المفاهيم المهنية والتحليلية المتقدمة لإنجاز المهام المطلوبة بدقة وكفاءة.',
+            'استخدام برامج وتطبيقات الحاسب الآلي لتحليل البيانات وإعداد التقارير الدورية.',
+            'التعاون مع الفريق لإنجاز المهام وتحسين جودة المخرجات بنسبة ملحوظة.'
+          ] : [
+            'Applied professional concepts and analytical methodologies to complete core project tasks efficiently.',
+            'Utilized digital software tools to process data and generate accurate reports.',
+            'Collaborated with peers to deliver timely results and improve overall output quality.'
+          ]
+        }];
+      } else {
+        career.experience = [{
+          role: isAr ? 'أخصائي / مسؤول مهني' : 'Professional Specialist',
+          company: isAr ? 'شركة رائدة في المجال' : 'Leading Organization',
+          period: isAr ? '2022 – الحالي' : '2022 – Present',
+          bullets: isAr ? [
+            'إدارة وتنفيذ المهام اليومية بكفاءة عالية وفقاً لأفضل الممارسات المهنية ومعايير الجودة.',
+            'إعداد وتحليل التقارير الدورية لتقديم توصيات تدعم اتخاذ القرارات الإدارية بشكل دقيق.',
+            'تطوير أساليب العمل اليومية مما ساهم في زيادة الإنتاجية وتقليل الوقت المستغرق في إنجاز المهام.'
+          ] : [
+            'Managed day-to-day operations efficiently in alignment with industry best practices and quality standards.',
+            'Prepared comprehensive analytical reports providing actionable recommendations for management.',
+            'Streamlined workflows resulting in measurable increases in operational productivity.'
+          ]
+        }];
+      }
+    }
+
+    // 4. Education
+    if (!career.education || career.education.length === 0) {
+      career.education = [{
+        degree: isAr ? 'بكالوريوس في التخصص المهني' : 'Bachelor Degree in Professional Field',
+        institution: isAr ? 'جامعة معتمدة' : 'Accredited University',
+        period: isAr ? '2024' : '2024'
+      }];
+    }
+
+    // 5. Languages
+    if (!career.languages || career.languages.length === 0) {
+      career.languages = isAr ? [
+        { name: 'العربية', level: 'اللغة الأم' },
+        { name: 'الإنجليزية', level: 'جيد جداً (مهني)' }
+      ] : [
+        { name: 'Arabic', level: 'Native' },
+        { name: 'English', level: 'Professional Working Proficiency' }
+      ];
+    }
+
+    saveAndRender();
+    if (typeof showNoticeModal === 'function') {
+      showNoticeModal({
+        title: isAr ? '✨ تم إنشاء نموذج سيرة ذاتية كامل!' : '✨ Complete Starter Resume Created!',
+        body: isAr ?
+          'تم ملء السيرة الذاتية بنموذج متكامل واحترافي لمجالك. يمكنك الآن التعديل على أي قسم وتغيير بياناتك بسهولة وسرعة!' :
+          'Your resume has been populated with a high-quality starter model. You can now easily edit any field to personalize your information!'
+      });
+    }
+  }
+
+  function setAccentColor(color) {
+    if (!career.meta) career.meta = {};
+    career.meta.accentColor = color;
+    saveAndRender();
+  }
+
+  function setCvFont(fontFamily) {
+    if (!career.meta) career.meta = {};
+    career.meta.fontFamily = fontFamily;
+    saveAndRender();
+  }
+
+  function togglePhoto(show) {
+    if (!career.meta) career.meta = {};
+    career.meta.showPhoto = show;
+    if (show && (!career.personalInfo || !career.personalInfo.photo)) {
+      if (!career.personalInfo) career.personalInfo = {};
+      career.personalInfo.photo = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80';
+    }
+    saveAndRender();
+  }
+
+  function setSectionOrder(orderArray) {
+    if (!career.meta) career.meta = {};
+    career.meta.sectionOrder = orderArray;
+    saveAndRender();
+  }
+
   return {
     init, setTemplate, pickGalleryTemplate, openGallery,
     openEditPanel, closeEditPanel,
     editSection, jumpTo,
+    autoFillStarterCV, setAccentColor, setCvFont, togglePhoto, setSectionOrder,
     addExpItem, duplicateExpItem, deleteExpItem,
     addProjItem, duplicateProjItem, deleteProjItem,
-    addSkillCat, deleteSkillCat, addEduItem, duplicateEduItem, deleteEduItem,
+    addSkillCat, deleteSkillCat, appendSkillToInput, addEduItem, duplicateEduItem, deleteEduItem,
     addLangItem, duplicateLangItem, deleteLangItem,
     showExample,
     aiImprove, aiShorten, aiProfessional, aiTranslate, aiSuggestSkills, handleAIAction, applyCoachFix,

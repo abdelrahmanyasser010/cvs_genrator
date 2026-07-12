@@ -19,31 +19,31 @@
 }
 
 .cv-header { border-bottom: 1.5px solid #111; padding-bottom: 13px; margin-bottom: 18px; text-align: center; }
-.cv-header h1 { font-size: 23px; font-weight: 700; letter-spacing: 0; margin-bottom: 3px; line-height: 1.2; }
-.cv-header .cv-subtitle { font-size: 13.5px; color: #333; font-weight: 600; margin-bottom: 9px; }
-.cv-contacts { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px 0; font-size: 12px; color: #333; }
+.cv-header h1 { font-size: 25px; font-weight: 800; letter-spacing: 0; margin-bottom: 4px; line-height: 1.25; color: #0f172a; }
+.cv-header .cv-subtitle { font-size: 14px; color: #334155; font-weight: 600; margin-bottom: 9px; }
+.cv-contacts { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 0; font-size: 12px; color: #475569; }
 .cv-contacts .ci { display: flex; align-items: center; gap: 4px; }
-.cv-contacts .ci a { color: #0056b3; font-weight: 500; text-decoration: none; }
-.cv-contacts .dot { margin: 0 8px; color: #bbb; }
-.ci-icon { width: 13px; height: 13px; fill: none; stroke: #666; stroke-width: 1.8; flex-shrink: 0; }
+.cv-contacts .ci a { color: var(--primary, #2563eb); font-weight: 600; text-decoration: none; }
+.cv-contacts .dot { margin: 0 8px; color: #cbd5e1; }
+.ci-icon { width: 13px; height: 13px; fill: none; stroke: #64748b; stroke-width: 1.8; flex-shrink: 0; }
 
 .cv-section { margin-bottom: 17px; }
 .cv-section-title {
-  font-size: 12px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0; border-bottom: 1px solid #d9d9d9;
-  padding-bottom: 4px; margin-bottom: 10px;
+  font-size: 13.5px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.3px; border-bottom: 1.5px solid #cbd5e1;
+  padding-bottom: 5px; margin-bottom: 11px; color: var(--primary, #1e293b);
 }
 
 .cv-entry { margin-bottom: 12px; }
 .cv-entry-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px; margin-bottom: 5px; }
 .cv-entry-left { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
-.cv-role { font-size: 13.5px; font-weight: 700; }
-.cv-company { font-size: 13px; color: #666; }
-.cv-period { font-size: 12px; color: #888; white-space: nowrap; }
+.cv-role { font-size: 14px; font-weight: 700; color: #0f172a; }
+.cv-company { font-size: 13.2px; font-weight: 600; color: #475569; }
+.cv-period { font-size: 12px; color: #64748b; white-space: nowrap; }
 
 ul.cv-ul { list-style: none; padding: 0; }
-ul.cv-ul li { position: relative; padding-left: 13px; font-size: 12.5px; color: #333; margin-bottom: 3px; line-height: 1.48; }
-ul.cv-ul li::before { content: '–'; position: absolute; left: 0; color: #999; }
+ul.cv-ul li { position: relative; padding-left: 13px; font-size: 12.6px; color: #1e293b; margin-bottom: 4px; line-height: 1.55; }
+ul.cv-ul li::before { content: '–'; position: absolute; left: 0; color: #94a3b8; font-weight: 700; }
 
 [dir="rtl"] ul.cv-ul li { padding-left: 0; padding-right: 13px; }
 [dir="rtl"] ul.cv-ul li::before { left: auto; right: 0; }
@@ -102,17 +102,24 @@ ul.cv-ul li::before { content: '–'; position: absolute; left: 0; color: #999; 
 }
 
 /* Responsive design */
-@media (max-width: 640px) {
-  .cv-paper { padding: 24px 18px; }
-  .cv-skill-row { flex-direction: column; gap: 4px; }
-  .cv-entry-head { flex-direction: column; align-items: flex-start; }
-  .cv-proj-head { flex-direction: column; align-items: flex-start; }
-  .cv-edu-row { flex-direction: column; align-items: flex-start; }
+@media (max-width: 768px) {
+  .cv-paper {
+    padding: 24px 18px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    word-break: break-word;
+  }
+  .cv-skill-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .cv-skill-cat { min-width: auto !important; margin-bottom: 2px; }
+  .cv-skill-val { flex: 1 1 auto !important; width: 100%; }
+  .cv-entry-head, .cv-proj-head, .cv-edu-row { flex-direction: column; align-items: flex-start; gap: 3px; }
+  .cv-period, .cv-edu-period { white-space: normal; }
 }
 
 @media (max-width: 480px) {
-  .cv-paper { padding: 20px 16px; font-size: 12px; }
-  .cv-header h1 { font-size: 18px; }
-  .cv-contacts { justify-content: flex-start; }
+  .cv-paper { padding: 20px 14px !important; font-size: 12.5px; }
+  .cv-header h1 { font-size: 19px; }
+  .cv-contacts { justify-content: flex-start; gap: 6px 10px; }
   .cv-langs { flex-direction: column; gap: 8px; }
 }

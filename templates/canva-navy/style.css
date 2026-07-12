@@ -1,6 +1,7 @@
 @import url('../shared/base.css');
 
 .cv-paper {
+  --primary: #1e3a8a;
   --accent: #14344d;
   padding: 0;
   font-size: 12.8px;

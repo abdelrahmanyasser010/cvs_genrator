@@ -2486,22 +2486,22 @@ a { color: inherit; text-decoration: none; }
 }
 
 .wz-title {
-  font-size: 48px;
-  font-weight: 800;
+  font-size: 28px;
+  font-weight: 700;
   color: var(--text);
-  margin-bottom: 16px;
-  line-height: 1.1;
-  letter-spacing: -1px;
+  margin-bottom: 12px;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
 }
 
 .wz-subtitle {
-  font-size: 18px;
+  font-size: 15px;
   color: var(--gray-500);
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 }
 
 .wz-title-heart {
-  font-size: 56px;
+  font-size: 34px;
   font-weight: 800;
   background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
   -webkit-background-clip: text;
@@ -2510,12 +2510,12 @@ a { color: inherit; text-decoration: none; }
 
 .wz-input-huge {
   width: 100%;
-  font-size: 32px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--text);
   border: none;
   border-bottom: 2px solid var(--gray-300);
-  padding: 16px 0;
+  padding: 12px 0;
   background: transparent;
   outline: none;
   transition: border-color 0.3s;
@@ -3627,9 +3627,71 @@ a { color: inherit; text-decoration: none; }
 }
 
 @media (max-width: 768px) {
-  .editor-panel-left { display: none; }
-  .topbar-center { display: none; }
-  .a4-paper { width: 100%; min-height: unset; }
+  .editor-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .editor-panel-left {
+    display: block !important;
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 2px solid var(--border);
+    max-height: none !important;
+  }
+  .sections-list {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    padding: 12px !important;
+  }
+  .section-row {
+    padding: 10px 12px !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+  }
+  .editor-canvas {
+    padding: 16px 12px !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+  .a4-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    transform: none !important;
+  }
+  .a4-paper, .cv-preview-scale {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    transform: none !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important;
+    border-radius: 12px !important;
+    margin: 0 auto !important;
+  }
+  .topbar-center {
+    display: none;
+  }
+  .modal-box {
+    width: 95% !important;
+    max-width: 100% !important;
+    max-height: 90vh !important;
+    border-radius: 14px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .sections-list {
+    grid-template-columns: 1fr !important;
+  }
+  .editor-canvas {
+    padding: 12px 8px !important;
+  }
+  .a4-paper, .cv-preview-scale {
+    border-radius: 8px !important;
+  }
 }
 
 /* AI Coach surfaces */
@@ -3867,7 +3929,7 @@ a { color: inherit; text-decoration: none; }
 @media (max-height: 820px) {
   .wizard-content-area { justify-content: flex-start; }
   .wizard-header { margin-bottom: 28px; }
-  .wz-title { font-size: 38px; }
+  .wz-title { font-size: 24px; }
   .wz-grid-options, .wz-list-options { margin-top: 20px; }
 }
 .wz-grid-options, .wz-list-options {
