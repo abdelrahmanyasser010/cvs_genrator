@@ -156,6 +156,22 @@
     </div>
   </div>
 
+  <!-- Mobile Bottom Action Bar (visible only on screens < 768px) -->
+  <nav class="mobile-bottom-bar no-print">
+    <button type="button" class="mob-bar-btn" onclick="document.getElementById('sections-list')?.scrollIntoView({behavior:'smooth'})">
+      <span>✏️</span>
+      <span>الأقسام</span>
+    </button>
+    <button type="button" class="mob-bar-btn" onclick="document.getElementById('preview-frame')?.scrollIntoView({behavior:'smooth'})">
+      <span>👁️</span>
+      <span>المعاينة</span>
+    </button>
+    <button type="button" class="mob-bar-btn mob-bar-btn-primary" onclick="Editor.showExportModal()">
+      <span>⬇️</span>
+      <span>تحميل PDF</span>
+    </button>
+  </nav>
+
   <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>

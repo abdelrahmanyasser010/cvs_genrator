@@ -346,7 +346,7 @@ const Editor = (function () {
 
       <div style="margin-bottom:14px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
         <div style="font-size:11px;font-weight:700;color:#334155;margin-bottom:6px;">🎨 ${isAr ? 'لون السيرة الذاتية (Accent Color)' : 'Accent Color'}</div>
-        <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
           ${[
             { color: '#2563eb', label: 'أزرق ملكي' },
             { color: '#059669', label: 'أخضر زمردي' },
@@ -354,30 +354,30 @@ const Editor = (function () {
             { color: '#be123c', label: 'عنابي أنيق' },
             { color: '#1e293b', label: 'كحلي داكن' }
           ].map(c => `
-            <button type="button" title="${c.label}" style="width:24px;height:24px;border-radius:50%;background:${c.color};border:2.5px solid ${career.meta.accentColor === c.color ? '#0f172a' : '#fff'};box-shadow:0 1px 3px rgba(0,0,0,0.2);cursor:pointer;" onclick="Editor.setAccentColor('${c.color}')"></button>
+            <button type="button" title="${c.label}" style="width:30px;height:30px;border-radius:50%;background:${c.color};border:2.5px solid ${career.meta.accentColor === c.color ? '#0f172a' : '#fff'};box-shadow:0 1px 4px rgba(0,0,0,0.25);cursor:pointer;" onclick="Editor.setAccentColor('${c.color}')"></button>
           `).join('')}
         </div>
 
         <div style="font-size:11px;font-weight:700;color:#334155;margin-bottom:6px;">🔤 ${isAr ? 'الخط العربي (Font Style)' : 'Font Style'}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
           ${['Inter', 'Cairo', 'Tajawal', 'Almarai'].map(f => `
-            <button type="button" style="padding:4px 8px;font-size:11px;border-radius:6px;border:1px solid #cbd5e1;background:${career.meta.fontFamily === f ? '#e2e8f0' : '#fff'};font-family:'${f}',sans-serif;cursor:pointer;font-weight:600;" onclick="Editor.setCvFont('${f}')">${f}</button>
+            <button type="button" style="padding:6px 10px;font-size:11.5px;border-radius:6px;border:1px solid #cbd5e1;background:${career.meta.fontFamily === f ? '#e2e8f0' : '#fff'};font-family:'${f}',sans-serif;cursor:pointer;font-weight:600;" onclick="Editor.setCvFont('${f}')">${f}</button>
           `).join('')}
         </div>
 
         <div style="font-size:11px;font-weight:700;color:#334155;margin-bottom:6px;">📷 ${isAr ? 'الصورة الشخصية (Profile Photo)' : 'Profile Photo'}</div>
-        <div style="display:flex;gap:6px;margin-bottom:10px;">
-          <button type="button" style="flex:1;padding:6px;font-size:11px;border-radius:6px;border:1px solid #cbd5e1;background:${career.meta.showPhoto ? '#dcfce7' : '#fff'};color:#15803d;font-weight:600;cursor:pointer;" onclick="Editor.togglePhoto(true)">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+          <button type="button" style="flex:1 1 130px;padding:8px;font-size:11.5px;border-radius:6px;border:1px solid #cbd5e1;background:${career.meta.showPhoto ? '#dcfce7' : '#fff'};color:#15803d;font-weight:600;cursor:pointer;" onclick="Editor.togglePhoto(true)">
             ✅ ${isAr ? 'إظهار الصورة' : 'Show Photo'}
           </button>
-          <button type="button" style="flex:1;padding:6px;font-size:11px;border-radius:6px;border:1px solid #cbd5e1;background:${!career.meta.showPhoto ? '#fee2e2' : '#fff'};color:#b91c1c;font-weight:600;cursor:pointer;" onclick="Editor.togglePhoto(false)">
+          <button type="button" style="flex:1 1 130px;padding:8px;font-size:11.5px;border-radius:6px;border:1px solid #cbd5e1;background:${!career.meta.showPhoto ? '#fee2e2' : '#fff'};color:#b91c1c;font-weight:600;cursor:pointer;" onclick="Editor.togglePhoto(false)">
             🚫 ${isAr ? 'إخفاء (لـ ATS)' : 'Hide (ATS)'}
           </button>
         </div>
 
         <div style="font-size:11px;font-weight:700;color:#334155;margin-bottom:6px;">↕️ ${isAr ? 'ترتيب الأقسام (التعليم أولاً أم الخبرة؟)' : 'Section Order'}</div>
-        <div style="display:flex;gap:6px;">
-          <button type="button" style="flex:1;padding:6px;font-size:11px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-weight:600;cursor:pointer;" onclick="Editor.setSectionOrder(['summary', 'education', 'experience', 'projects', 'skills', 'languages'])">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <button type="button" style="flex:1 1 130px;padding:8px;font-size:11.5px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-weight:600;cursor:pointer;" onclick="Editor.setSectionOrder(['summary', 'education', 'experience', 'projects', 'skills', 'languages'])">
             🎓 ${isAr ? 'التعليم أولاً' : 'Education First'}
           </button>
           <button type="button" style="flex:1;padding:6px;font-size:11px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-weight:600;cursor:pointer;" onclick="Editor.setSectionOrder(['summary', 'experience', 'education', 'projects', 'skills', 'languages'])">
