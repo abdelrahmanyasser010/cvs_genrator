@@ -58,16 +58,28 @@ const Editor = (function () {
     renderAll();
     updateTopbarName();
 
-    // Mobile init: start in edit mode, show score bar
-    if (window.innerWidth < 768) {
-      document.body.classList.add('mobile-edit-mode');
-      updateMobScoreBar();
-      // Re-apply scale on resize/orientation change
-      window.addEventListener('resize', () => {
+    // Mobile init & resize handler
+    const handleResize = () => {
+      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      if (!isMobile) {
+        document.body.classList.remove('mobile-edit-mode', 'mobile-preview-mode');
+        const paper = el('a4-wrapper');
+        if (paper) {
+          paper.style.transform = 'none';
+          paper.style.marginBottom = '0px';
+          paper.style.width = '100%';
+        }
+      } else {
+        if (!document.body.classList.contains('mobile-preview-mode')) {
+          document.body.classList.add('mobile-edit-mode');
+        }
         if (currentMobileView === 'preview') applyMobileScale();
         updateMobScoreBar();
-      });
-    }
+      }
+    };
+    
+    handleResize(); // Initial call
+    window.addEventListener('resize', handleResize);
   }
 
   function resolveStyles() {
@@ -429,9 +441,10 @@ const Editor = (function () {
     const status = getSectionStatus(s.key);
     const issue = getSectionIssue(s.key);
     const preview = getSectionPreview(s.key);
-    const statusIcon = status === 'done' ? '<span class="status-dot done"></span>' :
-      status === 'warn' ? '<span class="status-dot warn"></span>' :
-        '<span class="status-dot missing"></span>';
+    const isAr = career.meta?.locale === 'ar' || document.documentElement.lang === 'ar';
+    const statusHtml = status === 'done' ? `<span class="section-status status-done">✓ ${isAr ? 'مكتمل' : 'Done'}</span>` :
+      status === 'warn' ? `<span class="section-status status-warn">! ${isAr ? 'تحسين' : 'Improve'}</span>` :
+        `<span class="section-status status-missing">+ ${isAr ? 'مفقود' : 'Add'}</span>`;
 
     return `
       <div class="section-row ${issue ? `needs-attention ${issue.severity}` : ''}" data-key="${s.key}">
@@ -440,7 +453,7 @@ const Editor = (function () {
           <div class="section-row-label">${h(t(s.labelKey, s.defaultLabel))}</div>
           ${issue ? `<div class="section-row-preview issue">${h(issue.title)}</div>` : preview ? `<div class="section-row-preview">${h(preview)}</div>` : ''}
         </div>
-        <div class="section-row-status">${statusIcon}</div>
+        <div class="section-row-status">${statusHtml}</div>
       </div>
     `;
   }
@@ -477,6 +490,11 @@ const Editor = (function () {
       input.addEventListener('input', () => {
         collectFormData(sectionKey);
         debouncedRenderPreview();
+        const saveBtn = el('edit-save-btn');
+        if (saveBtn && saveBtn.textContent !== 'حفظ التغييرات') {
+          saveBtn.textContent = 'حفظ التغييرات';
+          saveBtn.style.background = '#2563eb';
+        }
       });
       input.addEventListener('blur', () => {
         collectFormData(sectionKey);
@@ -486,6 +504,16 @@ const Editor = (function () {
 
     initSortable(sectionKey);
     el('edit-overlay').style.display = 'flex';
+    document.body.classList.add('edit-panel-open');
+    requestAnimationFrame(() => {
+      const firstInput = el('edit-panel-body').querySelector('input, textarea, select');
+      if (firstInput) firstInput.focus();
+    });
+    const saveBtn = el('edit-save-btn');
+    if (saveBtn) {
+      saveBtn.textContent = 'إغلاق';
+      saveBtn.style.background = '#64748b'; // slate-500
+    }
   }
 
   function initSortable(sectionKey) {
@@ -517,6 +545,7 @@ const Editor = (function () {
       saveAndRender();
     }
     el('edit-overlay').style.display = 'none';
+    document.body.classList.remove('edit-panel-open');
     currentEditSection = null;
   }
 
@@ -1354,19 +1383,29 @@ const Editor = (function () {
 
   // ── Mobile: Edit/Preview view switching ──────────────────────────────────
   let currentMobileView = 'edit';
+  let editScrollPos = 0;
+  let previewScrollPos = 0;
 
   function setMobileView(view) {
+    if (currentMobileView === view) return;
+    
+    // Save current scroll
+    if (currentMobileView === 'edit') editScrollPos = window.scrollY;
+    if (currentMobileView === 'preview') previewScrollPos = window.scrollY;
+
     currentMobileView = view;
     const body = document.body;
 
     if (view === 'edit') {
       body.classList.remove('mobile-preview-mode');
       body.classList.add('mobile-edit-mode');
+      setTimeout(() => window.scrollTo(0, editScrollPos), 10);
     } else {
       body.classList.remove('mobile-edit-mode');
       body.classList.add('mobile-preview-mode');
       // Apply A4 scale so preview looks pixel-perfect
       applyMobileScale();
+      setTimeout(() => window.scrollTo(0, previewScrollPos), 10);
     }
 
     // Update bottom nav active state
@@ -1382,19 +1421,23 @@ const Editor = (function () {
   }
 
   function applyMobileScale() {
-    if (window.innerWidth >= 768) return; // desktop: skip
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (!isMobile) return;
     const canvas = el('editor-canvas');
     const paper = el('a4-wrapper');
     if (!canvas || !paper) return;
     const availW = canvas.clientWidth - 16; // 8px padding each side
     const scale = availW / 794;
+    paper.style.width = '794px';
     paper.style.transform = `scale(${scale})`;
     paper.style.transformOrigin = 'top center';
-    paper.style.marginBottom = `${-(1123 * (1 - scale))}px`; // collapse whitespace
+    // Use true scrollHeight for accurate whitespace collapse
+    paper.style.marginBottom = `${-(paper.scrollHeight * (1 - scale))}px`;
   }
 
   function updateMobScoreBar() {
-    if (window.innerWidth >= 768) return;
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (!isMobile) return;
     try {
       const result = ATSScorer.score(career);
       const pct = result.percent || 0;
@@ -1402,7 +1445,7 @@ const Editor = (function () {
       const label = el('mob-score-label');
       if (fill) fill.style.width = `${pct}%`;
       if (fill) fill.style.background = pct >= 75 ? '#16a34a' : pct >= 50 ? '#d97706' : '#dc2626';
-      if (label) label.textContent = `${pct}% CV Score`;
+      if (label) label.textContent = `تقييم السيرة: ${pct}%`;
     } catch(e) {}
   }
 
@@ -1443,6 +1486,14 @@ const Editor = (function () {
     const mobName = el('mob-topbar-name');
     const topbarName = el('topbar-name');
     if (mobName && topbarName) mobName.textContent = topbarName.textContent;
+    
+    // Update edit panel save button if open
+    const saveBtn = el('edit-save-btn');
+    if (saveBtn && el('edit-overlay').style.display !== 'none') {
+      saveBtn.textContent = 'تم الحفظ ✓';
+      saveBtn.style.background = '#16a34a'; // green-600
+    }
+
     clearTimeout(autosaveTimer);
     autosaveTimer = setTimeout(() => showSaveIndicator(t('ed.saved', 'Saved ✓'), true), 400);
   }

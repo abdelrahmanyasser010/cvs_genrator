@@ -38,18 +38,19 @@
       <button class="topbar-btn" onclick="Editor.showExportModal()" data-i18n="ed.topbar.download">⬇ Download</button>
       <a href="landing.html" class="topbar-btn topbar-btn-ghost" data-i18n="ed.topbar.exit">Exit</a>
     </div>
-    <!-- Mobile: compact topbar -->
-    <div class="mob-topbar">
-      <a href="landing.html" class="mob-topbar-back">←</a>
-      <span class="mob-topbar-title" id="mob-topbar-name">My Resume</span>
-      <button class="mob-topbar-menu" onclick="Editor.showExportModal()">⬇</button>
-    </div>
+  </header>
+
+  <!-- Mobile: compact topbar -->
+  <header class="mob-topbar no-print">
+    <a href="landing.html" class="mob-topbar-back">←</a>
+    <span class="mob-topbar-title" id="mob-topbar-name">My Resume</span>
+    <button class="mob-topbar-menu" onclick="Editor.showExportModal()">⋮</button>
   </header>
 
   <!-- Mobile: ATS Score Bar (under topbar) -->
   <div class="mob-score-bar no-print" id="mob-score-bar">
     <div class="mob-score-fill" id="mob-score-fill" style="width:0%"></div>
-    <span class="mob-score-label" id="mob-score-label">0%</span>
+    <span class="mob-score-label" id="mob-score-label">تقييم السيرة: 0%</span>
   </div>
 
   <!-- Main Editor Layout -->

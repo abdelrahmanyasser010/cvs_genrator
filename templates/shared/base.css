@@ -102,24 +102,3 @@ ul.cv-ul li::before { content: '–'; position: absolute; left: 0; color: #94a3b
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
-  .cv-paper {
-    padding: 24px 18px !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: hidden !important;
-    word-break: break-word;
-  }
-  .cv-skill-row { flex-direction: column; align-items: flex-start; gap: 4px; }
-  .cv-skill-cat { min-width: auto !important; margin-bottom: 2px; }
-  .cv-skill-val { flex: 1 1 auto !important; width: 100%; }
-  .cv-entry-head, .cv-proj-head, .cv-edu-row { flex-direction: column; align-items: flex-start; gap: 3px; }
-  .cv-period, .cv-edu-period { white-space: normal; }
-}
-
-@media (max-width: 480px) {
-  .cv-paper { padding: 20px 14px !important; font-size: 12.5px; }
-  .cv-header h1 { font-size: 19px; }
-  .cv-contacts { justify-content: flex-start; gap: 6px 10px; }
-  .cv-langs { flex-direction: column; gap: 8px; }
-}
