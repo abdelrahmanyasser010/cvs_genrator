@@ -191,9 +191,8 @@ const Editor = (function () {
   function renderAll() {
     renderSectionsList();
     updateScoreHeader();
-    renderHealthPanel();
-    renderCoachPanel();
-    renderAISuggestions();
+    const _ins = typeof AICoach !== 'undefined' ? AICoach.buildCoachInsights(career) : null;
+    if (_ins) { renderCoachOverview(_ins); renderCoachMentor(_ins); renderCoachATS(_ins); }
     renderTemplatePicker();
     renderPreview();
     applyStylesheets();
@@ -2133,22 +2132,178 @@ const Editor = (function () {
     saveAndRender();
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // CAREER COACH — 5-Level Analysis Rendering
-  // ─────────────────────────────────────────────────────────────────────────
+  // ───────────────────────────────────────────────────────────────────────────
+  // CAREER COACH — 3-Tab Redesign (Overview | Mentor | ATS)
+  // ───────────────────────────────────────────────────────────────────────────
+
+  function _ct(key, fallback) {
+    return typeof I18n !== 'undefined' ? I18n.t(key, fallback) : fallback;
+  }
 
   function switchCoachTab(tab) {
-    ['score', 'quality', 'ats', 'advice', 'plan'].forEach(t => {
-      const btn = el(`coach-tab-${t}`);
-      const pane = el(`coach-pane-${t}`);
+    ['overview', 'mentor', 'ats'].forEach(t => {
+      const btn = el('coach-tab-' + t);
+      const pane = el('coach-pane-' + t);
       if (btn) btn.classList.toggle('active', t === tab);
       if (pane) pane.classList.toggle('active', t === tab);
     });
-    // Render the selected tab's content on demand
-    if (tab === 'quality') renderCoachQuality();
-    else if (tab === 'ats') renderCoachATS();
-    else if (tab === 'advice') renderCoachAdvice();
-    else if (tab === 'plan') renderCoachPlan();
+    const _ins = typeof AICoach !== 'undefined' ? AICoach.buildCoachInsights(career) : null;
+    if (!_ins) return;
+    if (tab === 'overview') renderCoachOverview(_ins);
+    else if (tab === 'mentor') renderCoachMentor(_ins);
+    else if (tab === 'ats') renderCoachATS(_ins);
+  }
+
+  function renderCoachOverview(ins) {
+    const panel = el('coach-overview-panel');
+    if (!panel) return;
+    const scoreColor = ins.score >= 80 ? '#16a34a' : ins.score >= 60 ? '#d97706' : '#dc2626';
+    let html = '<div style="margin-bottom:16px;">'
+      + '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">' + _ct('coach.overview.score','Resume Score') + '</div>'
+      + '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;">'
+      + '<span style="font-size:32px;font-weight:900;line-height:1;color:#0f172a;">' + ins.score + '%</span>'
+      + '<span style="font-size:12px;font-weight:700;color:' + scoreColor + ';background:' + scoreColor + '20;padding:2px 8px;border-radius:12px;">' + h(ins.scoreLabel) + '</span>'
+      + '</div>'
+      + '<div style="height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden;">'
+      + '<div style="height:100%;width:' + ins.score + '%;background:' + scoreColor + ';border-radius:3px;transition:width 0.4s;"></div>'
+      + '</div></div>';
+
+    if (ins.priorities.length > 0) {
+      html += '<div style="margin-bottom:16px;">'
+        + '<div style="font-size:10px;font-weight:700;color:#dc2626;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #fecaca;padding-bottom:4px;">' + _ct('coach.overview.critical','Critical') + '</div>'
+        + ins.priorities.map(function(p) {
+          return '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;background:#fef2f2;padding:10px;border-radius:8px;cursor:pointer;" onclick="Editor.openEditPanel('' + p.sectionKey + '')">'
+            + '<span style="font-size:14px;margin-top:2px;">⚠</span>'
+            + '<div style="flex:1;">'
+            + '<div style="display:flex;justify-content:space-between;">'
+            + '<span style="font-size:13px;font-weight:700;color:#991b1b;">' + h(p.title) + '</span>'
+            + (p.points ? '<span style="font-size:11px;font-weight:700;color:#16a34a;">' + h(p.points) + '</span>' : '')
+            + '</div>'
+            + '<div style="font-size:11px;color:#7f1d1d;margin-top:2px;line-height:1.4;">' + h(p.detail) + '</div>'
+            + '</div></div>';
+        }).join('') + '</div>';
+    }
+
+    if (ins.recommended.length > 0) {
+      html += '<div style="margin-bottom:16px;">'
+        + '<div style="font-size:10px;font-weight:700;color:#0ea5e9;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #bae6fd;padding-bottom:4px;">' + _ct('coach.overview.recommended','Recommended') + '</div>'
+        + ins.recommended.map(function(r) {
+          return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer;" onclick="Editor.openEditPanel('' + r.sectionKey + '')">'
+            + '<span style="color:#0ea5e9;font-weight:700;">→</span>'
+            + '<span style="font-size:12px;color:#334155;">' + h(r.title) + '</span>'
+            + '</div>';
+        }).join('') + '</div>';
+    }
+
+    if (ins.completed.length > 0) {
+      html += '<div>'
+        + '<div style="font-size:10px;font-weight:700;color:#16a34a;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #bbf7d0;padding-bottom:4px;">' + _ct('coach.overview.completed','Completed') + '</div>'
+        + ins.completed.map(function(c) {
+          return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
+            + '<span style="color:#16a34a;">✓</span>'
+            + '<span style="font-size:12px;color:#475569;text-decoration:line-through;">' + h(c.title) + '</span>'
+            + '</div>';
+        }).join('') + '</div>';
+    }
+    panel.innerHTML = html;
+  }
+
+  function renderCoachMentor(ins) {
+    const panel = el('coach-mentor-panel');
+    if (!panel) return;
+    const m = ins.mentor;
+    let html = '<div style="margin-bottom:20px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:16px;">'
+      + '<div style="font-size:12px;font-weight:800;color:#1e40af;margin-bottom:8px;">' + h(m.headline) + '</div>'
+      + '<div style="font-size:13px;color:#1e3a8a;line-height:1.5;margin-bottom:12px;">' + h(m.explanation) + '</div>';
+
+    if (m.nextSteps.length > 0) {
+      html += '<div style="font-size:11px;font-weight:700;color:#3b82f6;text-transform:uppercase;margin-bottom:8px;">' + _ct('coach.mentor.next_steps','Next Steps:') + '</div>';
+      m.nextSteps.forEach(function(step, i) {
+        html += '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">'
+          + '<div style="width:16px;height:16px;border-radius:50%;background:#3b82f6;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">' + (i+1) + '</div>'
+          + '<div style="font-size:12px;color:#1d4ed8;line-height:1.4;">' + h(step) + '</div>'
+          + '</div>';
+      });
+    }
+    html += '</div>';
+
+    if (m.quickActions.length > 0) {
+      const isRtl = document.documentElement.dir === 'rtl';
+      html += '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:10px;letter-spacing:0.5px;">' + _ct('coach.mentor.quick_actions','Quick Actions') + '</div>'
+        + '<div style="display:flex;flex-direction:column;gap:8px;">'
+        + m.quickActions.map(function(act) {
+          return '<button style="width:100%;padding:10px 12px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:600;color:#334155;text-align:' + (isRtl ? 'right' : 'left') + ';cursor:pointer;transition:all 0.15s;"'
+            + ' onmouseover="this.style.borderColor='#94a3b8';this.style.background='#f8fafc';"'
+            + ' onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#fff';"'
+            + ' onclick="Editor.handleAIAction('' + act.id + '')">' + h(act.label) + '</button>';
+        }).join('') + '</div>';
+    }
+    panel.innerHTML = html;
+  }
+
+  function renderCoachATS(ins) {
+    const panel = el('coach-ats-panel');
+    if (!panel) return;
+    const ats = ins.ats;
+    const modeLabel = ats.mode === 'job_match' ? _ct('coach.ats.job_match','Job Match') : _ct('coach.ats.readiness','ATS Readiness');
+    let html = '<div style="margin-bottom:16px;">'
+      + '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">' + modeLabel + '</div>';
+
+    if (ats.mode === 'readiness') {
+      html += '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:16px;">'
+        + '<div style="font-size:12px;color:#334155;margin-bottom:6px;display:flex;align-items:center;gap:6px;"><span style="color:#16a34a">✓</span> ' + _ct('coach.ats.readable_template','Template is readable') + '</div>'
+        + '<div style="font-size:12px;color:#334155;margin-bottom:6px;display:flex;align-items:center;gap:6px;"><span style="color:#16a34a">✓</span> ' + _ct('coach.ats.clear_headings','Headings are clear') + '</div>'
+        + '<div style="font-size:12px;color:#334155;display:flex;align-items:center;gap:6px;"><span style="color:#16a34a">✓</span> ' + _ct('coach.ats.contact_present','Contact info present') + '</div>'
+        + '</div>'
+        + '<div style="font-size:11px;font-weight:700;color:#475569;margin-bottom:10px;">' + _ct('coach.ats.common_skills','Common skills in your field (add what you know):') + '</div>';
+
+      const sugSkills = typeof AICoach !== 'undefined' ? AICoach.suggestSkills(career).slice(0, 5) : [];
+      if (sugSkills.length > 0) {
+        html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+        sugSkills.forEach(function(kw) {
+          html += '<div id="kw-card-' + h(kw) + '" style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid #e2e8f0;padding:8px 12px;border-radius:6px;">'
+            + '<span style="font-size:12px;font-weight:600;color:#0f172a;">' + h(kw) + '</span>'
+            + '<button style="background:none;border:none;color:#2563eb;font-size:11px;font-weight:700;cursor:pointer;padding:4px;" onclick="Editor.addKeywordWithConfirm('' + h(kw) + '', 'skill')">' + _ct('coach.ats.add','+ Add') + '</button>'
+            + '</div>';
+        });
+        html += '</div>';
+      } else {
+        html += '<div style="font-size:12px;color:#64748b;">' + _ct('coach.ats.all_good','Great! You have added most common skills.') + '</div>';
+      }
+    }
+    html += '</div>';
+    panel.innerHTML = html;
+  }
+
+  function addKeywordWithConfirm(keyword, type) {
+    const card = el('kw-card-' + keyword);
+    if (!card) return;
+    card.innerHTML = '<div style="font-size:11px;color:#334155;margin-bottom:6px;">' + _ct('coach.ats.do_you_have_exp','Do you have actual experience with {keyword}?').replace('{keyword}', h(keyword)) + '</div>'
+      + '<div style="display:flex;gap:6px;">'
+      + '<button style="flex:1;background:#16a34a;color:#fff;border:none;padding:6px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;" onclick="Editor.confirmAddKeyword('' + h(keyword) + '','' + type + '')">' + _ct('coach.ats.yes_add','Yes, add') + '</button>'
+      + '<button style="flex:1;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;padding:6px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;" onclick="Editor.cancelAddKeyword('' + h(keyword) + '')">' + _ct('coach.ats.no','No') + '</button>'
+      + '</div>';
+  }
+
+  function confirmAddKeyword(keyword, type) {
+    const card = el('kw-card-' + keyword);
+    if (card) {
+      card.innerHTML = '<span style="font-size:12px;color:#16a34a;font-weight:600;">✓ ' + _ct('coach.ats.added','Added') + '</span>';
+      setTimeout(function() { if (card.parentNode) card.remove(); }, 2000);
+    }
+    pushUndo();
+    const category = _ct('coach.ats.skills_category','Core Skills');
+    career.skills = career.skills || {};
+    career.skills[category] = Array.from(new Set((career.skills[category] || []).concat([keyword])));
+    saveAndRender();
+  }
+
+  function cancelAddKeyword(keyword) {
+    const card = el('kw-card-' + keyword);
+    if (card) {
+      card.innerHTML = '<span style="font-size:12px;font-weight:600;color:#0f172a;opacity:0.4;">' + h(keyword) + '</span>';
+      setTimeout(function() { if (card.parentNode) card.remove(); }, 1500);
+    }
   }
 
   // Level 2 — Quality Analysis
