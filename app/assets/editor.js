@@ -2172,7 +2172,7 @@ const Editor = (function () {
       html += '<div style="margin-bottom:16px;">'
         + '<div style="font-size:10px;font-weight:700;color:#dc2626;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #fecaca;padding-bottom:4px;">' + _ct('coach.overview.critical','Critical') + '</div>'
         + ins.priorities.map(function(p) {
-          return '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;background:#fef2f2;padding:10px;border-radius:8px;cursor:pointer;" onclick="Editor.openEditPanel('' + p.sectionKey + '')">'
+          return '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;background:#fef2f2;padding:10px;border-radius:8px;cursor:pointer;" onclick="Editor.openEditPanel(\'' + p.sectionKey + '\')">'
             + '<span style="font-size:14px;margin-top:2px;">⚠</span>'
             + '<div style="flex:1;">'
             + '<div style="display:flex;justify-content:space-between;">'
@@ -2188,7 +2188,7 @@ const Editor = (function () {
       html += '<div style="margin-bottom:16px;">'
         + '<div style="font-size:10px;font-weight:700;color:#0ea5e9;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #bae6fd;padding-bottom:4px;">' + _ct('coach.overview.recommended','Recommended') + '</div>'
         + ins.recommended.map(function(r) {
-          return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer;" onclick="Editor.openEditPanel('' + r.sectionKey + '')">'
+          return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer;" onclick="Editor.openEditPanel(\'' + r.sectionKey + '\')">'
             + '<span style="color:#0ea5e9;font-weight:700;">→</span>'
             + '<span style="font-size:12px;color:#334155;">' + h(r.title) + '</span>'
             + '</div>';
@@ -2233,9 +2233,9 @@ const Editor = (function () {
         + '<div style="display:flex;flex-direction:column;gap:8px;">'
         + m.quickActions.map(function(act) {
           return '<button style="width:100%;padding:10px 12px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:600;color:#334155;text-align:' + (isRtl ? 'right' : 'left') + ';cursor:pointer;transition:all 0.15s;"'
-            + ' onmouseover="this.style.borderColor='#94a3b8';this.style.background='#f8fafc';"'
-            + ' onmouseout="this.style.borderColor='#e2e8f0';this.style.background='#fff';"'
-            + ' onclick="Editor.handleAIAction('' + act.id + '')">' + h(act.label) + '</button>';
+            + ' onmouseover="this.style.borderColor=\'#94a3b8\';this.style.background=\'#f8fafc\';"'
+            + ' onmouseout="this.style.borderColor=\'#e2e8f0\';this.style.background=\'#fff\';"'
+            + ' onclick="Editor.handleAIAction(\'' + act.id + '\')">' + h(act.label) + '</button>';
         }).join('') + '</div>';
     }
     panel.innerHTML = html;
@@ -2263,7 +2263,7 @@ const Editor = (function () {
         sugSkills.forEach(function(kw) {
           html += '<div id="kw-card-' + h(kw) + '" style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid #e2e8f0;padding:8px 12px;border-radius:6px;">'
             + '<span style="font-size:12px;font-weight:600;color:#0f172a;">' + h(kw) + '</span>'
-            + '<button style="background:none;border:none;color:#2563eb;font-size:11px;font-weight:700;cursor:pointer;padding:4px;" onclick="Editor.addKeywordWithConfirm('' + h(kw) + '', 'skill')">' + _ct('coach.ats.add','+ Add') + '</button>'
+            + '<button style="background:none;border:none;color:#2563eb;font-size:11px;font-weight:700;cursor:pointer;padding:4px;" onclick="Editor.addKeywordWithConfirm(\'' + h(kw) + '\', \'skill\')">' + _ct('coach.ats.add','+ Add') + '</button>'
             + '</div>';
         });
         html += '</div>';
@@ -2280,8 +2280,8 @@ const Editor = (function () {
     if (!card) return;
     card.innerHTML = '<div style="font-size:11px;color:#334155;margin-bottom:6px;">' + _ct('coach.ats.do_you_have_exp','Do you have actual experience with {keyword}?').replace('{keyword}', h(keyword)) + '</div>'
       + '<div style="display:flex;gap:6px;">'
-      + '<button style="flex:1;background:#16a34a;color:#fff;border:none;padding:6px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;" onclick="Editor.confirmAddKeyword('' + h(keyword) + '','' + type + '')">' + _ct('coach.ats.yes_add','Yes, add') + '</button>'
-      + '<button style="flex:1;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;padding:6px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;" onclick="Editor.cancelAddKeyword('' + h(keyword) + '')">' + _ct('coach.ats.no','No') + '</button>'
+      + '<button style="flex:1;background:#16a34a;color:#fff;border:none;padding:6px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;" onclick="Editor.confirmAddKeyword(\'' + h(keyword) + '\', \'' + type + '\')">' + _ct('coach.ats.yes_add','Yes, add') + '</button>'
+      + '<button style="flex:1;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;padding:6px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;" onclick="Editor.cancelAddKeyword(\'' + h(keyword) + '\')">' + _ct('coach.ats.no','No') + '</button>'
       + '</div>';
   }
 
