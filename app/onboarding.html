@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -11,38 +11,131 @@
 </head>
 <body>
   <main class="wizard-wrap">
-    <div class="onboarding-card">
-      <h1 data-i18n="onboarding.title" style="font-size: 32px; margin-bottom: 12px; font-weight: 600; color: var(--text);">Let's build your resume</h1>
-      <p data-i18n="onboarding.subtitle" style="color: var(--muted); margin-bottom: 40px; font-size: 16px; line-height: 1.6;">
+    <div class="onboarding-card" style="max-width:540px;padding:32px;">
+      <h1 data-i18n="onboarding.title" style="font-size: 28px; margin-bottom: 8px; font-weight: 700; color: var(--text);">Let's build your resume</h1>
+      <p data-i18n="onboarding.subtitle" style="color: var(--muted); margin-bottom: 28px; font-size: 15px; line-height: 1.6;">
         Choose how you'd like to get started
       </p>
       
-      <div style="display: flex; flex-direction: column; gap: 16px; max-width: 320px; margin: 0 auto;">
-        <button class="btn btn-primary onboarding-btn" onclick="startNewCV()">
-          <span style="font-size: 18px; margin-right: 8px;">✨</span>
-          <span data-i18n="onboarding.createNew">Create New Resume</span>
+      <div style="display: flex; flex-direction: column; gap: 14px; text-align: left;">
+        
+        <!-- Path 1: Step by Step Wizard -->
+        <button class="btn onboarding-path-card" style="display:flex;align-items:flex-start;gap:14px;padding:16px;border:1.5px solid var(--primary,#2563eb);border-radius:12px;background:#fff;cursor:pointer;transition:all 0.2s;text-align:inherit;width:100%;" onclick="startNewCV()" onmouseover="this.style.boxShadow='0 4px 12px rgba(37,99,235,0.1)'" onmouseout="this.style.boxShadow='none'">
+          <span style="font-size: 24px;line-height:1;">✨</span>
+          <div>
+            <div style="font-size:16px;font-weight:700;color:var(--text,#0f172a);margin-bottom:4px;" data-i18n="onboarding.createNew">المعالج الذكي خطوة بخطوة (AI Step-by-Step)</div>
+            <div style="font-size:13px;color:#64748b;line-height:1.4;" data-i18n="onboarding.createDesc">مثالي لحديثي التخرج أو بناء سيرة ذاتية منظمة من الصفر بسهولة وبإرشاد ذكي</div>
+          </div>
         </button>
-        <button class="btn onboarding-btn-secondary" onclick="openEditor()">
-          <span style="font-size: 18px; margin-right: 8px;">📝</span>
-          <span data-i18n="onboarding.openExisting">Open Existing</span>
+
+        <!-- Path 2: Senior / Expert Quick Start -->
+        <button class="btn onboarding-path-card" style="display:flex;align-items:flex-start;gap:14px;padding:16px;border:1.5px solid #0d9488;border-radius:12px;background:#f0fdf4;cursor:pointer;transition:all 0.2s;text-align:inherit;width:100%;" onclick="startSeniorCV()" onmouseover="this.style.boxShadow='0 4px 12px rgba(13,148,136,0.1)'" onmouseout="this.style.boxShadow='none'">
+          <span style="font-size: 24px;line-height:1;">👑</span>
+          <div>
+            <div style="font-size:16px;font-weight:700;color:#0f766e;margin-bottom:4px;" data-i18n="onboarding.seniorStart">مسار الخبراء والمحترفين (Senior Quick Start)</div>
+            <div style="font-size:13px;color:#134e4a;line-height:1.4;" data-i18n="onboarding.seniorDesc">تخطي الأسئلة والدخول المباشر للوحة التحكم الشاملة مع قوالب جاهزة واختبار مطابقة ATS فوراً</div>
+          </div>
         </button>
+
+        <!-- Path 3: Open Saved or Import JSON -->
+        <div style="border:1px solid #cbd5e1;border-radius:12px;padding:16px;background:#f8fafc;margin-top:4px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:20px;">📂</span>
+              <span style="font-size:14px;font-weight:700;color:#334155;" data-i18n="onboarding.savedSection">إدارة السير السابقة واستيراد الملفات</span>
+            </div>
+          </div>
+          
+          <div id="saved-cv-container" style="margin-bottom:10px;"></div>
+
+          <div style="display:flex;gap:8px;">
+            <button class="btn onboarding-btn-secondary" style="flex:1;padding:10px;font-size:13px;font-weight:600;border:1px solid #94a3b8;border-radius:8px;background:#fff;cursor:pointer;" onclick="openEditor()">
+              📝 <span data-i18n="onboarding.openExisting">فتح آخر سيرة في المحرر</span>
+            </button>
+            <label class="btn onboarding-btn-secondary" style="flex:1;padding:10px;font-size:13px;font-weight:600;border:1px dashed #64748b;border-radius:8px;background:#fff;cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;">
+              ⬆️ <span data-i18n="onboarding.importJson">استيراد ملف JSON</span>
+              <input type="file" id="import-json-input" accept=".json" style="display:none" onchange="handleImportJson(event)">
+            </label>
+          </div>
+        </div>
+
       </div>
     </div>
   </main>
 
   <script src="/app/assets/safety.js"></script>
   <script src="/engine/i18n.js"></script>
+  <script src="/engine/normalize-career.js"></script>
+  <script src="/engine/career-storage.js"></script>
   <script>
     function startNewCV() {
       localStorage.removeItem('cv_studio_career');
       window.location.href = 'index.html';
     }
     
+    function startSeniorCV() {
+      let career = typeof CareerStorage !== 'undefined' ? CareerStorage.load() : null;
+      if (!career) {
+        career = typeof CareerNormalize !== 'undefined' ? CareerNormalize.createEmpty() : {};
+        career.careerProfile = { level: 'senior', field: 'developer', years: '5+' };
+        career.personalInfo = career.personalInfo || {};
+        career.personalInfo.title = career.personalInfo.title || 'Senior Specialist / Leader';
+        if (typeof CareerStorage !== 'undefined') CareerStorage.save(career);
+      }
+      window.location.href = 'editor.html';
+    }
+
     function openEditor() {
       window.location.href = 'editor.html';
     }
 
+    function handleImportJson(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (typeof CareerStorage !== 'undefined') {
+            CareerStorage.save(data);
+          } else {
+            localStorage.setItem('cv_studio_career', JSON.stringify(data));
+          }
+          window.location.href = 'editor.html';
+        } catch(err) {
+          alert('ملف JSON غير صالح. يرجى اختيار ملف سيرة ذاتية صحيح.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function checkSavedCV() {
+      const container = document.getElementById('saved-cv-container');
+      if (!container) return;
+      try {
+        const saved = localStorage.getItem('cv_studio_career');
+        if (saved) {
+          const data = JSON.parse(saved);
+          const name = data?.personalInfo?.name || data?.personalInfo?.title || 'سيرة ذاتية محفوظة';
+          const level = data?.careerProfile?.level || '';
+          const isAr = (data?.meta?.locale || typeof I18n !== 'undefined' && I18n.getLocale?.()) === 'ar';
+          container.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:space-between;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;margin-bottom:8px;">
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#1e40af;">📄 ${name}</div>
+                <div style="font-size:11px;color:#3b82f6;">${level ? `المستوى: ${level.toUpperCase()}` : (isAr ? 'آخر تعديل محفوظ' : 'Saved draft')}</div>
+              </div>
+              <button onclick="openEditor()" style="background:#2563eb;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">فتح ✏️</button>
+            </div>
+          `;
+        } else {
+          container.innerHTML = `<div style="font-size:12px;color:#94a3b8;font-style:italic;text-align:center;padding:6px;">لا توجد سيرة محفوظة حالياً في هذا المتصفح</div>`;
+        }
+      } catch(e) {}
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+      checkSavedCV();
       if (typeof I18n !== 'undefined') {
         I18n.init().then(() => I18n.translateDom());
       }

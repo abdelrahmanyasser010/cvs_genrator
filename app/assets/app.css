@@ -4031,7 +4031,9 @@ justify-content: space-between;
 }
 
 @media (max-width: 1024px) {
-  .editor-panel-right { display: none; }
+  /* Hide desktop topbar and right panel by default unless body mode enables */
+  .editor-topbar { display: none !important; }
+  .editor-panel-right { display: none !important; }
 }
 
 /* Mobile-only elements: hidden on desktop, shown inside @media below */
@@ -4041,12 +4043,7 @@ justify-content: space-between;
   display: none;
 }
 
-@media (max-width: 768px) {
-  /* Hide desktop panels */
-  .editor-topbar, .editor-panel-right {
-    display: none !important;
-  }
-
+@media (max-width: 1024px) {
   /* Editor Layout */
   .editor-layout {
     display: block !important;
@@ -4091,36 +4088,79 @@ justify-content: space-between;
     border: none;
     color: var(--gray-600);
     padding: 4px;
+    cursor: pointer;
   }
 
-  /* ── ATS Score Bar ── */
+  /* ── Mobile Topbar Dropdown Menu ── */
+  .mob-dropdown-menu {
+    position: absolute;
+    top: 54px;
+    left: 14px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    padding: 8px;
+    z-index: 200;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mob-dropdown-menu button,
+  .mob-dropdown-menu a.menu-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-800);
+    text-decoration: none;
+    cursor: pointer;
+    text-align: right;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background 0.15s;
+  }
+  .mob-dropdown-menu button:hover,
+  .mob-dropdown-menu a.menu-link:hover {
+    background: #f8fafc;
+    color: var(--primary);
+  }
+
+  /* ── ATS Score Card ── */
   .mob-score-bar {
     display: block;
-    height: 28px;
-    background: #f1f5f9;
-    position: relative;
+    padding: 8px 14px;
+    background: #f8fafc;
     border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
   }
-  .mob-score-fill {
-    height: 100%;
-    background: var(--primary);
-    transition: width 0.4s ease;
-  }
-  .mob-score-label {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 12px;
-    font-weight: 800;
-    color: #fff;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.35);
-    white-space: nowrap;
+  .mob-score-bar:hover {
+    background: #f1f5f9;
   }
 
   /* ── View Modes Switching ── */
-  body.mobile-edit-mode .editor-canvas { display: none !important; }
-  body.mobile-preview-mode .editor-panel-left { display: none !important; }
+  body.mobile-edit-mode .editor-canvas,
+  body.mobile-edit-mode .editor-panel-right { display: none !important; }
+  body.mobile-preview-mode .editor-panel-left,
+  body.mobile-preview-mode .editor-panel-right { display: none !important; }
+
+  body.mobile-coach-mode .editor-panel-left,
+  body.mobile-coach-mode .editor-canvas { display: none !important; }
+  body.mobile-coach-mode .editor-panel-right {
+    display: block !important;
+    width: 100% !important;
+    border-left: none !important;
+    max-height: none !important;
+    padding: 16px 14px 90px !important;
+    overflow-y: auto !important;
+  }
 
   /* ── Left Panel (Edit Mode) ── */
   .editor-panel-left {

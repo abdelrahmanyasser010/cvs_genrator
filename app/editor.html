@@ -15,10 +15,15 @@
 
   <!-- Top Bar (desktop) -->
   <header class="editor-topbar no-print">
-    <div class="topbar-left">
+    <div class="topbar-left" style="display:flex;align-items:center;gap:12px;">
       <a href="landing.html" class="topbar-logo">CV Studio</a>
       <div class="topbar-divider"></div>
-      <span class="topbar-filename" id="topbar-name" data-i18n="ed.myResume">My Resume</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="topbar-filename" id="topbar-name" data-i18n="ed.myResume" style="cursor:pointer;" onclick="Editor.showVersionManagerModal()">My Resume</span>
+        <button class="topbar-btn" onclick="Editor.showVersionManagerModal()" title="إدارة النسخ والتخصيص لوظيفة أخرى" style="background:#f1f5f9;border:1px solid #cbd5e1;color:#334155;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;">
+          <span>📂</span> <span id="active-version-badge">النسخ والتخصيص</span> <span>▼</span>
+        </button>
+      </div>
     </div>
     <div class="topbar-center">
       <div class="zoom-controls">
@@ -32,9 +37,10 @@
         </select>
       </div>
     </div>
-    <div class="topbar-right">
-      <div class="save-indicator" id="save-indicator"></div>
-      <button class="topbar-btn" onclick="Editor.undoAction()" title="Undo (Ctrl+Z)" data-i18n="ed.topbar.undo">↩ Undo</button>
+    <div class="topbar-right" style="display:flex;align-items:center;gap:8px;">
+      <div class="save-indicator" id="save-indicator" style="font-size:12px;font-weight:700;color:#10b981;background:#f0fdf4;padding:4px 10px;border-radius:999px;border:1px solid #bbf7d0;display:flex;align-items:center;gap:4px;">✓ تم الحفظ تلقائياً</div>
+      <button class="topbar-btn" onclick="Editor.undoAction()" title="تراجع (Ctrl+Z)" data-i18n="ed.topbar.undo">↩ تراجع</button>
+      <button class="topbar-btn" onclick="Editor.redoAction()" title="إعادة (Ctrl+Y)">↪ إعادة</button>
       <button class="topbar-btn" onclick="Editor.showExportModal()" data-i18n="ed.topbar.download">⬇ Download</button>
       <a href="landing.html" class="topbar-btn topbar-btn-ghost" data-i18n="ed.topbar.exit">Exit</a>
     </div>
@@ -43,14 +49,26 @@
   <!-- Mobile: compact topbar -->
   <header class="mob-topbar no-print">
     <a href="landing.html" class="mob-topbar-back">←</a>
-    <span class="mob-topbar-title" id="mob-topbar-name" data-i18n="ed.myResume">My Resume</span>
-    <button class="mob-topbar-menu" onclick="Editor.showExportModal()">⋮</button>
+    <div style="display:flex;align-items:center;gap:6px;flex:1;overflow:hidden;">
+      <span class="mob-topbar-title" id="mob-topbar-name" data-i18n="ed.myResume" style="cursor:pointer;" onclick="Editor.showVersionManagerModal()">My Resume</span>
+      <button onclick="Editor.showVersionManagerModal()" style="background:#e2e8f0;border:none;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:700;color:#1e293b;cursor:pointer;">📂 نسخ</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:4px;">
+      <button class="mob-topbar-btn" onclick="Editor.undoAction()" title="Undo" style="background:none;border:none;font-size:18px;padding:4px;cursor:pointer;">↩</button>
+      <button class="mob-topbar-btn" onclick="Editor.redoAction()" title="Redo" style="background:none;border:none;font-size:18px;padding:4px;cursor:pointer;">↪</button>
+      <button class="mob-topbar-menu" onclick="Editor.showMobMenu(event)">⋮</button>
+    </div>
   </header>
 
-  <!-- Mobile: ATS Score Bar (under topbar) -->
-  <div class="mob-score-bar no-print" id="mob-score-bar">
-    <div class="mob-score-fill" id="mob-score-fill" style="width:0%"></div>
-    <span class="mob-score-label" id="mob-score-label">تقييم السيرة: 0%</span>
+  <!-- Mobile: Clickable ATS Score Card (under topbar) -->
+  <div class="mob-score-bar no-print" id="mob-score-bar" onclick="Editor.setMobileView('coach')" title="اضغط لفتح المدرب المهني">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:12px;font-weight:800;">
+      <span style="color:#1e293b;">🎯 المدرب المهني ←</span>
+      <span id="mob-score-label" style="color:#2563eb;">تقييم السيرة: 0%</span>
+    </div>
+    <div style="height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden;width:100%;">
+      <div class="mob-score-fill" id="mob-score-fill" style="width:0%;height:100%;background:#3b82f6;border-radius:3px;transition:width 0.4s ease, background 0.4s ease;"></div>
+    </div>
   </div>
 
   <!-- Main Editor Layout -->
@@ -73,6 +91,15 @@
 
     <!-- CENTER: Resume Preview -->
     <main class="editor-canvas" id="editor-canvas">
+      <div class="mob-preview-controls no-print" id="mob-preview-controls" style="display:none;background:#fff;border-bottom:1px solid #e2e8f0;padding:8px 12px;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.05);width:100%;">
+        <div style="font-size:12px;font-weight:700;color:#334155;">🔍 تكبير:</div>
+        <div style="display:flex;gap:6px;">
+          <button onclick="Editor.handleZoomSelect('60')" style="padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;background:#f8fafc;font-size:11px;font-weight:700;">60%</button>
+          <button onclick="Editor.handleZoomSelect('80')" style="padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;background:#f8fafc;font-size:11px;font-weight:700;">80%</button>
+          <button onclick="Editor.handleZoomSelect('100')" style="padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;background:#f8fafc;font-size:11px;font-weight:700;">100%</button>
+          <button onclick="Editor.handleZoomSelect('fit-width')" style="padding:4px 8px;border:1px solid #3b82f6;border-radius:4px;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:700;">↔ احتواء</button>
+        </div>
+      </div>
       <div class="a4-wrapper" id="a4-wrapper">
         <div class="a4-paper" id="preview-frame">
           <!-- CV Renders here -->
@@ -167,7 +194,7 @@
     </div>
   </div>
 
-  <!-- Mobile Bottom Navigation (Edit / Preview / Export) -->
+  <!-- Mobile Bottom Navigation (Edit / Preview / Coach / Export) -->
   <nav class="mobile-bottom-bar no-print" id="mob-bottom-nav">
     <button type="button" class="mob-bar-btn active" id="mob-btn-edit" onclick="Editor.setMobileView('edit')">
       <span class="mob-btn-icon">✏️</span>
@@ -176,6 +203,10 @@
     <button type="button" class="mob-bar-btn" id="mob-btn-preview" onclick="Editor.setMobileView('preview')">
       <span class="mob-btn-icon">👁</span>
       <span class="mob-btn-label" data-i18n="ed.mobile.preview">معاينة</span>
+    </button>
+    <button type="button" class="mob-bar-btn" id="mob-btn-coach" onclick="Editor.setMobileView('coach')">
+      <span class="mob-btn-icon">🎯</span>
+      <span class="mob-btn-label" data-i18n="ed.mobile.coach">المدرب</span>
     </button>
     <button type="button" class="mob-bar-btn mob-bar-btn-export" onclick="Editor.showExportModal()">
       <span class="mob-btn-icon">⬇</span>

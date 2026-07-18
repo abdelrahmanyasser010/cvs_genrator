@@ -74,11 +74,11 @@ const Editor = (function () {
     renderAll();
     updateTopbarName();
 
-    // Mobile init & resize handler
+    // Mobile & Tablet init & resize handler
     const handleResize = () => {
-      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      const isMobile = window.matchMedia('(max-width: 1024px)').matches;
       if (!isMobile) {
-        document.body.classList.remove('mobile-edit-mode', 'mobile-preview-mode');
+        document.body.classList.remove('mobile-edit-mode', 'mobile-preview-mode', 'mobile-coach-mode');
         const paper = el('a4-wrapper');
         if (paper) {
           paper.style.transform = 'none';
@@ -86,7 +86,7 @@ const Editor = (function () {
           paper.style.width = '100%';
         }
       } else {
-        if (!document.body.classList.contains('mobile-preview-mode')) {
+        if (!document.body.classList.contains('mobile-preview-mode') && !document.body.classList.contains('mobile-coach-mode')) {
           document.body.classList.add('mobile-edit-mode');
         }
         if (currentMobileView === 'preview') applyMobileScale();
@@ -201,10 +201,15 @@ const Editor = (function () {
 
   function updateTopbarName() {
     const nameEl = el('topbar-name');
-    const displayTitle = resumeDisplayTitle();
+    const displayTitle = career.meta?.versionName || resumeDisplayTitle();
     if (nameEl) nameEl.textContent = displayTitle;
     const mobName = el('mob-topbar-name');
     if (mobName) mobName.textContent = displayTitle;
+    const badge = el('active-version-badge');
+    if (badge) {
+      const activeId = typeof CareerStorage !== 'undefined' && CareerStorage.getActiveVersionId ? CareerStorage.getActiveVersionId() : 'default';
+      badge.textContent = activeId === 'default' ? 'النسخة الرئيسية' : (career.meta?.versionName ? (career.meta.versionName.slice(0, 15) + '...') : 'نسخة مخصصة');
+    }
   }
 
   function resumeDisplayTitle() {
@@ -1260,21 +1265,87 @@ const Editor = (function () {
     `;
   }
 
-  async function applyCoachFix(issueId) {
-    if (typeof AICoach === 'undefined') return;
-    pushUndo();
-    const before = JSON.stringify(career);
-    const result = await AICoach.applyQuickFix(career, issueId);
-    if (JSON.stringify(career) !== before) {
+  function showSmartFixPreviewModal(draftCareer, beforeText, afterText, title, successMsg) {
+    const oldModal = document.getElementById('smartfix-preview-modal');
+    if (oldModal) oldModal.remove();
+
+    const isAr = (career.meta?.locale || 'ar') === 'ar';
+    const modal = document.createElement('div');
+    modal.id = 'smartfix-preview-modal';
+    modal.style.cssText = 'display:flex;align-items:center;justify-content:center;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.75);z-index:999999;backdrop-filter:blur(4px);padding:20px;';
+    modal.innerHTML = `
+      <div class="modal-card" style="background:#fff;border-radius:16px;max-width:760px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);overflow:hidden;direction:${isAr ? 'rtl' : 'ltr'};">
+        <div style="padding:20px 24px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;background:#f8fafc;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:24px;">✨</span>
+            <div>
+              <h3 style="margin:0;font-size:18px;font-weight:700;color:#0f172a;">${h(title || (isAr ? 'معاينة التحسين المقترح بالمقارنة' : 'SmartFix Before & After Preview'))}</h3>
+              <div style="font-size:12px;color:#64748b;">${isAr ? 'راجع التعديل المطور بالذكاء الاصطناعي وقارنه بالنص الحالي قبل اعتماده' : 'Review the AI enhanced content against your current content before applying'}</div>
+            </div>
+          </div>
+          <button onclick="document.getElementById('smartfix-preview-modal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b;">✕</button>
+        </div>
+        <div style="padding:24px;overflow-y:auto;flex:1;display:grid;grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));gap:20px;">
+          <div style="border:1px solid #f1f5f9;border-radius:12px;padding:16px;background:#f8fafc;display:flex;flex-direction:column;">
+            <div style="font-size:12px;font-weight:700;color:#64748b;margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+              <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#94a3b8;"></span> ${isAr ? 'الوضع الحالي (Before)' : 'Current Content (Before)'}
+            </div>
+            <div style="font-size:13px;line-height:1.7;color:#334155;white-space:pre-wrap;font-family:inherit;">${h(beforeText || (isAr ? '(قسم فارغ أو غير ممتلئ)' : '(Empty section)'))}</div>
+          </div>
+          <div style="border:2px solid #10b981;border-radius:12px;padding:16px;background:#f0fdf4;display:flex;flex-direction:column;position:relative;">
+            <div style="font-size:12px;font-weight:700;color:#047857;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
+              <span style="display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;"></span> ${isAr ? 'الاقتراح المطور (AI Enhanced)' : 'AI Proposed Content'}</span>
+              <span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:999px;font-size:11px;">${isAr ? 'موصى به' : 'Recommended'}</span>
+            </div>
+            <div style="font-size:13px;line-height:1.7;color:#064e3b;white-space:pre-wrap;font-family:inherit;font-weight:500;">${h(afterText || (isAr ? '(تم التحسين بنجاح)' : '(Enhanced content applied)'))}</div>
+          </div>
+        </div>
+        <div style="padding:16px 24px;border-top:1px solid #e2e8f0;background:#f8fafc;display:flex;justify-content:flex-end;gap:12px;">
+          <button onclick="document.getElementById('smartfix-preview-modal').remove()" style="padding:10px 18px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:#475569;cursor:pointer;">${isAr ? '✕ إلغاء والتراجع' : 'Cancel'}</button>
+          <button id="btn-apply-smartfix-now" style="padding:10px 22px;border:none;border-radius:8px;background:#2563eb;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 6px -1px rgba(37,99,235,0.2);">${isAr ? '✓ تطبيق التعديل الآن' : 'Apply Proposed Fix'}</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('btn-apply-smartfix-now').onclick = () => {
+      pushUndo();
+      career = JSON.parse(JSON.stringify(draftCareer));
       saveAndRender();
-      showSaveIndicator(result.message || t('ed.saved', 'Saved'), true);
+      showSaveIndicator(successMsg || _ct('coach.smart_fix.success', '✓ تم تطبيق التحسين الذكي بنجاح وتحديث النتيجة!'), true);
+      document.getElementById('smartfix-preview-modal')?.remove();
       if (currentEditSection) openEditPanel(currentEditSection);
-      renderExportReview();
+      if (typeof renderExportReview === 'function') renderExportReview();
+      if (typeof updateCoachPanel === 'function') updateCoachPanel();
+    };
+  }
+
+  function extractSectionTextForCompare(cObj, issueId) {
+    if (!cObj) return '';
+    if (issueId?.includes('summary') || issueId === 'missing-summary' || issueId === 'auto-summary') {
+      return cObj.summary || '';
+    }
+    if (issueId?.includes('skills') || issueId === 'few-skills' || issueId === 'auto-skills') {
+      return (cObj.skills?.core || []).join(', ');
+    }
+    if (issueId?.includes('bullet') || issueId?.includes('exp') || issueId === 'thin-bullet' || issueId === 'auto-bullets') {
+      return (cObj.experience || []).map(e => '• ' + e.role + ' at ' + e.company + ':\n  ' + (e.bullets||[]).join('\n  ')).join('\n\n');
+    }
+    return JSON.stringify(cObj, null, 2);
+  }
+
+  async function applyCoachFix(issueId) {
+    if (typeof AICoach === 'undefined' || !career) return;
+    const draftCareer = JSON.parse(JSON.stringify(career));
+    const beforeText = extractSectionTextForCompare(career, issueId);
+    const result = await AICoach.applyQuickFix(draftCareer, issueId);
+    if (JSON.stringify(career) !== JSON.stringify(draftCareer)) {
+      const afterText = extractSectionTextForCompare(draftCareer, issueId);
+      showSmartFixPreviewModal(draftCareer, beforeText, afterText, result.title || _ct('coach.smart_fix.title', 'معاينة التحسين الذكي'), result.message);
       return;
     }
-    undoStack.pop();
     const review = AICoach.getPreExportReview(career);
-    const item = review.items.find(x => x.id === issueId);
+    const item = review?.items?.find(x => x.id === issueId);
     if (item?.section) openEditPanel(item.section);
   }
 
@@ -1411,6 +1482,117 @@ const Editor = (function () {
     }
   }
 
+  // ── Mobile / Tablet View Switching ──────────────────────────────────
+  let currentMobileView = 'edit';
+  let editScrollPos = 0;
+  let previewScrollPos = 0;
+
+  function setMobileView(view) {
+    if (currentMobileView === view) return;
+    
+    // Save current scroll
+    if (currentMobileView === 'edit') editScrollPos = window.scrollY;
+    if (currentMobileView === 'preview') previewScrollPos = window.scrollY;
+
+    currentMobileView = view;
+    const body = document.body;
+    body.classList.remove('mobile-edit-mode', 'mobile-preview-mode', 'mobile-coach-mode');
+
+    const mobControls = el('mob-preview-controls');
+    if (mobControls) mobControls.style.display = view === 'preview' ? 'flex' : 'none';
+
+    if (view === 'edit') {
+      body.classList.add('mobile-edit-mode');
+      setTimeout(() => window.scrollTo(0, editScrollPos), 10);
+    } else if (view === 'preview') {
+      body.classList.add('mobile-preview-mode');
+      applyMobileScale();
+      setTimeout(() => window.scrollTo(0, previewScrollPos), 10);
+    } else if (view === 'coach') {
+      body.classList.add('mobile-coach-mode');
+      setTimeout(() => window.scrollTo(0, 0), 10);
+    }
+
+    // Update nav active state
+    const editBtn = el('mob-btn-edit');
+    const prevBtn = el('mob-btn-preview');
+    const coachBtn = el('mob-btn-coach');
+    if (editBtn) editBtn.classList.toggle('active', view === 'edit');
+    if (prevBtn) prevBtn.classList.toggle('active', view === 'preview');
+    if (coachBtn) coachBtn.classList.toggle('active', view === 'coach');
+
+    // Sync mobile topbar title
+    const mobName = el('mob-topbar-name');
+    const topbarName = el('topbar-name');
+    if (mobName && topbarName) mobName.textContent = topbarName.textContent;
+  }
+
+  function showMobMenu(event) {
+    if (event && event.stopPropagation) event.stopPropagation();
+    const existing = el('mob-dropdown-menu');
+    if (existing) { existing.remove(); return; }
+    const menu = document.createElement('div');
+    menu.id = 'mob-dropdown-menu';
+    menu.className = 'mob-dropdown-menu';
+    menu.innerHTML = `
+      <button onclick="Editor.undoAction(); el('mob-dropdown-menu')?.remove();"><span class="icon">↩️</span> <span data-i18n="ed.topbar.undo">تراجع عن آخر تعديل</span></button>
+      <button onclick="Editor.setMobileView('coach'); el('mob-dropdown-menu')?.remove();"><span class="icon">🎯</span> <span data-i18n="ed.mobile.coach">المدرب المهني و ATS</span></button>
+      <button onclick="Editor.showExportModal(); el('mob-dropdown-menu')?.remove();"><span class="icon">⬇️</span> <span data-i18n="ed.topbar.download">تصدير / تحميل الملف</span></button>
+      <a href="landing.html" class="menu-link"><span class="icon">🚪</span> <span data-i18n="ed.topbar.exit">خروج إلى الرئيسية</span></a>
+    `;
+    document.body.appendChild(menu);
+    const closeMenu = (e) => {
+      if (!menu.contains(e.target) && e.target?.className !== 'mob-topbar-menu') {
+        menu.remove();
+        document.removeEventListener('click', closeMenu);
+      }
+    };
+    setTimeout(() => document.addEventListener('click', closeMenu), 10);
+  }
+
+  function applyMobileScale() {
+    const isMobile = window.matchMedia('(max-width: 1024px)').matches;
+    if (!isMobile) return;
+    const canvas = el('editor-canvas');
+    const paper = el('a4-wrapper');
+    if (!canvas || !paper) return;
+    if (career && career.meta?.zoomLevel && career.meta.zoomLevel !== 'fit-width' && career.meta.zoomLevel !== 'fit-page') {
+      const customScale = parseInt(career.meta.zoomLevel, 10) / 100;
+      paper.style.width = '794px';
+      paper.style.transform = `scale(${customScale})`;
+      paper.style.transformOrigin = 'top center';
+      const frame = el('preview-frame');
+      const height = frame?.scrollHeight || paper.scrollHeight || 1123;
+      paper.style.marginBottom = `${-(height * (1 - customScale))}px`;
+      return;
+    }
+    const availW = Math.max(280, canvas.clientWidth - 16);
+    const scale = Math.min(1, availW / 794);
+    paper.style.width = '794px';
+    paper.style.transform = `scale(${scale})`;
+    paper.style.transformOrigin = 'top center';
+    const frame = el('preview-frame');
+    const height = frame?.scrollHeight || paper.scrollHeight || 1123;
+    paper.style.marginBottom = `${-(height * (1 - scale))}px`;
+  }
+
+  function updateMobScoreBar() {
+    const isMobile = window.matchMedia('(max-width: 1024px)').matches;
+    if (!isMobile) return;
+    try {
+      const result = ATSScorer.score(career);
+      const pct = result.percent || 0;
+      const label = result.label || (pct >= 75 ? 'ممتازة' : pct >= 50 ? 'جيدة' : 'تحتاج تحسين');
+      const fill = el('mob-score-fill');
+      const lbl = el('mob-score-label');
+      if (fill) {
+        fill.style.width = `${pct}%`;
+        fill.style.background = pct >= 75 ? '#16a34a' : pct >= 50 ? '#d97706' : '#dc2626';
+      }
+      if (lbl) lbl.textContent = `تقييم السيرة: ${pct}% (${label})`;
+    } catch(e) {}
+  }
+
   // ─────────────────────────────────────────────────
   // GALLERY
   // ─────────────────────────────────────────────────
@@ -1497,75 +1679,6 @@ const Editor = (function () {
     setZoom(fit);
   }
 
-  // ── Mobile: Edit/Preview view switching ──────────────────────────────────
-  let currentMobileView = 'edit';
-  let editScrollPos = 0;
-  let previewScrollPos = 0;
-
-  function setMobileView(view) {
-    if (currentMobileView === view) return;
-    
-    // Save current scroll
-    if (currentMobileView === 'edit') editScrollPos = window.scrollY;
-    if (currentMobileView === 'preview') previewScrollPos = window.scrollY;
-
-    currentMobileView = view;
-    const body = document.body;
-
-    if (view === 'edit') {
-      body.classList.remove('mobile-preview-mode');
-      body.classList.add('mobile-edit-mode');
-      setTimeout(() => window.scrollTo(0, editScrollPos), 10);
-    } else {
-      body.classList.remove('mobile-edit-mode');
-      body.classList.add('mobile-preview-mode');
-      // Apply A4 scale so preview looks pixel-perfect
-      applyMobileScale();
-      setTimeout(() => window.scrollTo(0, previewScrollPos), 10);
-    }
-
-    // Update bottom nav active state
-    const editBtn = el('mob-btn-edit');
-    const prevBtn = el('mob-btn-preview');
-    if (editBtn) editBtn.classList.toggle('active', view === 'edit');
-    if (prevBtn) prevBtn.classList.toggle('active', view === 'preview');
-
-    // Sync mobile topbar title
-    const mobName = el('mob-topbar-name');
-    const topbarName = el('topbar-name');
-    if (mobName && topbarName) mobName.textContent = topbarName.textContent;
-  }
-
-  function applyMobileScale() {
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    if (!isMobile) return;
-    const canvas = el('editor-canvas');
-    const paper = el('a4-wrapper');
-    if (!canvas || !paper) return;
-    const availW = Math.max(280, canvas.clientWidth - 16);
-    const scale = Math.min(1, availW / 794);
-    paper.style.width = '794px';
-    paper.style.transform = `scale(${scale})`;
-    paper.style.transformOrigin = 'top center';
-    const frame = el('preview-frame');
-    const height = frame?.scrollHeight || paper.scrollHeight || 1123;
-    paper.style.marginBottom = `${-(height * (1 - scale))}px`;
-  }
-
-  function updateMobScoreBar() {
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    if (!isMobile) return;
-    try {
-      const result = ATSScorer.score(career);
-      const pct = result.percent || 0;
-      const fill = el('mob-score-fill');
-      const label = el('mob-score-label');
-      if (fill) fill.style.width = `${pct}%`;
-      if (fill) fill.style.background = pct >= 75 ? '#16a34a' : pct >= 50 ? '#d97706' : '#dc2626';
-      if (label) label.textContent = `تقييم السيرة: ${pct}%`;
-    } catch(e) {}
-  }
-
   // ─────────────────────────────────────────────────
   // UNDO / REDO
   // ─────────────────────────────────────────────────
@@ -1617,7 +1730,19 @@ const Editor = (function () {
     if (!ind) return;
     ind.textContent = msg;
     ind.className = 'save-indicator ' + (fade ? 'saved' : 'saving');
-    if (fade) setTimeout(() => { ind.textContent = ''; ind.className = 'save-indicator'; }, 2500);
+    if (fade) {
+      ind.style.color = '#10b981';
+      ind.style.background = '#f0fdf4';
+      ind.style.borderColor = '#bbf7d0';
+      setTimeout(() => {
+        ind.textContent = _ct('ed.saved_auto', '✓ تم الحفظ تلقائياً');
+        ind.className = 'save-indicator saved';
+      }, 2500);
+    } else {
+      ind.style.color = '#3b82f6';
+      ind.style.background = '#eff6ff';
+      ind.style.borderColor = '#bfdbfe';
+    }
   }
 
   // ─────────────────────────────────────────────────
@@ -2204,6 +2329,103 @@ const Editor = (function () {
     return isAr() ? ar : en;
   }
 
+  function showVersionManagerModal() {
+    const old = el('version-manager-modal');
+    if (old) old.remove();
+
+    const versions = typeof CareerStorage !== 'undefined' && CareerStorage.listVersions ? CareerStorage.listVersions() : [];
+    const activeId = typeof CareerStorage !== 'undefined' && CareerStorage.getActiveVersionId ? CareerStorage.getActiveVersionId() : 'default';
+    const isAr = (career.meta?.locale || 'ar') === 'ar';
+
+    const modal = document.createElement('div');
+    modal.id = 'version-manager-modal';
+    modal.style.cssText = 'display:flex;align-items:center;justify-content:center;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.75);z-index:999999;backdrop-filter:blur(4px);padding:20px;';
+    modal.innerHTML = `
+      <div class="modal-card" style="background:#fff;border-radius:16px;max-width:680px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);overflow:hidden;direction:${isAr ? 'rtl' : 'ltr'};">
+        <div style="padding:20px 24px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;background:#f8fafc;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:24px;">📂</span>
+            <div>
+              <h3 style="margin:0;font-size:18px;font-weight:700;color:#0f172a;">${isAr ? 'إدارة النسخ والتخصيص الوظيفي' : 'CV Versions & Job Tailoring'}</h3>
+              <div style="font-size:12px;color:#64748b;">${isAr ? 'أنشئ عدة نسخ مخصصة من سيرتك لكل شركة أو وظيفة تتقدم إليها' : 'Manage multiple versions of your resume tailored for different roles'}</div>
+            </div>
+          </div>
+          <button onclick="document.getElementById('version-manager-modal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b;">✕</button>
+        </div>
+
+        <div style="padding:20px 24px;background:#eff6ff;border-bottom:1px solid #bfdbfe;display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+          <input type="text" id="new-version-name-input" placeholder="${isAr ? 'اسم النسخة الجديدة (مثال: Senior FinTech Tech Lead)...' : 'New version name...'}" style="flex:1;min-width:240px;padding:10px 14px;border:1px solid #3b82f6;border-radius:8px;font-size:13px;outline:none;">
+          <button onclick="Editor.handleCreateVersion()" style="padding:10px 18px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 2px 4px rgba(37,99,235,0.2);">
+            <span>➕</span> ${isAr ? 'إنشاء وتخصيص نسخة' : 'Duplicate & Tailor'}
+          </button>
+        </div>
+
+        <div style="padding:24px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:12px;">
+          ${versions.map(v => {
+            const isActive = v.id === activeId;
+            return `
+              <div style="border:1px solid ${isActive ? '#86efac' : '#e2e8f0'};border-radius:12px;padding:16px;background:${isActive ? '#f0fdf4' : '#fff'};display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                    <span style="font-size:15px;font-weight:700;color:#0f172a;">${h(v.name)}</span>
+                    ${isActive ? `<span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;">${isAr ? 'النسخة الحالية' : 'Active'}</span>` : ''}
+                  </div>
+                  <div style="font-size:11px;color:#64748b;">${isAr ? 'آخر تحديث:' : 'Updated:'} ${new Date(v.updatedAt).toLocaleDateString(isAr ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  ${!isActive ? `<button onclick="Editor.handleSwitchVersion('${v.id}')" style="background:#2563eb;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">${isAr ? 'انتقال لهذه النسخة ⮐' : 'Switch to this version'}</button>` : ''}
+                  ${!isActive && v.id !== 'default' ? `<button onclick="Editor.handleDeleteVersion('${v.id}')" style="background:#fee2e2;color:#dc2626;border:none;padding:8px 12px;border-radius:6px;font-size:12px;cursor:pointer;" title="حذف">🗑️</button>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div style="padding:16px 24px;border-top:1px solid #e2e8f0;background:#f8fafc;display:flex;justify-content:flex-end;">
+          <button onclick="document.getElementById('version-manager-modal').remove()" style="padding:10px 20px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:#475569;cursor:pointer;">${isAr ? 'إغلاق' : 'Close'}</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  function handleCreateVersion() {
+    const input = el('new-version-name-input');
+    const name = input ? input.value.trim() : '';
+    if (!name && !confirm('هل تريد إنشاء نسخة جديدة بالاسم الافتراضي؟')) return;
+    if (typeof CareerStorage !== 'undefined' && CareerStorage.duplicateCareer) {
+      pushUndo();
+      const res = CareerStorage.duplicateCareer(name || (career.personalInfo?.name + ' - نسخة تخصيص'));
+      career = res.career;
+      saveAndRender();
+      showSaveIndicator('✓ تم إنشاء النسخة الجديدة والانتقال إليها', true);
+      showVersionManagerModal(); // Refresh modal
+    }
+  }
+
+  function handleSwitchVersion(versionId) {
+    if (typeof CareerStorage !== 'undefined' && CareerStorage.switchVersion) {
+      pushUndo();
+      career = CareerStorage.switchVersion(versionId);
+      saveAndRender();
+      showSaveIndicator('✓ تم الانتقال للنسخة المحددة', true);
+      const modal = el('version-manager-modal');
+      if (modal) modal.remove();
+      if (typeof updateCoachPanel === 'function') updateCoachPanel();
+    }
+  }
+
+  function handleDeleteVersion(versionId) {
+    if (!confirm('هل أنت متأكد من حذف هذه النسخة نهائياً؟')) return;
+    if (typeof CareerStorage !== 'undefined' && CareerStorage.deleteVersion) {
+      const ok = CareerStorage.deleteVersion(versionId);
+      if (ok) {
+        showSaveIndicator('✓ تم حذف النسخة', true);
+        showVersionManagerModal(); // Refresh modal
+      }
+    }
+  }
+
   function switchCoachTab(tab) {
     ['overview', 'mentor', 'ats'].forEach(t => {
       const btn = el('coach-tab-' + t);
@@ -2221,8 +2443,22 @@ const Editor = (function () {
   function renderCoachOverview(ins) {
     const panel = el('coach-overview-panel');
     if (!panel) return;
+    const isRtl = document.documentElement.dir === 'rtl' || (typeof I18n !== 'undefined' && I18n.getLocale() === 'ar');
     const scoreColor = ins.score >= 80 ? '#16a34a' : ins.score >= 60 ? '#d97706' : '#dc2626';
-    let html = '<div style="margin-bottom:16px;">'
+
+    let html = '<div style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: #fff; padding: 16px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);">'
+      + '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">'
+      + '<span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 20px;">🎯 ' + _ct('coach.overview.today_goal', 'هدف اليوم') + '</span>'
+      + '<span style="font-size: 11px; font-weight: 700; opacity: 0.9;">' + _ct('coach.overview.remaining', 'المتبقي') + ': ' + ins.todayGoal.remainingTasksCount + ' ' + _ct('coach.overview.tasks', 'مهام') + '</span>'
+      + '</div>'
+      + '<div style="font-size: 14px; font-weight: 800; line-height: 1.4; margin-bottom: 10px;">'
+      + _ct('coach.overview.raise_to', 'ارفع السيرة من {current}% ← {target}%').replace('{current}', ins.todayGoal.currentScore).replace('{target}', ins.todayGoal.targetScore)
+      + '</div>'
+      + '<div style="height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden;">'
+      + '<div style="height: 100%; width: ' + ins.todayGoal.currentScore + '%; background: #22c55e; border-radius: 3px; transition: width 0.4s;"></div>'
+      + '</div></div>';
+
+    html += '<div style="margin-bottom:16px;">'
       + '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">' + _ct('coach.overview.score','Resume Score') + '</div>'
       + '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;">'
       + '<span style="font-size:32px;font-weight:900;line-height:1;color:#0f172a;">' + ins.score + '%</span>'
@@ -2232,19 +2468,26 @@ const Editor = (function () {
       + '<div style="height:100%;width:' + ins.score + '%;background:' + scoreColor + ';border-radius:3px;transition:width 0.4s;"></div>'
       + '</div></div>';
 
-    if (ins.priorities.length > 0) {
+    if (ins.top3Problems && ins.top3Problems.length > 0) {
       html += '<div style="margin-bottom:16px;">'
-        + '<div style="font-size:10px;font-weight:700;color:#dc2626;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #fecaca;padding-bottom:4px;">' + _ct('coach.overview.critical','Critical') + '</div>'
-        + ins.priorities.map(function(p) {
-          return '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;background:#fef2f2;padding:10px;border-radius:8px;cursor:pointer;" onclick="Editor.openEditPanel(\'' + p.sectionKey + '\')">'
-            + '<span style="font-size:14px;margin-top:2px;">⚠</span>'
-            + '<div style="flex:1;">'
-            + '<div style="display:flex;justify-content:space-between;">'
-            + '<span style="font-size:13px;font-weight:700;color:#991b1b;">' + h(p.title) + '</span>'
-            + (p.points ? '<span style="font-size:11px;font-weight:700;color:#16a34a;">' + h(p.points) + '</span>' : '')
+        + '<div style="font-size:11px;font-weight:800;color:#dc2626;text-transform:uppercase;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">'
+        + '<span>🔥 ' + _ct('coach.overview.top_problems', 'أهم 3 مشاكل للتحسين') + '</span>'
+        + '</div>'
+        + ins.top3Problems.map(function(p, idx) {
+          return '<div style="background:#fff;border:1px solid #fee2e2;border-radius:10px;padding:12px;margin-bottom:10px;box-shadow:0 2px 6px rgba(220,38,38,0.05);">'
+            + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">'
+            + '<div style="font-size:13px;font-weight:800;color:#991b1b;display:flex;align-items:center;gap:6px;">'
+            + '<span style="background:#fef2f2;color:#dc2626;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">' + (idx + 1) + '</span>'
+            + '<span>' + h(p.title) + '</span>'
             + '</div>'
-            + '<div style="font-size:11px;color:#7f1d1d;margin-top:2px;line-height:1.4;">' + h(p.detail) + '</div>'
-            + '</div></div>';
+            + (p.points ? '<span style="font-size:11px;font-weight:800;color:#16a34a;background:#dcfce7;padding:2px 6px;border-radius:10px;flex-shrink:0;">' + h(p.points) + '</span>' : '')
+            + '</div>'
+            + '<div style="font-size:12px;color:#475569;margin-bottom:8px;line-height:1.4;">' + h(p.detail) + '</div>'
+            + (p.why ? '<div style="background:#f8fafc;border-left:' + (isRtl ? 'none' : '3px solid #64748b') + ';border-right:' + (isRtl ? '3px solid #64748b' : 'none') + ';padding:8px 10px;border-radius:6px;font-size:11px;color:#334155;line-height:1.4;margin-bottom:10px;"><strong style="color:#0f172a;">💡 ' + _ct('coach.overview.why', 'لماذا؟') + '</strong> ' + h(p.why) + '</div>' : '')
+            + '<button style="width:100%;background:#dc2626;color:#fff;border:none;border-radius:6px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;transition:background 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;" onmouseover="this.style.background=\'#b91c1c\'" onmouseout="this.style.background=\'#dc2626\'" onclick="Editor.triggerSmartFix(\'' + h(p.fixAction || 'edit-personal') + '\', \'' + h(p.sectionKey) + '\', \'' + h(p.id) + '\')">'
+            + '⚡ ' + (p.actionLabel || _ct('coach.overview.smart_fix', 'إصلاح ذكي'))
+            + '</button>'
+            + '</div>';
         }).join('') + '</div>';
     }
 
@@ -2276,11 +2519,20 @@ const Editor = (function () {
     const panel = el('coach-mentor-panel');
     if (!panel) return;
     const m = ins.mentor;
+    const isRtl = document.documentElement.dir === 'rtl' || (typeof I18n !== 'undefined' && I18n.getLocale() === 'ar');
     let html = '<div style="margin-bottom:20px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:16px;">'
-      + '<div style="font-size:12px;font-weight:800;color:#1e40af;margin-bottom:8px;">' + h(m.headline) + '</div>'
-      + '<div style="font-size:13px;color:#1e3a8a;line-height:1.5;margin-bottom:12px;">' + h(m.explanation) + '</div>';
+      + '<div style="font-size:13px;font-weight:800;color:#1e40af;margin-bottom:8px;">' + h(m.headline) + '</div>';
 
-    if (m.nextSteps.length > 0) {
+    if (m.bestStep) {
+      html += '<div style="background:#fff;border:1px solid #93c5fd;border-radius:8px;padding:10px;margin-bottom:10px;">'
+        + '<div style="font-size:12px;font-weight:800;color:#1d4ed8;margin-bottom:4px;">📌 ' + h(m.bestStep) + '</div>'
+        + (m.why ? '<div style="font-size:11px;color:#3b82f6;line-height:1.4;">💡 <strong>' + _ct('coach.overview.why', 'لماذا؟') + '</strong> ' + h(m.why) + '</div>' : '')
+        + '</div>';
+    } else if (m.explanation) {
+      html += '<div style="font-size:13px;color:#1e3a8a;line-height:1.5;margin-bottom:12px;">' + h(m.explanation) + '</div>';
+    }
+
+    if (m.nextSteps && m.nextSteps.length > 0) {
       html += '<div style="font-size:11px;font-weight:700;color:#3b82f6;text-transform:uppercase;margin-bottom:8px;">' + _ct('coach.mentor.next_steps','Next Steps:') + '</div>';
       m.nextSteps.forEach(function(step, i) {
         html += '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">'
@@ -2291,8 +2543,7 @@ const Editor = (function () {
     }
     html += '</div>';
 
-    if (m.quickActions.length > 0) {
-      const isRtl = document.documentElement.dir === 'rtl';
+    if (m.quickActions && m.quickActions.length > 0) {
       html += '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin-bottom:10px;letter-spacing:0.5px;">' + _ct('coach.mentor.quick_actions','Quick Actions') + '</div>'
         + '<div style="display:flex;flex-direction:column;gap:8px;">'
         + m.quickActions.map(function(act) {
@@ -2309,21 +2560,52 @@ const Editor = (function () {
     const panel = el('coach-ats-panel');
     if (!panel) return;
     const ats = ins.ats;
+    const isRtl = document.documentElement.dir === 'rtl' || (typeof I18n !== 'undefined' && I18n.getLocale() === 'ar');
     const modeLabel = ats.mode === 'job_match' ? _ct('coach.ats.job_match','Job Match') : _ct('coach.ats.readiness','ATS Readiness');
+
     let html = '<div style="margin-bottom:16px;">'
-      + '<div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">' + modeLabel + '</div>';
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
+      + '<div style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:1px;">' + modeLabel + '</div>'
+      + (ats.mode === 'job_match' ? '<button style="background:none;border:none;color:#dc2626;font-size:11px;font-weight:700;cursor:pointer;padding:2px 6px;" onclick="Editor.clearJDMatch()">✕ ' + _ct('coach.ats.clear_jd', 'مسح التخصيص') + '</button>' : '')
+      + '</div>';
 
-    if (ats.mode === 'readiness') {
-      html += '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:16px;">'
-        + '<div style="font-size:12px;color:#334155;margin-bottom:6px;display:flex;align-items:center;gap:6px;"><span style="color:#16a34a">✓</span> ' + _ct('coach.ats.readable_template','Template is readable') + '</div>'
-        + '<div style="font-size:12px;color:#334155;margin-bottom:6px;display:flex;align-items:center;gap:6px;"><span style="color:#16a34a">✓</span> ' + _ct('coach.ats.clear_headings','Headings are clear') + '</div>'
-        + '<div style="font-size:12px;color:#334155;display:flex;align-items:center;gap:6px;"><span style="color:#16a34a">✓</span> ' + _ct('coach.ats.contact_present','Contact info present') + '</div>'
-        + '</div>'
-        + '<div style="font-size:11px;font-weight:700;color:#475569;margin-bottom:10px;">' + _ct('coach.ats.common_skills','Common skills in your field (add what you know):') + '</div>';
+    if (ats.mode === 'job_match') {
+      const matchColor = ats.score >= 80 ? '#16a34a' : ats.score >= 60 ? '#d97706' : '#dc2626';
+      html += '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:16px;text-align:center;">'
+        + '<div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px;">' + _ct('coach.ats.match_score', 'نسبة مطابقة إعلان الوظيفة (JD)') + '</div>'
+        + '<div style="font-size:36px;font-weight:900;color:' + matchColor + ';">' + ats.score + '%</div>'
+        + '</div>';
 
-      const sugSkills = typeof AICoach !== 'undefined' ? AICoach.suggestSkills(career).slice(0, 5) : [];
+      if (ats.missingKeywords.length > 0) {
+        html += '<div style="margin-bottom:16px;">'
+          + '<div style="font-size:11px;font-weight:700;color:#dc2626;margin-bottom:8px;">❌ ' + _ct('coach.ats.missing_jd_kw', 'كلمات مفتاحية مفقودة من إعلان الوظيفة:') + '</div>'
+          + '<div style="display:flex;flex-wrap:wrap;gap:6px;">'
+          + ats.missingKeywords.map(function(kw) {
+            return '<span style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:4px 8px;border-radius:14px;font-size:11px;font-weight:600;cursor:pointer;" onclick="Editor.addKeywordWithConfirm(\'' + h(kw) + '\', \'skill\')" title="' + _ct('coach.ats.click_add', 'اضغط للإضافة') + '">+ ' + h(kw) + '</span>';
+          }).join('') + '</div></div>';
+      }
+
+      if (ats.foundKeywords.length > 0) {
+        html += '<div style="margin-bottom:16px;">'
+          + '<div style="font-size:11px;font-weight:700;color:#16a34a;margin-bottom:8px;">✅ ' + _ct('coach.ats.found_jd_kw', 'كلمات متطابقة بنجاح:') + '</div>'
+          + '<div style="display:flex;flex-wrap:wrap;gap:6px;">'
+          + ats.foundKeywords.map(function(kw) {
+            return '<span style="background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;padding:4px 8px;border-radius:14px;font-size:11px;font-weight:600;">✓ ' + h(kw) + '</span>';
+          }).join('') + '</div></div>';
+      }
+    } else {
+      html += '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:16px;">';
+      (ats.readinessChecklist || []).forEach(function(item) {
+        html += '<div style="font-size:12px;color:#334155;margin-bottom:6px;display:flex;align-items:center;gap:6px;">'
+          + '<span style="color:' + (item.ok ? '#16a34a' : '#dc2626') + ';font-weight:800;">' + (item.ok ? '✓' : '✕') + '</span> '
+          + h(item.label) + '</div>';
+      });
+      html += '</div>';
+
+      const sugSkills = ats.commonSkills || [];
       if (sugSkills.length > 0) {
-        html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+        html += '<div style="font-size:11px;font-weight:700;color:#475569;margin-bottom:10px;">💡 ' + _ct('coach.ats.common_skills','المهارات الشائعة في مجالك (أضف ما تتقنه):') + '</div>'
+          + '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">';
         sugSkills.forEach(function(kw) {
           html += '<div id="kw-card-' + h(kw) + '" style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid #e2e8f0;padding:8px 12px;border-radius:6px;">'
             + '<span style="font-size:12px;font-weight:600;color:#0f172a;">' + h(kw) + '</span>'
@@ -2331,10 +2613,18 @@ const Editor = (function () {
             + '</div>';
         });
         html += '</div>';
-      } else {
-        html += '<div style="font-size:12px;color:#64748b;">' + _ct('coach.ats.all_good','Great! You have added most common skills.') + '</div>';
       }
     }
+
+    // Target JD Paste Box
+    const curJD = career.meta?.targetJD || '';
+    html += '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px;margin-top:10px;">'
+      + '<div style="font-size:11px;font-weight:800;color:#1e40af;margin-bottom:6px;">🎯 ' + _ct('coach.ats.jd_target_title', 'فحص مطابقة إعلان وظيفة (Job Description)') + '</div>'
+      + '<div style="font-size:11px;color:#1e3a8a;line-height:1.4;margin-bottom:8px;">' + _ct('coach.ats.jd_target_desc', 'الصق نص إعلان الوظيفة هنا لحساب نسبة المطابقة الحقيقية ومعرفة الكلمات المفقودة في سيرتك.') + '</div>'
+      + '<textarea id="coach-jd-input" rows="3" placeholder="' + _ct('coach.ats.jd_placeholder', 'الصق متطلبات الوظيفة هنا...') + '" style="width:100%;padding:8px;border:1px solid #93c5fd;border-radius:6px;font-size:11px;margin-bottom:8px;resize:vertical;">' + h(curJD) + '</textarea>'
+      + '<button style="width:100%;background:#2563eb;color:#fff;border:none;padding:8px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'#1d4ed8\'" onmouseout="this.style.background=\'#2563eb\'" onclick="Editor.applyJDMatch()">' + _ct('coach.ats.analyze_jd', '🔍 تحليل ومطابقة الوظيفة') + '</button>'
+      + '</div>';
+
     html += '</div>';
     panel.innerHTML = html;
   }
@@ -2370,161 +2660,57 @@ const Editor = (function () {
     }
   }
 
-  // Level 2 — Quality Analysis
-  function renderCoachQuality() {
-    const panel = el('coach-quality-panel');
-    if (!panel || typeof CareerCoach === 'undefined') return;
-    const { issues, quality } = CareerCoach.analyzeQuality(career);
-
-    const qualityColor = { excellent: '#16a34a', good: '#2563eb', needs_work: '#dc2626' };
-    const qualityLabel = {
-      excellent: _label('🏆 Excellent', '🏆 ممتازة'),
-      good: _label('✅ Good', '✅ جيدة'),
-      needs_work: _label('⚠️ Needs Work', '⚠️ تحتاج تحسين')
-    };
-
-    if (issues.length === 0) {
-      panel.innerHTML = `
-        <div class="rpanel-label">⭐ ${_label('Quality Analysis', 'تحليل الجودة')}</div>
-        <div class="coach-success">
-          <div style="font-size:32px;margin-bottom:8px;">🏆</div>
-          <div style="font-weight:700;color:#16a34a;margin-bottom:4px;">${_label('Excellent Quality!', 'جودة ممتازة!')}</div>
-          <div style="font-size:12px;color:#475569;">${_label('Your bullets are strong, measurable, and well-written.', 'نقاط الخبرة قوية وواضحة ومكتوبة بشكل جيد.')}</div>
-        </div>`;
+  async function triggerSmartFix(fixAction, sectionKey, issueId) {
+    if (!career) return;
+    if (['auto-summary', 'auto-bullets', 'auto-skills'].includes(fixAction)) {
+      const targetId = issueId || (fixAction === 'auto-summary' ? 'missing-summary' : fixAction === 'auto-bullets' ? 'thin-bullet' : 'few-skills');
+      await applyCoachFix(targetId);
       return;
     }
-
-    panel.innerHTML = `
-      <div class="rpanel-label">⭐ ${_label('Quality Analysis', 'تحليل الجودة')}
-        <span style="float:right;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:${qualityColor[quality]}20;color:${qualityColor[quality]};">${qualityLabel[quality]}</span>
-      </div>
-      ${issues.map(issue => `
-        <div class="coach-issue coach-issue-${issue.type}">
-          <div class="coach-issue-header">
-            <span>${issue.icon}</span>
-            <span class="coach-issue-title">${h(issue.title)}</span>
-          </div>
-          <div class="coach-issue-detail">${h(issue.detail)}</div>
-          ${issue.example ? `
-            <div class="coach-example">
-              <div class="coach-ex-bad">❌ ${h(issue.example.bad)}</div>
-              <div class="coach-ex-good">✅ ${h(issue.example.good)}</div>
-            </div>` : ''}
-          ${issue.action ? `<button class="coach-fix-btn" onclick="Editor.openEditPanel('${issue.action.replace('edit-', '')}')">${_label('Fix Now →', 'عدّل الآن ←')}</button>` : ''}
-        </div>
-      `).join('')}`;
+    // Fallback or edit-* actions: directly open the panel
+    openEditPanel(sectionKey || 'personalInfo');
   }
 
-  // Level 3 — ATS Keyword Gap
-  function renderCoachKeywordGapLegacy() {
-    const panel = el('coach-ats-panel');
-    if (!panel || typeof CareerCoach === 'undefined') return;
-    const { present, missing, coverage, total } = CareerCoach.analyzeATS(career);
-    const field = career.careerProfile?.field || 'other';
-
-    const barColor = coverage >= 70 ? '#16a34a' : coverage >= 40 ? '#d97706' : '#dc2626';
-
-    panel.innerHTML = `
-      <div class="rpanel-label">🔍 ${_label('ATS Keyword Check', 'فحص كلمات ATS')}</div>
-      <div class="coach-ats-coverage">
-        <div class="coach-ats-bar-wrap">
-          <div class="coach-ats-bar" style="width:${coverage}%;background:${barColor};"></div>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:4px;">
-          <span style="color:${barColor};font-weight:700;">${coverage}% ${_label('keyword match', 'مطابقة كلمات')}</span>
-          <span style="color:#94a3b8;">${present.length}/${total} ${_label('found', 'موجود')}</span>
-        </div>
-      </div>
-
-      ${missing.length > 0 ? `
-        <div class="coach-kw-section">
-          <div style="font-size:11px;font-weight:700;color:#dc2626;margin-bottom:6px;">❌ ${_label('Missing Keywords', 'كلمات ناقصة')}</div>
-          <div class="coach-kw-chips">
-            ${missing.map(kw => `<span class="coach-kw-chip coach-kw-missing">${h(kw)}</span>`).join('')}
-          </div>
-          <div style="font-size:11px;color:#64748b;margin-top:8px;">${_label('Add these to your Skills or Experience section to improve ATS score.', 'أضف الكلمات المناسبة منها في المهارات أو الخبرات لتحسين نتيجة ATS.')}</div>
-        </div>` : ''}
-
-      ${present.length > 0 ? `
-        <div class="coach-kw-section" style="margin-top:10px;">
-          <div style="font-size:11px;font-weight:700;color:#16a34a;margin-bottom:6px;">✅ ${_label('Keywords Found', 'كلمات موجودة')}</div>
-          <div class="coach-kw-chips">
-            ${present.map(kw => `<span class="coach-kw-chip coach-kw-present">${h(kw)}</span>`).join('')}
-          </div>
-        </div>` : ''}`;
-  }
-
-  // Level 4 — Career Advice
-  function renderCoachAdvice() {
-    const panel = el('coach-advice-panel');
-    if (!panel || typeof CareerCoach === 'undefined') return;
-    const { advice, levelLabel } = CareerCoach.analyzeCareer(career);
-    const field = career.careerProfile?.field || 'other';
-
-    const typeColor = { critical: '#dc2626', warning: '#d97706', info: '#2563eb', path: '#7c3aed' };
-    const typeBg = { critical: '#fef2f2', warning: '#fffbeb', info: '#eff6ff', path: '#f5f3ff' };
-
-    panel.innerHTML = `
-      <div class="rpanel-label">🎯 ${_label('Career Coach', 'مدرب المسار')}
-        <span style="float:right;font-size:11px;padding:2px 8px;border-radius:20px;background:#e0e7ff;color:#4338ca;font-weight:700;">${h(levelLabel)}</span>
-      </div>
-      ${advice.length === 0 ? `
-        <div class="coach-success">
-          <div style="font-size:28px;margin-bottom:6px;">🎯</div>
-          <div style="font-weight:700;color:#16a34a;">${_label('Strong Profile!', 'ملف قوي!')}</div>
-          <div style="font-size:12px;color:#475569;margin-top:4px;">${_label('Your CV is well-aligned with your career level.', 'سيرتك مناسبة لمستواك المهني بشكل جيد.')}</div>
-        </div>` :
-        advice.map(item => `
-          <div class="coach-advice-card" style="border-left:3px solid ${typeColor[item.type] || '#2563eb'};background:${typeBg[item.type] || '#eff6ff'};">
-            <div class="coach-advice-title">${item.icon} ${h(item.title)}</div>
-            <div class="coach-advice-detail">${h(item.detail)}</div>
-            ${item.items ? `
-              <ul class="coach-advice-list">
-                ${item.items.map(i => `<li>${h(i)}</li>`).join('')}
-              </ul>` : ''}
-            ${item.action ? `<button class="coach-fix-btn" onclick="Editor.openEditPanel('${item.action.replace('edit-', '')}')">${_label('Fix Now →', 'عدّل الآن ←')}</button>` : ''}
-          </div>
-        `).join('')
-      }`;
-  }
-
-  // Level 5 — Action Plan
-  function renderCoachPlan() {
-    const panel = el('coach-plan-panel');
-    if (!panel || typeof CareerCoach === 'undefined') return;
-    const steps = CareerCoach.buildActionPlan(career);
-    const { structural } = CareerCoach.analyzeStructure(career);
-    const currentScore = ATSScorer ? ATSScorer.score(career).percent : 0;
-
-    if (steps.length === 0) {
-      panel.innerHTML = `
-        <div class="rpanel-label">🗺️ ${_label('Action Plan', 'خطة التحسين')}</div>
-        <div class="coach-success">
-          <div style="font-size:32px;margin-bottom:8px;">🏆</div>
-          <div style="font-weight:700;color:#16a34a;margin-bottom:4px;">${_label('Roadmap Complete!', 'الخطة مكتملة!')}</div>
-          <div style="font-size:12px;color:#475569;">${_label('Your CV is strong. Keep it updated!', 'سيرتك قوية. حافظ على تحديثها باستمرار.')}</div>
-        </div>`;
+  function applyJDMatch() {
+    const input = el('coach-jd-input');
+    if (!input) return;
+    const jdText = input.value.trim();
+    if (jdText.length < 15) {
+      alert(_ct('coach.ats.jd_too_short', 'الرجاء إدخال نص إعلان وظيفة واضح (على الأقل 15 حرف) لتحليله.'));
       return;
     }
+    career.meta = career.meta || {};
+    career.meta.targetJD = jdText;
 
-    panel.innerHTML = `
-      <div class="rpanel-label">🗺️ ${_label('Action Plan', 'خطة التحسين')}
-        <span style="float:right;font-size:11px;padding:2px 8px;border-radius:20px;background:#fef3c7;color:#b45309;font-weight:700;">${_label('Score', 'النتيجة')}: ${currentScore}%</span>
-      </div>
-      <div style="font-size:11.5px;color:#64748b;margin-bottom:12px;">${_label('Follow these steps to improve your resume score:', 'اتبع الخطوات دي لتحسين قوة السيرة:')}</div>
-      <div class="coach-roadmap">
-        ${steps.map((step, idx) => `
-          <div class="coach-roadmap-step" ${step.sectionKey ? `onclick="Editor.openEditPanel('${step.sectionKey.replace('edit-', '')}')"` : ''} style="cursor:${step.sectionKey ? 'pointer' : 'default'};">
-            <div class="coach-step-num">${idx + 1}</div>
-            <div class="coach-step-body">
-              <div class="coach-step-title">${step.icon} ${h(step.label)}</div>
-              ${step.detail ? `<div class="coach-step-detail">${h(step.detail)}</div>` : ''}
-              <div class="coach-step-impact">${h(step.impact)}</div>
-            </div>
-          </div>
-          ${idx < steps.length - 1 ? '<div class="coach-roadmap-arrow">↓</div>' : ''}
-        `).join('')}
-      </div>`;
+    // Simple keyword extraction for score logic
+    const words = jdText.toLowerCase().replace(/[^a-z0-9أ-ي\s]/g, ' ').split(/\s+/).filter(w => w.length > 3 && !['with','and','for','from','that','this','have','will','your','when','where','what','which','who','whom','whose','إلى','على','في','من','عن','مع','هذا','تلك','التي','الذي','كل'].includes(w));
+    const uniqueJDWords = Array.from(new Set(words));
+    
+    const allCvText = JSON.stringify(career).toLowerCase();
+    const found = [];
+    const missing = [];
+    uniqueJDWords.forEach(w => {
+      if (allCvText.includes(w)) found.push(w);
+      else missing.push(w);
+    });
+
+    career.meta.jdMatchScore = uniqueJDWords.length ? Math.round((found.length / uniqueJDWords.length) * 100) : 75;
+    career.meta.jdFoundKeywords = found.slice(0, 12);
+    career.meta.jdMissingKeywords = missing.slice(0, 12);
+
+    saveAndRender();
+    switchCoachTab('ats');
+  }
+
+  function clearJDMatch() {
+    if (career && career.meta) {
+      delete career.meta.targetJD;
+      delete career.meta.jdMatchScore;
+      delete career.meta.jdFoundKeywords;
+      delete career.meta.jdMissingKeywords;
+    }
+    saveAndRender();
+    switchCoachTab('ats');
   }
 
   return {

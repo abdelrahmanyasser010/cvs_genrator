@@ -121,6 +121,10 @@ const AICoach = (function () {
         title: tr(career, 'This changes the CV strategy.', 'ده بيغير استراتيجية الـ CV.'),
         body: tr(career, 'Fresh CVs should emphasize education/projects. Senior CVs should emphasize impact and leadership.', 'لو حديث تخرج نركز على التعليم والمشاريع. لو senior نركز على التأثير والقيادة.')
       },
+      contact: {
+        title: tr(career, 'Complete contact info prevents missed calls.', 'بيانات التواصل الكاملة بتضمن إن الفرص متضيعش منك.'),
+        body: tr(career, 'Include a professional email, phone number with country code, and city/country.', 'اكتب بريد إلكتروني احترافي، ورقم هاتف مع كود الدولة، والمدينة أو البلد.')
+      },
       education: {
         title: tr(career, fresh ? 'Education matters a lot for your level.' : 'Keep education concise.', fresh ? 'التعليم مهم جدًا في مستواك.' : 'خلي التعليم مختصر.'),
         body: tr(career, 'Use: Degree, institution, year. Example: BSc Accounting, Cairo University, 2024.', 'اكتب: الدرجة، الجامعة، السنة. مثال: بكالوريوس تجارة، جامعة القاهرة، 2024.')
@@ -156,8 +160,7 @@ const AICoach = (function () {
     const text = String(value || '').trim();
     if (!text) return null;
     if (step === 'email' && !/^[^s@]+@[^s@]+.[^s@]+$/.test(text)) {
-      return {
-    buildCoachInsights, tone: 'warn', message: tr(career, 'This email may fail recruiter systems.', 'الإيميل ده ممكن مايتقبلش في أنظمة التوظيف.') };
+      return { tone: 'warn', message: tr(career, 'This email may fail recruiter systems.', 'الإيميل ده ممكن مايتقبلش في أنظمة التوظيف.') };
     }
     if ((step === 'experience' || step === 'projects') && wordCount(text) < 4) {
       return { tone: 'warn', message: tr(career, 'Give me a little more context so I can turn it into a strong bullet later.', 'اديني تفاصيل أكتر شوية عشان أقدر أحولها لجملة قوية بعدين.') };
@@ -183,7 +186,7 @@ const AICoach = (function () {
 
     function issue(career, id, severity, section, title, detail, actionLabel, impactPoints = 0) {
     const loc = localizedIssue(career, id, title, detail, actionLabel);
-    return { id, severity, section, title: loc.title, detail: loc.detail, actionLabel: loc.actionLabel, impactPoints };
+    return { id, severity, section, title: loc.title, detail: loc.detail, actionLabel: loc.actionLabel, impactPoints, why: loc.why, fixAction: loc.fixAction };
   }
 
   function getPreExportReview(career) {
@@ -291,18 +294,115 @@ const AICoach = (function () {
 
     return { score: Math.round(score), blockers, warnings, items };
   }
+
   function localizedIssue(career, id, title, detail, actionLabel) {
-    if (!isArabic(career)) return { title, detail, actionLabel };
+    const isAr = isArabic(career);
+    const whyMap = {
+      'missing-name': {
+        ar: 'بدون الاسم الكامل في أعلى السيرة لن يتمكن مسؤول التوظيف أو نظام الفرز الآلي من حفظ ملفك والتعرف عليه.',
+        en: 'Without your full name at the top, recruiters and ATS scanners cannot archive or identify your application.'
+      },
+      'bad-email': {
+        ar: 'أنظمة الفرز الآلي (ATS) ترفض الإيميلات غير الصحيحة، ومسؤول التوظيف لن يستطيع مراسلتك لتحديد موعد المقابلة.',
+        en: 'ATS scanners reject invalid emails, and recruiters cannot reach out to schedule an interview with you.'
+      },
+      'missing-phone': {
+        ar: 'رقم الهاتف هو وسيلة الاتصال الأسرع والأولى لدعوتك للمقابلات الوظيفية العاجلة.',
+        en: 'A phone number is the primary and fastest contact method recruiters use for immediate interview invitations.'
+      },
+      'missing-github': {
+        ar: 'في مجالك (برمجة أو تصميم)، رابط الأعمال أو الـ GitHub هو أول دليل عملي يبحث عنه المقيم الفني قبل قراءة النص.',
+        en: 'In your field (development/design), a portfolio or GitHub link is the first proof of competence technical reviewers check.'
+      },
+      'missing-summary': {
+        ar: 'النبذة المهنية هي أول ما يقرأه المدير في أول 6 ثوانٍ، وبدونها قد يتم تجاوز ملفك قبل قراءة تفاصيل الخبرات.',
+        en: 'The professional summary is what recruiters read in the first 6 seconds; without it, your profile lacks immediate focus and direction.'
+      },
+      'short-summary': {
+        ar: 'النبذة الحالية قصيرة جداً ولا تبرز تخصصك الدقيق، سنوات خبرتك، أو القيمة المضافة التي ستقدمها للشركة.',
+        en: 'Your current summary is too brief to clearly showcase your specialized expertise, experience level, and key value proposition.'
+      },
+      'long-summary': {
+        ar: 'النبذة الطويلة تصعب القراءة السريعة وتستهلك مساحة قيمة يجب تخصيصها للإنجازات العملية.',
+        en: 'A lengthy summary makes quick scanning difficult and takes up valuable space that should be used for measurable achievements.'
+      },
+      'missing-experience': {
+        ar: 'السيرة الذاتية بدون خبرة عملية تتطلب إبراز المشاريع والتدريب والأنشطة بوضوح لإقناع أصحاب العمل.',
+        en: 'Without work experience, you must clearly highlight practical projects and internships to demonstrate competence.'
+      },
+      'weak-experience': {
+        ar: 'خبراتك مكتوبة كقائمة مسؤوليات عامة بدون أفعال قوية أو أرقام وإنجازات، مما يضعف تأثيرها وتنافسيتها.',
+        en: 'Your experience bullets list generic daily duties instead of measurable achievements and action verbs.'
+      },
+      'missing-project': {
+        ar: 'المشاريع العملية هي الإثبات الفعلي لمهاراتك وتطبيقك للأدوات، خاصة في المجالات التقنية والتطبيقية.',
+        en: 'Real projects are concrete proof of your technical and practical skills, essential for standing out in competitive roles.'
+      },
+      'few-skills': {
+        ar: 'أنظمة الفرز الآلي (ATS) تبحث عن كلمات مفتاحية ومهارات محددة مرتبطة بالوظيفة؛ نقص المهارات يؤدي لاستبعاد السيرة آلياً.',
+        en: 'ATS scanners check for specific domain keywords; too few skills can lead to automatic filtering and low match scores.'
+      },
+      'missing-skills': {
+        ar: 'قسم المهارات هو المحرك الأساسي لتخطي فلتر الـ ATS وإعطاء انطباع سريع بمدى ملاءمتك للمتطلبات.',
+        en: 'The skills section is crucial for passing ATS filters and giving recruiters a quick snapshot of your technical fit.'
+      },
+      'many-skills': {
+        ar: 'القائمة الطويلة والعامة من المهارات تقلل المصداقية؛ التركيز على أهم 10-12 مهارة متخصصة يجعل السيرة أقوى وأصدق.',
+        en: 'An overly long list of generic skills dilutes credibility; focusing on top 10-12 specialized skills is much more persuasive.'
+      },
+      'fresh-education': {
+        ar: 'المؤهل العلمي والجامعة وسنة التخرج هي معيار الفلترة الأساسي لحديثي التخرج عند الفرز الأولي.',
+        en: 'Your degree, institution, and graduation year are the primary qualification filters for early-career roles.'
+      },
+      'missing-certs': {
+        ar: 'الشهادات المهنية المعتمدة تزيد من موثوقية مهاراتك وتعطيك أفضلية تنافسية واضحة في مجالك.',
+        en: 'Professional certifications validate your skills and give you a distinct competitive advantage in your industry.'
+      }
+    };
+
+    const fixActionMap = {
+      'missing-summary': 'auto-summary',
+      'short-summary': 'auto-summary',
+      'long-summary': 'auto-summary',
+      'weak-experience': 'auto-bullets',
+      'few-skills': 'auto-skills',
+      'missing-skills': 'auto-skills',
+      'missing-name': 'edit-personal',
+      'bad-email': 'edit-personal',
+      'missing-phone': 'edit-personal',
+      'missing-github': 'edit-personal',
+      'missing-experience': 'edit-experience',
+      'missing-project': 'edit-projects',
+      'fresh-education': 'edit-education',
+      'missing-certs': 'edit-certificates'
+    };
+
+    let whyText = whyMap[id] ? (isAr ? whyMap[id].ar : whyMap[id].en) : (isAr ? 'هذه التفصيلة تحسن من جودة وقراءة السيرة الذاتية في أنظمة التوظيف.' : 'Addressing this improves resume readability and ATS parsing quality.');
+    if (id.startsWith('empty-exp')) {
+      whyText = isAr ? 'كتابة المسمى الوظيفي فقط بدون تفاصيل لا يعطي مسؤول التوظيف أي فكرة عن إنجازاتك أو حجم مسؤولياتك.' : 'Listing just a job title without details gives recruiters no insight into your contributions or responsibilities.';
+    } else if (id.startsWith('thin-bullet') || id.startsWith('metric-bullet')) {
+      whyText = isAr ? 'الجمل القصيرة أو الخالية من أرقام تظهر كمهام روتينية وليس كإنجازات قوية تجذب انتباه المقيم.' : 'Short or non-numeric bullets appear as routine tasks rather than high-impact achievements.';
+    }
+
+    let fixAction = fixActionMap[id] || (id.startsWith('empty-exp') || id.startsWith('thin-bullet') || id.startsWith('metric-bullet') ? 'auto-bullets' : 'edit-personal');
+
+    if (!isAr) {
+      if (id.startsWith('empty-exp')) return { title: 'Add experience bullets.', detail: 'Describe responsibilities and impact, not just the job title.', actionLabel: 'Fix Experience', why: whyText, fixAction };
+      if (id.startsWith('thin-bullet')) return { title: 'Improve weak bullet.', detail: 'Very short bullets appear as basic tasks rather than achievements.', actionLabel: 'Improve Bullets', why: whyText, fixAction };
+      if (id.startsWith('metric-bullet')) return { title: 'Add measurable result.', detail: 'Numbers and metrics make your impact much more persuasive.', actionLabel: 'Add Metrics', why: whyText, fixAction };
+      return { title, detail, actionLabel, why: whyText, fixAction };
+    }
+
     const staticCopy = {
       'missing-name': ['أضف اسمك الكامل.', 'لازم يكون الاسم واضح في أعلى السيرة الذاتية.', 'أضف الاسم'],
       'bad-email': ['أضف بريد إلكتروني صحيح.', 'الإيميل الخاطئ ممكن يمنع وصول مسؤول التوظيف لك.', 'صحح التواصل'],
       'missing-phone': ['أضف رقم الهاتف.', 'السيرة الذاتية الأفضل توفر أكثر من طريقة للتواصل.', 'صحح التواصل'],
       'missing-github': ['أضف GitHub أو Portfolio.', 'ده مهم أكثر لو المجال برمجة أو تصميم.', 'افتح بيانات التواصل'],
-      'missing-summary': ['أنشئ نبذة مهنية.', 'النبذة القصيرة بتدي اتجاه للسيرة وتحسن مطابقة الكلمات المفتاحية.', 'أنشئ'],
-      'short-summary': ['قوّي النبذة المهنية.', 'النبذة الحالية قصيرة ومش بتشرح قيمتك بوضوح.', 'حسّن'],
-      'long-summary': ['اختصر النبذة المهنية.', 'النبذة الطويلة بتصعب القراءة وبتاخد مساحة مهمة.', 'اختصر'],
+      'missing-summary': ['أنشئ نبذة مهنية.', 'النبذة القصيرة بتدي اتجاه للسيرة وتحسن مطابقة الكلمات المفتاحية.', 'إنشاء ذكي'],
+      'short-summary': ['قوّي النبذة المهنية.', 'النبذة الحالية قصيرة ومش بتشرح قيمتك بوضوح.', 'تحسين ذكي'],
+      'long-summary': ['اختصر النبذة المهنية.', 'النبذة الطويلة بتصعب القراءة وبتاخد مساحة مهمة.', 'اختصار ذكي'],
       'missing-experience': ['أضف الخبرات العملية.', 'السيرة بدون خبرة عملية واضحة هتظهر ناقصة.', 'أضف خبرة'],
-      'weak-experience': ['قوّي الخبرات العملية.', 'أضف إنجازات أوضح بدل وصف عام للمسؤوليات.', 'حسّن'],
+      'weak-experience': ['قوّي الخبرات العملية.', 'أضف إنجازات أوضح بدل وصف عام للمسؤوليات.', 'تحسين ذكي'],
       'missing-project': ['أضف مشروع قوي.', 'المشاريع بتثبت المهارات العملية خصوصًا في المجالات التطبيقية.', 'أضف مشروع'],
       'few-skills': ['أضف مهارات مناسبة أكثر.', 'أنظمة ATS تحتاج كلمات مفتاحية كفاية مرتبطة بالمجال.', 'اقترح مهارات'],
       'missing-skills': ['أضف المهارات.', 'قسم المهارات مهم جدًا لأنظمة ATS ومسؤولي التوظيف.', 'أضف مهارات'],
@@ -310,19 +410,19 @@ const AICoach = (function () {
       'fresh-education': ['أضف التعليم والمؤهل.', 'التعليم دليل أساسي في هذا المجال.', 'أضف التعليم'],
       'missing-certs': ['أضف الشهادات إن وجدت.', 'الشهادات بتقوّي مصداقية مهاراتك في المجال.', 'أضف شهادة']
     };
-    if (staticCopy[id]) {
+        if (staticCopy[id]) {
       const [arTitle, arDetail, arAction] = staticCopy[id];
-      return { title: arTitle, detail: arDetail, actionLabel: arAction };
+      return { title: arTitle, detail: arDetail, actionLabel: arAction, why: whyText, fixAction };
     }
-    if (id.startsWith('empty-exp')) return { title: 'أضف نقاط للخبرة.', detail: 'اكتب المسؤوليات والنتائج، مش المسمى الوظيفي فقط.', actionLabel: 'افتح الخبرة' };
-    if (id.startsWith('thin-bullet')) return { title: 'حسّن نقطة خبرة ضعيفة.', detail: 'الجمل القصيرة جدًا بتظهر كمهام، مش إنجازات.', actionLabel: 'حسّن النقاط' };
-    if (id.startsWith('metric-bullet')) return { title: 'أضف أثر قابل للقياس لو متاح.', detail: 'الأرقام والنتائج بتخلي الإنجاز أكثر إقناعًا.', actionLabel: 'افتح الخبرة' };
-    return { title, detail, actionLabel };
+    if (id.startsWith('empty-exp')) return { title: 'أضف نقاط للخبرة.', detail: 'اكتب المسؤوليات والنتائج، مش المسمى الوظيفي فقط.', actionLabel: 'افتح الخبرة', why: whyText, fixAction };
+    if (id.startsWith('thin-bullet')) return { title: 'حسّن نقطة خبرة ضعيفة.', detail: 'الجمل القصيرة جدًا بتظهر كمهام، مش إنجازات.', actionLabel: 'تحسين ذكي', why: whyText, fixAction };
+    if (id.startsWith('metric-bullet')) return { title: 'أضف أثر قابل للقياس لو متاح.', detail: 'الأرقام والنتائج بتخلي الإنجاز أكثر إقناعًا.', actionLabel: 'تحسين ذكي', why: whyText, fixAction };
+    return { title, detail, actionLabel, why: whyText, fixAction };
   }
 
   function issue(career, id, severity, section, title, detail, actionLabel, impactPoints = 0) {
     const loc = localizedIssue(career, id, title, detail, actionLabel);
-    return { id, severity, section, title: loc.title, detail: loc.detail, actionLabel: loc.actionLabel, impactPoints };
+    return { id, severity, section, title: loc.title, detail: loc.detail, actionLabel: loc.actionLabel, impactPoints, why: loc.why, fixAction: loc.fixAction };
   }
 
   async function applyQuickFix(career, issueId) {
@@ -387,17 +487,67 @@ const AICoach = (function () {
   }
 
   
+  
+  function getRoleAwareMentorAdvice(career) {
+    const f = field(career);
+    const l = level(career);
+    const isAr = isArabic(career);
+    const p = career.personalInfo || {};
+    const hasExp = (career.experience || []).length > 0;
+    const hasSummary = (career.professionalSummary || '').trim().length > 20;
+
+    const jobTitle = career.careerProfile?.jobTitle || industry(career);
+    const levelStr = typeof I18n !== 'undefined' ? (l === 'fresh' ? I18n.t('coach.mentor.roles.fresh_graduate', 'Fresh Graduate') : I18n.t('coach.mentor.roles.experienced', 'Experienced')) : (l === 'fresh' ? 'Fresh Graduate' : 'Experienced');
+    const headline = typeof I18n !== 'undefined' ? I18n.t('coach.mentor.greetings.you_are', 'You are a {levelStr} {jobTitle}.').replace('{levelStr}', levelStr).replace('{jobTitle}', jobTitle) : `You are a ${levelStr} ${jobTitle}.`;
+
+    let bestStep = '';
+    let why = '';
+    const nextSteps = [];
+
+    if (f === 'accountant') {
+      bestStep = isAr ? 'أفضل خطوة الآن: أضف تدريباً عملياً أو إجادة Excel و ERP بالمستوى المتقدم.' : 'Best step right now: Add practical training or advanced Excel/ERP proficiency.';
+      why = isAr ? 'في المحاسبة، أصحاب العمل يبحثون أولاً عن المهارات التطبيقية والدقة والتعامل مع الأنظمة المحاسبية قبل المشاريع العامة.' : 'In accounting, employers look primarily for practical systems proficiency, accuracy, and ERP experience above general projects.';
+      if (!hasExp) nextSteps.push(isAr ? 'أضف تدريب عملي (Internship) أو تطبيق محاسبي واقعي في قسم الخبرات.' : 'Add an internship or real-world accounting practice in your experience section.');
+      if (!flatSkills(career).some(s => /excel|erp|sap|oracle/i.test(s))) nextSteps.push(isAr ? 'أضف مهارات Excel أو ERP أو SAP بوضوح في قائمة المهارات.' : 'Clearly list Excel, ERP, or SAP in your skills.');
+      nextSteps.push(isAr ? 'حول مهامك المحاسبية إلى أرقام وإنجازات (مثال: تقليل وقت إغلاق الحسابات بنسبة 15%).' : 'Turn responsibilities into numeric achievements (e.g., reduced month-end closing time by 15%).');
+    } else if (f === 'developer' || f === 'designer' || f === 'ui_ux_designer' || f === 'graphic_designer') {
+      bestStep = isAr ? 'أفضل خطوة الآن: أضف رابط الأعمال (Portfolio أو GitHub) ومشروعاً تطبيقياً كاملاً.' : 'Best step right now: Add a portfolio/GitHub link and at least one end-to-end practical project.';
+      why = isAr ? 'في المجالات التقنية والتصميمية، معرض الأعمال والمشاريع الحقيقية هي المعيار الأول الذي يقيم به المدير الفني مستواك قبل قراءة أي نص.' : 'In tech and design, your live portfolio and real projects are the #1 criteria technical hiring managers review before reading any text.';
+      if ((career.projects || []).length === 0) nextSteps.push(isAr ? 'أضف مشروعاً واحداً على الأقل مع شرح الأدوات المستخدمة والنتيجة.' : 'Add at least one complete project highlighting tools used and outcome.');
+      if (!p.links?.github && !p.links?.portfolio && !p.links?.behance) nextSteps.push(isAr ? 'أضف رابط GitHub أو Behance أو الموقع الشخصي في بيانات التواصل.' : 'Add your GitHub, Behance, or live portfolio link in contact info.');
+    } else {
+      bestStep = isAr ? 'أفضل خطوة الآن: إبراز إنجازات رقمية واضحة وإضافة المهارات الأكثر طلباً في مجالك.' : 'Best step right now: Highlight measurable achievements and add top in-demand skills for your domain.';
+      why = isAr ? 'في مستواك الحالي، الوضوح والتركيز على المهارات المتخصصة هو ما يميز سيرتك الذاتية عن المئات من المتقدمين لنفس الوظيفة.' : 'At your current level, clarity and specialized skills are what distinguish your resume from hundreds of applicants.';
+      if (!hasExp && l === 'fresh') nextSteps.push(isAr ? 'ركز على إبراز الأنشطة الطلابية، التدريب الصيفي، أو مشاريع التخرج بشكل احترافي.' : 'Focus on professionally showcasing student leadership, internships, or academic projects.');
+      if (hasExp) nextSteps.push(isAr ? 'استخدم أفعال قيادة قوية (مثل: قمت بإدارة، طورت، حققت) في بداية كل نقطة خبرة.' : 'Start every bullet point with strong action verbs (e.g., Managed, Developed, Achieved).');
+      nextSteps.push(isAr ? 'تأكد من شمول المهارات التقنية المتخصصة المطلوبة في إعلانات التوظيف.' : 'Ensure you include domain-specific technical skills found in target job posts.');
+    }
+
+    const quickActions = [
+      { id: 'edit-summary', label: isAr ? '⭐ كتابة النبذة المهنية' : '⭐ Write Summary', condition: !hasSummary },
+      { id: 'improve-experience', label: isAr ? '🔥 تقوية نقاط الخبرة (أفعال وأرقام)' : '🔥 Improve Experience Bullets', condition: hasExp },
+      { id: 'suggest-skills', label: isAr ? '💡 اقتراح مهارات شائعة في مجالك' : '💡 Suggest Domain Skills', condition: true },
+      { id: 'tailor-job', label: isAr ? '🎯 تخصيص السيرة لوظيفة محددة (JD)' : '🎯 Tailor to Job Description', condition: true }
+    ].filter(a => a.condition).slice(0, 4);
+
+    return {
+      headline,
+      bestStep,
+      why,
+      nextSteps,
+      quickActions
+    };
+  }
+
   function buildCoachInsights(career) {
     const isAr = locale(career) === 'ar';
     const review = getPreExportReview(career);
     
-    // Status Logic
     const score = review.score;
     let scoreLabel = typeof I18n !== 'undefined' ? I18n.t('coach.overview.needs_work', 'Needs Improvement') : 'Needs Improvement';
     if (score >= 80) scoreLabel = typeof I18n !== 'undefined' ? I18n.t('coach.overview.excellent', 'Excellent') : 'Excellent';
     else if (score >= 60) scoreLabel = typeof I18n !== 'undefined' ? I18n.t('coach.overview.good', 'Good') : 'Good';
 
-    // Prioritization: max 3 priorities
     const priorities = review.items
       .filter(i => i.severity === 'high' || i.severity === 'medium')
       .slice(0, 3)
@@ -407,10 +557,11 @@ const AICoach = (function () {
         detail: i.detail,
         actionLabel: i.actionLabel,
         sectionKey: i.section,
-        points: i.impactPoints > 0 ? `+${i.impactPoints}%` : ''
+        points: i.impactPoints > 0 ? `+${i.impactPoints}%` : '',
+        why: i.why || (isAr ? 'هذه الخطوة ضرورية لرفع تقييم السيرة الذاتية وتخطي أنظمة الفرز الآلي (ATS).' : 'Essential for boosting resume score and passing automated ATS screening.'),
+        fixAction: i.fixAction || 'edit-personal'
       }));
 
-    // Recommended
     const recommended = review.items
       .filter(i => (i.severity === 'medium' || i.severity === 'low') && !priorities.find(p => p.id === i.id))
       .slice(0, 3)
@@ -420,7 +571,6 @@ const AICoach = (function () {
         sectionKey: i.section
       }));
 
-    // Completed Sections
     const completed = [];
     const p = career.personalInfo || {};
     if (p.name?.trim() && p.email?.trim() && p.phone?.trim()) {
@@ -443,60 +593,38 @@ const AICoach = (function () {
       completed.push({ title: typeof I18n !== 'undefined' ? I18n.t('coach.overview.skills', 'Skills') : 'Skills', sectionKey: 'skills' });
     }
 
-    // Role-Aware Mentor
-    const f = field(career);
-    const l = level(career);
-    let mentorHeadline = '';
-    let mentorExplanation = '';
-    const mentorNextSteps = [];
+    const todayGoal = {
+      currentScore: score,
+      targetScore: Math.min(100, score < 70 ? score + 18 : score < 85 ? score + 12 : 100),
+      remainingTasksCount: priorities.length,
+      completedTasksCount: completed.length
+    };
 
-    const jobTitle = career.careerProfile?.jobTitle || industry(career);
-    const levelStr = typeof I18n !== 'undefined' ? (l === 'fresh' ? I18n.t('coach.mentor.roles.fresh_graduate', 'Fresh Graduate') : I18n.t('coach.mentor.roles.experienced', 'Experienced')) : (l === 'fresh' ? 'Fresh Graduate' : 'Experienced');
-    mentorHeadline = typeof I18n !== 'undefined' ? I18n.t('coach.mentor.greetings.you_are', 'You are a {levelStr} {jobTitle}.').replace('{levelStr}', levelStr).replace('{jobTitle}', jobTitle) : `You are a ${levelStr} ${jobTitle}.`;
+    const mentor = getRoleAwareMentorAdvice(career);
 
-    // Role-aware logic
-    if (f === 'accountant') {
-      mentorExplanation = typeof I18n !== 'undefined' ? I18n.t('coach.mentor.greetings.accountant', 'In accounting, practical training and ERP proficiency are much more important than independent projects.') : 'In accounting, practical training and ERP proficiency are much more important than independent projects.';
-      if (!hasExp) mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.add_internship', 'Add an internship or practical training') : 'Add an internship or practical training');
-      if (!flatSkills(career).some(s => /excel|erp|sap|oracle/i.test(s))) mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.add_excel_erp', 'Add Excel or ERP proficiency if available') : 'Add Excel or ERP proficiency if available');
-      mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.turn_resp_to_achieve', 'Turn responsibilities into numeric achievements') : 'Turn responsibilities into numeric achievements');
-    } else if (f === 'developer' || f === 'designer' || f === 'ui_ux_designer' || f === 'graphic_designer') {
-      mentorExplanation = typeof I18n !== 'undefined' ? I18n.t('coach.mentor.greetings.developer', 'In your field, a portfolio and practical projects are what sets you apart.') : 'In your field, a portfolio and practical projects are what sets you apart.';
-      if ((career.projects || []).length === 0) mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.add_project', 'Add at least one project (with a link)') : 'Add at least one project (with a link)');
-      if (!p.links?.github && !p.links?.portfolio && !p.links?.behance) mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.add_portfolio', 'Add a portfolio link (GitHub, Behance)') : 'Add a portfolio link (GitHub, Behance)');
-    } else {
-      mentorExplanation = typeof I18n !== 'undefined' ? I18n.t('coach.mentor.greetings.default', 'At your current level, highlighting specialized skills clearly is the key to success.') : 'At your current level, highlighting specialized skills clearly is the key to success.';
-      if (!hasExp && l === 'fresh') mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.focus_activities', 'Focus on highlighting training and student activities') : 'Focus on highlighting training and student activities');
-      if (hasExp) mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.use_action_verbs', 'Use strong action verbs like "Managed" or "Developed" in experience') : 'Use strong action verbs like "Managed" or "Developed" in experience');
-      mentorNextSteps.push(typeof I18n !== 'undefined' ? I18n.t('coach.mentor.advice.include_skills', 'Ensure you include in-demand skills in your field') : 'Ensure you include in-demand skills in your field');
-    }
-
-    // Quick Actions Priority
-    const quickActions = [
-      { id: 'edit-summary', label: typeof I18n !== 'undefined' ? I18n.t('coach.mentor.write_summary', '⭐ Write Summary') : '⭐ Write Summary', condition: !hasSummary },
-      { id: 'improve-experience', label: typeof I18n !== 'undefined' ? I18n.t('coach.mentor.improve_experience', '🔥 Improve Experience') : '🔥 Improve Experience', condition: hasExp && priorities.some(p => p.sectionKey === 'experience') },
-      { id: 'tailor-job', label: typeof I18n !== 'undefined' ? I18n.t('coach.mentor.tailor_job', '🎯 Tailor to Job') : '🎯 Tailor to Job', condition: true },
-      { id: 'suggest-skills', label: typeof I18n !== 'undefined' ? I18n.t('coach.mentor.suggest_skills', '💡 Suggest Skills') : '💡 Suggest Skills', condition: true }
-    ].filter(a => a.condition).slice(0, 4); // return up to 4 applicable actions
+    const hasJD = !!(career.meta && career.meta.targetJD && career.meta.targetJD.trim().length > 15);
+    const ats = {
+      mode: hasJD ? 'job_match' : 'readiness',
+      score: hasJD ? (career.meta.jdMatchScore || 0) : score,
+      readinessChecklist: [
+        { label: isAr ? 'القالب متوافق مع قراءة أنظمة ATS (بدون جداول أو أعمدة معقدة)' : 'Template is readable by ATS scanners (no complex tables)', ok: true },
+        { label: isAr ? 'العناوين واضحة وقياسية (الخبرة، المهارات، التعليم)' : 'Headings are clear and standard (Experience, Skills, Education)', ok: true },
+        { label: isAr ? 'بيانات الاتصال كاملة وتحتوي على هاتف وإيميل صحيح' : 'Contact info complete with phone and valid email', ok: !!(p.phone?.trim() && p.email?.trim()) }
+      ],
+      commonSkills: suggestSkills(career).slice(0, 6),
+      missingKeywords: hasJD ? (career.meta.jdMissingKeywords || []) : [],
+      foundKeywords: hasJD ? (career.meta.jdFoundKeywords || []) : []
+    };
 
     return {
       score,
       scoreLabel,
-      priorities,
+      todayGoal,
+      top3Problems: priorities,
       recommended,
       completed,
-      mentor: {
-        headline: mentorHeadline,
-        explanation: mentorExplanation,
-        nextSteps: mentorNextSteps,
-        quickActions
-      },
-      ats: {
-        mode: career.meta?.targetJD ? 'job_match' : 'readiness',
-        score: career.meta?.targetJD ? (career.meta?.jdMatchScore || 0) : score,
-        missingKeywords: career.meta?.jdMissingKeywords || [],
-        foundKeywords: career.meta?.jdFoundKeywords || []
-      }
+      mentor,
+      ats
     };
   }
 
@@ -508,7 +636,9 @@ const AICoach = (function () {
     applyQuickFix,
     suggestSkills,
     improveExperienceBullets,
-    buildFallbackSummary
+    buildFallbackSummary,
+    buildCoachInsights,
+    getRoleAwareMentorAdvice
   };
 })();
 

@@ -3,8 +3,8 @@
  */
 const Wizard = (function () {
   const STEPS = [
-    'welcome', 'locale', 'name', 'nice_to_meet', 'field', 'experience_years', 'location', 
-    'email', 'phone', 'linkedin', 'github', 'education', 'experience', 'projects', 'skills', 'template', 'done'
+    'welcome', 'locale', 'name', 'nice_to_meet', 'field', 'experience_years', 'contact', 
+    'education', 'experience', 'projects', 'skills', 'template', 'done'
   ];
   const LINK_PROOF_FIELDS = ['developer', 'designer', 'graphic_designer', 'ui_ux_designer', 'marketing', 'data_analyst'];
   const GITHUB_FIELDS = ['developer', 'data_analyst'];
@@ -90,7 +90,7 @@ const Wizard = (function () {
     const leftSec = document.querySelector('.wizard-left');
     if (!target) return;
 
-    const earlySteps = ['welcome', 'locale', 'name', 'nice_to_meet', 'field', 'experience_years', 'location', 'email', 'phone', 'linkedin', 'github'];
+    const earlySteps = ['welcome', 'locale', 'name', 'nice_to_meet', 'field', 'experience_years', 'contact'];
     const currentStep = STEPS[stepIndex];
     if (earlySteps.includes(currentStep)) {
       if (rightSec) rightSec.style.display = 'none';
@@ -194,24 +194,15 @@ const Wizard = (function () {
         if (!lvl) { valid = false; showError(t('wz.errRequired')); }
         else { career.careerProfile.level = lvl.value; }
         break;
-      case 'location':
-        career.personalInfo.location = el('wz-input-loc').value.trim();
-        break;
-      case 'email':
-        const em = el('wz-input-email').value.trim();
-        if (em && !em.includes('@')) { valid = false; showError(t('wz.errEmail')); }
-        else { career.personalInfo.email = em; }
-        break;
-      case 'phone':
-        career.personalInfo.phone = el('wz-input-phone').value.trim();
-        break;
-      case 'linkedin':
+      case 'contact':
+        const em = el('wz-input-email')?.value.trim() || '';
+        if (em && !em.includes('@')) { valid = false; showError(t('wz.errEmail')); break; }
+        career.personalInfo.email = em;
+        career.personalInfo.phone = el('wz-input-phone')?.value.trim() || '';
+        career.personalInfo.location = el('wz-input-loc')?.value.trim() || '';
         if (!career.personalInfo.links) career.personalInfo.links = {};
-        career.personalInfo.links.linkedin = el('wz-input-linkedin').value.trim();
-        break;
-      case 'github':
-        if (!career.personalInfo.links) career.personalInfo.links = {};
-        career.personalInfo.links.github = el('wz-input-github').value.trim();
+        if (el('wz-input-linkedin')) career.personalInfo.links.linkedin = el('wz-input-linkedin').value.trim();
+        if (el('wz-input-github')) career.personalInfo.links.github = el('wz-input-github').value.trim();
         break;
       case 'education':
         const edu = el('wz-input-edu').value.trim();
@@ -392,49 +383,44 @@ const Wizard = (function () {
         btn.style.display = 'none';
         break;
 
-      case 'location':
+      case 'contact':
+        const curField = career.careerProfile?.field || '';
+        const showLinks = LINK_PROOF_FIELDS.includes(curField);
         html = `
-          <h1 class="wz-title">${t('wz.stepLocation')}</h1>
-          <input type="text" id="wz-input-loc" class="wz-input-huge" placeholder="${t('wz.stepLocationPh')}" value="${a(career.personalInfo?.location || '')}" autofocus>
+          <h1 class="wz-title">${career.meta?.locale === 'ar' ? 'بيانات التواصل الأساسية' : 'Contact Information'}</h1>
+          <div style="display:flex;flex-direction:column;gap:16px;margin-top:16px;text-align:left;">
+            <div>
+              <label style="font-size:13px;font-weight:700;color:var(--text,#1e293b);display:block;margin-bottom:6px;">${t('wz.stepEmail', career.meta?.locale === 'ar' ? 'البريد الإلكتروني' : 'Email Address')}</label>
+              <input type="email" id="wz-input-email" class="wz-input-huge" style="margin:0;width:100%;" placeholder="${t('wz.stepEmailPh')}" value="${a(career.personalInfo?.email || '')}" autofocus>
+            </div>
+            <div>
+              <label style="font-size:13px;font-weight:700;color:var(--text,#1e293b);display:block;margin-bottom:6px;">${t('wz.stepPhone', career.meta?.locale === 'ar' ? 'رقم الهاتف' : 'Phone Number')}</label>
+              <input type="tel" id="wz-input-phone" class="wz-input-huge" style="margin:0;width:100%;" placeholder="${t('wz.stepPhonePh')}" value="${a(career.personalInfo?.phone || '')}">
+            </div>
+            <div>
+              <label style="font-size:13px;font-weight:700;color:var(--text,#1e293b);display:block;margin-bottom:6px;">${t('wz.stepLocation', career.meta?.locale === 'ar' ? 'المدينة والبلد' : 'Location / City')}</label>
+              <input type="text" id="wz-input-loc" class="wz-input-huge" style="margin:0;width:100%;" placeholder="${t('wz.stepLocationPh')}" value="${a(career.personalInfo?.location || '')}">
+            </div>
+            ${showLinks ? `
+            <div style="border-top:1px dashed #cbd5e1;padding-top:16px;margin-top:4px;">
+              <div style="font-size:12px;font-weight:700;color:#64748b;margin-bottom:10px;">🔗 ${career.meta?.locale === 'ar' ? 'روابط مهنية (اختياري لكن يُنصح به لمجالك)' : 'Professional Links (Recommended for your field)'}</div>
+              <div style="margin-bottom:12px;">
+                <input type="url" id="wz-input-linkedin" class="wz-input-huge" style="margin:0;width:100%;font-size:15px;padding:12px;" placeholder="${t('wz.stepLinkedinPh', 'LinkedIn URL')}" value="${a(career.personalInfo?.links?.linkedin || '')}">
+              </div>
+              <div>
+                <input type="url" id="wz-input-github" class="wz-input-huge" style="margin:0;width:100%;font-size:15px;padding:12px;" placeholder="${GITHUB_FIELDS.includes(curField) ? t('wz.stepGithubPh', 'GitHub URL') : 'Portfolio URL (Behance / Personal Site)'}" value="${a(career.personalInfo?.links?.github || '')}">
+              </div>
+            </div>
+            ` : ''}
+          </div>
         `;
-        setTimeout(() => bindLiveInput('wz-input-loc', 'personalInfo', 'location', true), 0);
-        break;
-
-      case 'email':
-        html = `
-          <h1 class="wz-title">${t('wz.stepEmail')}</h1>
-          <input type="email" id="wz-input-email" class="wz-input-huge" placeholder="${t('wz.stepEmailPh')}" value="${a(career.personalInfo?.email || '')}" autofocus>
-        `;
-        setTimeout(() => bindLiveInput('wz-input-email', 'personalInfo', 'email', true), 0);
-        break;
-
-      case 'phone':
-        html = `
-          <h1 class="wz-title">${t('wz.stepPhone')}</h1>
-          <input type="tel" id="wz-input-phone" class="wz-input-huge" placeholder="${t('wz.stepPhonePh')}" value="${a(career.personalInfo?.phone || '')}" autofocus>
-        `;
-        setTimeout(() => bindLiveInput('wz-input-phone', 'personalInfo', 'phone', true), 0);
-        break;
-
-      case 'linkedin':
-        html = `
-          <div class="wz-encouragement">${t('wz.msgLookingGood')}</div>
-          <h1 class="wz-title">${t('wz.stepLinkedin')}</h1>
-          <input type="url" id="wz-input-linkedin" class="wz-input-huge" placeholder="${t('wz.stepLinkedinPh')}" value="${a(career.personalInfo?.links?.linkedin || '')}" autofocus>
-        `;
-        setTimeout(() => bindLiveInput('wz-input-linkedin', 'links', 'linkedin', true), 0);
-        btn.innerText = t('wz.skip');
-        break;
-
-      case 'github':
-        const currentField = career.careerProfile?.field || '';
-        const isGithubField = GITHUB_FIELDS.includes(currentField);
-        html = `
-          <h1 class="wz-title">${isGithubField ? t('wz.stepGithub') : (career.meta?.locale === 'ar' ? 'عندك رابط أعمال أو صفحة مهنية؟' : 'Do you have a portfolio or professional page?')}</h1>
-          <input type="url" id="wz-input-github" class="wz-input-huge" placeholder="${isGithubField ? t('wz.stepGithubPh') : 'https://...'}" value="${a(career.personalInfo?.links?.github || '')}" autofocus>
-        `;
-        setTimeout(() => bindLiveInput('wz-input-github', 'links', 'github', true), 0);
-        btn.innerText = t('wz.skip');
+        setTimeout(() => {
+          bindLiveInput('wz-input-email', 'personalInfo', 'email', true);
+          bindLiveInput('wz-input-phone', 'personalInfo', 'phone', true);
+          bindLiveInput('wz-input-loc', 'personalInfo', 'location', true);
+          if (el('wz-input-linkedin')) bindLiveInput('wz-input-linkedin', 'links', 'linkedin', true);
+          if (el('wz-input-github')) bindLiveInput('wz-input-github', 'links', 'github', true);
+        }, 0);
         break;
 
       case 'education':
@@ -481,15 +467,21 @@ const Wizard = (function () {
         break;
 
       case 'template':
+        const topTemplates = TEMPLATES.filter(tmp => ['ai-recommended', 'ats', 'modern'].includes(tmp.id));
         html = `
           <h1 class="wz-title">${t('wz.stepTemplate')}</h1>
-          <div class="wz-grid-options template-grid">
-            ${TEMPLATES.map(tmp => `
-              <label class="wz-grid-card">
+          <div style="font-size:13px;color:#64748b;margin-bottom:16px;">${career.meta?.locale === 'ar' ? 'اختر قالبك المبدئي — يمكنك التبديل بين 16+ قالباً احترافياً لاحقاً من لوحة التحكم' : 'Pick your starting template — you can switch across 16+ professional designs anytime inside the editor'}</div>
+          <div class="wz-grid-options template-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            ${topTemplates.map(tmp => `
+              <label class="wz-grid-card ${career.meta.templateId === tmp.id ? 'active' : ''}" style="position:relative;padding:18px;">
                 <input type="radio" name="wz-template" value="${tmp.id}" ${career.meta.templateId === tmp.id ? 'checked' : ''} onchange="Wizard.setTemplate('${tmp.id}')">
-                <span class="wz-card-label">${h(t(tmp.name))}</span>
+                <span class="wz-card-label" style="font-weight:700;">${h(t(tmp.name))}</span>
+                ${tmp.id === 'ai-recommended' ? `<span style="display:block;font-size:11px;color:#2563eb;margin-top:4px;font-weight:600;">⭐ ${career.meta?.locale === 'ar' ? 'موصى به بالذكاء الاصطناعي' : 'AI Recommended'}</span>` : ''}
               </label>
             `).join('')}
+          </div>
+          <div style="margin-top:20px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;color:#475569;line-height:1.5;">
+            💡 ${career.meta?.locale === 'ar' ? 'تم اختيار أفضل 3 قوالب لتسهيل البدء السريع وتجنب الحيرة. عند الدخول للمحرر ستجد معرض القوالب الكامل.' : 'We show the top 3 templates for a fast, clutter-free start. Inside the editor, you will have access to the full template gallery.'}
           </div>
         `;
         break;
@@ -557,7 +549,6 @@ const Wizard = (function () {
       career.careerProfile.years = '0';
       return true;
     }
-    if (step === 'github') return !LINK_PROOF_FIELDS.includes(field);
     if (step === 'projects') return !PROJECT_FIELDS.includes(field);
     return false;
   }
