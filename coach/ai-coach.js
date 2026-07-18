@@ -276,14 +276,12 @@ const AICoach = (function () {
       items.push(issue(career, 'fresh-education', 'medium', 'education', 'Add education.', 'It strengthens your profile.', 'Add education', wEdu));
     }
 
-    // Certifications
+    // Certifications (Optional tip that does not penalize score or show as warning)
     const wCert = rules.section_weights.certifications || 0;
     if ((career.certificates || []).length > 0) {
       score += wCert;
-    } else if (rules.required_sections.includes('certifications')) {
-      items.push(issue(career, 'missing-certs', 'high', 'certificates', 'Add certifications.', 'Required for your role.', 'Add certs', wCert));
-    } else if (rules.recommended_sections.includes('certifications')) {
-      items.push(issue(career, 'missing-certs', 'medium', 'certificates', 'Add certifications.', 'Helps validate your skills.', 'Add certs', wCert));
+    } else if (rules.required_sections.includes('certifications') || rules.recommended_sections.includes('certifications')) {
+      items.push(issue(career, 'missing-certs', 'info', 'certificates', 'Professional Certifications (Optional)', 'Certifications are an optional bonus if you have them, but skipping this section will not hurt your core CV score.', '+ Add Cert (Optional)', 0));
     }
 
     // Penalize if core personal info is missing
@@ -355,8 +353,8 @@ const AICoach = (function () {
         en: 'Your degree, institution, and graduation year are the primary qualification filters for early-career roles.'
       },
       'missing-certs': {
-        ar: 'الشهادات المهنية المعتمدة تزيد من موثوقية مهاراتك وتعطيك أفضلية تنافسية واضحة في مجالك.',
-        en: 'Professional certifications validate your skills and give you a distinct competitive advantage in your industry.'
+        ar: 'الشهادات المهنية هي إضافة اختيارية ممتازة إذا كانت متوفرة لديك، ولكن عدم وجودها لا ينقص من تقييم السيرة الذاتية الأساسي.',
+        en: 'Professional certifications are an optional bonus if you have them, but omitting them will not penalize your core score.'
       }
     };
 
@@ -408,7 +406,7 @@ const AICoach = (function () {
       'missing-skills': ['أضف المهارات.', 'قسم المهارات مهم جدًا لأنظمة ATS ومسؤولي التوظيف.', 'أضف مهارات'],
       'many-skills': ['اختصر قائمة المهارات.', 'القائمة المركزة أصدق من قائمة طويلة وعامة.', 'افتح المهارات'],
       'fresh-education': ['أضف التعليم والمؤهل.', 'التعليم دليل أساسي في هذا المجال.', 'أضف التعليم'],
-      'missing-certs': ['أضف الشهادات إن وجدت.', 'الشهادات بتقوّي مصداقية مهاراتك في المجال.', 'أضف شهادة']
+      'missing-certs': ['الشهادات المهنية (اختياري).', 'إضافة اختيارية لتقوية الملف إذا توفرت، ولا تؤثر على التقييم الأساسي.', '+ أضف شهادة (اختياري)']
     };
         if (staticCopy[id]) {
       const [arTitle, arDetail, arAction] = staticCopy[id];

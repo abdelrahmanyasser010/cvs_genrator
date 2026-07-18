@@ -75,7 +75,7 @@ const CVSections = (function () {
       const photoUrl = p.photo || '';
       const showPhoto = Boolean(photoUrl && career.meta?.showPhoto);
       const photoHtml = showPhoto ? `<div class="cv-header-photo" style="margin-inline-end:16px;flex-shrink:0;"><img src="${esc(photoUrl)}" alt="" style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:2.5px solid var(--primary,#2563eb);box-shadow:0 2px 8px rgba(0,0,0,0.08);"></div>` : '';
-      return `<header class="cv-header" style="${showPhoto ? 'display:flex;align-items:center;flex-wrap:wrap;' : ''}">${photoHtml}<div style="flex:1;min-width:200px;"><h1>${esc(p.name)}</h1>${title ? `<div class="cv-subtitle">${esc(title)}</div>` : ''}<div class="cv-contacts">${ciHtml}</div></div></header>`;
+      return `<header class="cv-header" onclick="if(typeof Editor!=='undefined'&&Editor.openEditPanel)Editor.openEditPanel('personalInfo');" style="cursor:pointer;${showPhoto ? 'display:flex;align-items:center;flex-wrap:wrap;' : ''}" title="${career.meta?.locale==='ar'?'اضغط لتعديل الاسم والمسمى الوظيفي':'Click to edit name and job title'}">${photoHtml}<div style="flex:1;min-width:200px;"><h1>${esc(p.name)}</h1>${title ? `<div class="cv-subtitle">${esc(title)}</div>` : ''}<div class="cv-contacts">${ciHtml}</div></div></header>`;
     }
 
   function summary(career, labels) {

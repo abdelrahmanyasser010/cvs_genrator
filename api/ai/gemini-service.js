@@ -14,7 +14,8 @@ function getApiKey() {
 async function generateWithGemini({ prompt, options = {} }) {
   const apiKey = getApiKey();
   if (!apiKey) {
-    return json(501, {
+    return json(200, {
+      fallback: true,
       error: 'AI is not configured on the server. Set GEMINI_API_KEY.'
     });
   }

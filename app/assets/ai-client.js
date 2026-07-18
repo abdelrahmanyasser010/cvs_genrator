@@ -153,6 +153,7 @@ ${JSON.stringify(data, null, 2)}`;
     });
     if (res.status === 404 || res.status === 501) return null;
     const data = await readResponse(res);
+    if (data?.fallback || data?.error) return null;
     return data?.text?.trim() || null;
   }
 

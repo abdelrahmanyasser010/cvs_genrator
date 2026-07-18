@@ -75,7 +75,7 @@ const LayoutEngine = (function () {
     const side = `
       <div style="background:var(--primary, #0f766e);color:#fff;padding:28px 20px;height:100%;box-sizing:border-box;">
         ${photoHtml}
-        <div style="text-align:center;margin-bottom:20px;">
+        <div onclick="if(typeof Editor!=='undefined'&&Editor.openEditPanel)Editor.openEditPanel('personalInfo');" style="text-align:center;margin-bottom:20px;cursor:pointer;" title="اضغط لتعديل الاسم والمسمى الوظيفي">
           <h1 style="font-size:21px;color:#fff;margin:0 0 6px;font-weight:800;line-height:1.2;">${CVSections.esc(p.name || '')}</h1>
           <div style="font-size:13.5px;color:rgba(255,255,255,0.9);font-weight:600;">${CVSections.esc(p.title || career.careerProfile?.title || '')}</div>
         </div>
@@ -111,7 +111,7 @@ const LayoutEngine = (function () {
     const photoHtml = showPhoto ? `<div style="flex-shrink:0;"><img src="${CVSections.esc(photoUrl)}" alt="" style="width:84px;height:84px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,0.2);"></div>` : '';
 
     const headerBanner = `
-      <div style="background:linear-gradient(135deg, var(--primary, #1e293b) 0%, #334155 100%);color:#fff;padding:26px 30px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-radius:6px 6px 0 0;">
+      <div onclick="if(typeof Editor!=='undefined'&&Editor.openEditPanel)Editor.openEditPanel('personalInfo');" style="background:linear-gradient(135deg, var(--primary, #1e293b) 0%, #334155 100%);color:#fff;padding:26px 30px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-radius:6px 6px 0 0;cursor:pointer;" title="اضغط لتعديل الاسم والمسمى الوظيفي">
         <div style="flex:1;">
           <h1 style="font-size:26px;color:#fff;margin:0 0 5px;font-weight:800;">${CVSections.esc(p.name || '')}</h1>
           <div style="font-size:14px;color:rgba(255,255,255,0.9);font-weight:600;margin-bottom:12px;">${CVSections.esc(p.title || career.careerProfile?.title || '')}</div>

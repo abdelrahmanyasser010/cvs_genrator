@@ -699,7 +699,7 @@ const Editor = (function () {
           <input class="form-input" id="f-name" type="text" placeholder="${t('ed.form.ph_name', 'e.g. Ahmed Ali')}" value="${a(pi.name || '')}">
         </div>
         <div class="form-field">
-          <label class="form-label">${t('ed.form.jobTitle', 'Job Title')}</label>
+          <label class="form-label">${isAr() ? 'المسمى المهني تحت الاسم (مثل: معلم، محاسب، مطور)' : 'Job Title (displayed under your name)'}</label>
           <input class="form-input" id="f-title" type="text" placeholder="${a(titlePlaceholder)}" value="${a(pi.title || '')}">
         </div>
         <div class="form-field">

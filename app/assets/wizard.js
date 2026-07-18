@@ -528,7 +528,11 @@ const Wizard = (function () {
     career.careerProfile.field = fieldId;
     const picked = FIELDS.find(item => item.id === fieldId);
     if (!career.personalInfo) career.personalInfo = {};
-    if (!career.personalInfo.title && picked?.label) career.personalInfo.title = picked.label;
+    const label = picked ? (picked.label || t(picked.key)) : fieldId;
+    if (label) {
+      career.personalInfo.title = label;
+      career.careerProfile.title = label;
+    }
     handleNext();
   }
 
