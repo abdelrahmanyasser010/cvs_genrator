@@ -2856,7 +2856,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ── Left Panel ── */
 .editor-panel-left {
-  width: 240px;
+  width: 260px;
   flex-shrink: 0;
   background: white;
   border-right: 1px solid var(--border);
@@ -2864,7 +2864,7 @@ a { color: inherit; text-decoration: none; }
   flex-direction: column;
   height: 100%;
   max-height: 100%;
-  overflow: hidden;
+  overflow-y: auto !important;
   min-height: 0;
 }
 
@@ -3083,7 +3083,7 @@ a { color: inherit; text-decoration: none; }
   height: 100%;
   max-height: 100%;
   gap: 0;
-  overflow: hidden;
+  overflow-y: auto !important;
   min-height: 0;
 }
 
@@ -3588,10 +3588,10 @@ a { color: inherit; text-decoration: none; }
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 12px;
 }
 
-.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field { display: flex; flex-direction: column; gap: 4px; }
 .form-field-full { grid-column: 1 / -1; }
 
 .form-label {
@@ -3610,10 +3610,10 @@ a { color: inherit; text-decoration: none; }
 }
 
 .form-input {
-  padding: 10px 14px;
-  font-size: 14px;
+  padding: 8px 10px;
+  font-size: 13.5px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 6px;
   background: white;
   outline: none;
   font-family: var(--font);
@@ -3628,10 +3628,10 @@ a { color: inherit; text-decoration: none; }
 }
 
 .form-textarea {
-  padding: 12px 14px;
-  font-size: 14px;
+  padding: 8px 10px;
+  font-size: 13.5px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 6px;
   background: white;
   outline: none;
   font-family: var(--font);
@@ -3648,10 +3648,10 @@ a { color: inherit; text-decoration: none; }
 }
 
 .list-item {
-  padding: 16px;
+  padding: 12px;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  margin-bottom: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
   background: var(--gray-50);
 }
 
@@ -3659,7 +3659,7 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .list-item-title {

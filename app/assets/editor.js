@@ -644,13 +644,14 @@ const Editor = (function () {
   }
 
   function buildAIPills(sectionKey) {
-    const pills = [
-      { label: t('ed.ai_pills.improve', '✨ Improve'), action: `aiImprove('${sectionKey}')` },
-      { label: t('ed.ai_pills.shorten', '✂️ Shorten'), action: `aiShorten('${sectionKey}')` },
-      { label: t('ed.ai_pills.professional', '🎯 Professional'), action: `aiProfessional('${sectionKey}')` },
-      { label: t('ed.ai_pills.translate', '🌐 Translate'), action: `aiTranslate('${sectionKey}')` },
-    ];
-    if (sectionKey === 'skills') pills.push({ label: t('ed.ai_pills.suggest_skills', '💡 Suggest Skills'), action: `aiSuggestSkills()` });
+    const pills = [];
+    if (['summary', 'experience', 'projects'].includes(sectionKey)) {
+      pills.push({ label: t('ed.ai_pills.improve', '✨ Improve & Professionalize'), action: `aiImprove('${sectionKey}')` });
+      pills.push({ label: t('ed.ai_pills.translate', '🌐 Translate (En/Ar)'), action: `aiTranslate('${sectionKey}')` });
+    }
+    if (sectionKey === 'skills') {
+      pills.push({ label: t('ed.ai_pills.suggest_skills', '💡 Suggest Skills'), action: `aiSuggestSkills()` });
+    }
     return pills.map(p => `<button class="ai-pill" onclick="Editor.${p.action}">${p.label}</button>`).join('');
   }
 
@@ -760,11 +761,20 @@ const Editor = (function () {
 
   // ─── EXPERIENCE ───
   function buildExperienceForm() {
+    const f = career.careerProfile?.field;
+    let orgLabel = t('ed.form.company', 'Company');
+    let orgPh = t('ed.form.ph_company', 'Company name');
+    if (f === 'teacher') { orgLabel = isAr() ? 'المدرسة / المؤسسة' : 'School / Institution'; orgPh = isAr() ? 'اسم المدرسة...' : 'School name...'; }
+    else if (f === 'doctor' || f === 'nurse' || f === 'dentist' || f === 'pharmacist') { orgLabel = isAr() ? 'المستشفى / العيادة' : 'Hospital / Clinic'; orgPh = isAr() ? 'اسم المستشفى أو العيادة...' : 'Hospital/Clinic name...'; }
+    else if (f === 'lawyer') { orgLabel = isAr() ? 'المكتب / الجهة' : 'Law Firm / Org'; orgPh = isAr() ? 'اسم المكتب...' : 'Firm name...'; }
+    
+    const atWord = isAr() ? 'في' : 'at';
+    
     const exps = career.experience || [];
     const items = exps.map((e, i) => `
       <div class="list-item" data-idx="${i}">
         <div class="list-item-header">
-          <span class="list-item-title">${h(e.role || t('ed.form.newRole', 'New Role'))} at ${h(e.company || '...')}</span>
+          <span class="list-item-title">${h(e.role || t('ed.form.newRole', 'New Role'))} ${atWord} ${h(e.company || '...')}</span>
           <div>
             <button class="list-item-btn" onclick="Editor.duplicateExpItem(${i})" title="Duplicate">📋</button>
             <button class="list-item-del" onclick="Editor.deleteExpItem(${i})" title="Delete">✕</button>
@@ -772,8 +782,8 @@ const Editor = (function () {
         </div>
         <div class="form-grid">
           <div class="form-field">
-            <label class="form-label">${t('ed.form.company', 'Company')}</label>
-            <input class="form-input" id="f-exp-co-${i}" type="text" placeholder="${t('ed.form.ph_company', 'Company name')}" value="${a(e.company || '')}">
+            <label class="form-label">${orgLabel}</label>
+            <input class="form-input" id="f-exp-co-${i}" type="text" placeholder="${orgPh}" value="${a(e.company || '')}">
           </div>
           <div class="form-field">
             <label class="form-label">${t('ed.form.role', 'Role')}</label>
@@ -789,7 +799,7 @@ const Editor = (function () {
           </div>
           <div class="form-field form-field-full">
             <label class="form-label">${t('ed.form.description', 'Description')}</label>
-            <textarea class="form-textarea" id="f-exp-desc-${i}" rows="4" placeholder="${t('ed.form.ph_desc', 'Describe what you accomplished...')}">${h(e.rawDescription || (e.bullets || []).join('\n'))}</textarea>
+            <textarea class="form-textarea" id="f-exp-desc-${i}" rows="3" placeholder="${t('ed.form.ph_desc', 'Describe what you accomplished...')}">${h(e.rawDescription || (e.bullets || []).join('\n'))}</textarea>
             <div style="font-size:11.5px;color:#64748b;margin-top:4px;">💡 <b>نصيحة:</b> مش عارف تكتب إيه في المهام؟ اضغط على زر <b>"⚡ إدراج مهام جاهزة لمجالي"</b> بالأعلى وسنقوم بكتابتها فوراً!</div>
           </div>
         </div>
@@ -943,9 +953,27 @@ const Editor = (function () {
               <input class="form-input" id="f-skill-vals-${i}" type="text" placeholder="${getPh().skills || t('ed.form.ph_skill_vals', 'React, TypeScript, CSS')}" value="${a((skills || []).join(', '))}">
               <div style="font-size:11.5px;color:#64748b;margin-top:6px;">💡 <b>نصيحة:</b> افصل بين كل مهارة وأخرى بفاصلة (،) أو اضغط على المقترحات الجاهزة لإضافتها فوراً:</div>
               <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
-                ${['Excel', 'Word', 'إعداد التقارير المالية', 'التحليل المالي', 'المراجعة والتدقيق', 'أنظمة ERP', 'التواصل الفعال', 'حل المشكلات'].map(sk => `
-                  <button type="button" style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:4px 10px;border-radius:14px;font-size:12px;cursor:pointer;font-weight:500;" onclick="Editor.appendSkillToInput(${i}, '${sk}')">+ ${sk}</button>
-                `).join('')}
+                ${(function() {
+                  const f = career.careerProfile?.field || 'developer';
+                  let sugs = [];
+                  if (typeof AICoach !== 'undefined' && AICoach.suggestSkills) {
+                    sugs = AICoach.suggestSkills(career, []);
+                  } else if (typeof OfflineHelpers !== 'undefined' && OfflineHelpers.suggestSkills) {
+                    sugs = OfflineHelpers.suggestSkills(f, '', []);
+                  }
+                  if (!sugs || !sugs.length) {
+                    const map = {
+                      doctor: isAr() ? ['التشخيص الطبي', 'رعاية المرضى', 'الطوارئ والعناية', 'الفحص السريري', 'وصف العلاج', 'السجلات الطبية', 'إدارة الحالات', 'التواصل الطبي'] : ['Clinical Diagnosis', 'Patient Care', 'Emergency Medicine', 'Treatment Planning', 'Medical Records (EMR)', 'Clinical Ethics'],
+                      teacher: isAr() ? ['إدارة الفصل', 'تطوير المناهج', 'التعليم التفاعلي', 'تقييم الطلاب', 'التعلم عن بعد', 'تخطيط الدروس', 'تكنولوجيا التعليم'] : ['Classroom Management', 'Curriculum Design', 'Lesson Planning', 'Student Assessment', 'EdTech Tools', 'Differentiated Instruction'],
+                      accountant: isAr() ? ['Excel', 'إعداد التقارير المالية', 'التحليل المالي', 'المراجعة والتدقيق', 'أنظمة ERP', 'إدارة الميزانية', 'الضرائب'] : ['Excel', 'Financial Reporting', 'Financial Analysis', 'Auditing', 'ERP Systems', 'Tax Compliance', 'Budgeting'],
+                      developer: isAr() ? ['JavaScript', 'TypeScript', 'React', 'Node.js', 'Git', 'SQL', 'REST APIs', 'Problem Solving'] : ['JavaScript', 'TypeScript', 'React', 'Node.js', 'Git', 'SQL', 'REST APIs', 'System Design']
+                    };
+                    sugs = map[f] || map.developer;
+                  }
+                  return sugs.slice(0, 10).map(sk => `
+                    <button type="button" style="background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:4px 10px;border-radius:14px;font-size:12px;cursor:pointer;font-weight:500;" onclick="Editor.appendSkillToInput(${i}, '${sk.replace(/'/g, "\\'")}')">+ ${sk}</button>
+                  `).join('');
+                })()}
               </div>
             </div>
           </div>
@@ -1938,6 +1966,8 @@ const Editor = (function () {
     if (isAILoading) return;
     switch (action) {
       case 'generate-summary':
+      case 'auto-summary':
+      case 'edit-summary':
         setAILoading(true);
         (async () => {
           let text = null;
@@ -1959,12 +1989,19 @@ const Editor = (function () {
       case 'improve-summary': aiImprove('summary'); break;
       case 'shorten-summary': aiShorten('summary'); break;
       case 'translate-summary': aiTranslate('summary'); break;
-      case 'suggest-skills': aiSuggestSkills(); break;
+      case 'suggest-skills':
+      case 'auto-skills':
+        aiSuggestSkills(); break;
       case 'tailor-job': tailorJob(); break;
+      case 'edit-personal': openEditPanel('personalInfo'); break;
       case 'edit-skills': openEditPanel('skills'); break;
       case 'edit-experience': openEditPanel('experience'); break;
       case 'edit-education': openEditPanel('education'); break;
+      case 'edit-projects': openEditPanel('projects'); break;
+      case 'edit-certificates': openEditPanel('certifications'); break;
       case 'improve-bullets':
+      case 'improve-experience':
+      case 'auto-bullets':
         setAILoading(true);
         (async () => {
           pushUndo();
