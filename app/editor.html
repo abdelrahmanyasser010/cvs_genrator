@@ -43,7 +43,7 @@
   <!-- Mobile: compact topbar -->
   <header class="mob-topbar no-print">
     <a href="landing.html" class="mob-topbar-back">←</a>
-    <span class="mob-topbar-title" id="mob-topbar-name">My Resume</span>
+    <span class="mob-topbar-title" id="mob-topbar-name" data-i18n="ed.myResume">My Resume</span>
     <button class="mob-topbar-menu" onclick="Editor.showExportModal()">⋮</button>
   </header>
 
@@ -63,7 +63,7 @@
       </div>
       <div id="resume-score-header" style="padding: 16px 16px 0 16px;"></div>
       <div id="global-settings" style="padding: 12px; padding-bottom: 0;"></div>
-      <div class="sections-list-title" style="padding: 12px; font-size: 13px; font-weight: 800; color: var(--gray-500); text-transform: uppercase;">
+      <div class="sections-list-title" data-i18n="ed.sections_title" style="padding: 12px; font-size: 13px; font-weight: 800; color: var(--gray-500); text-transform: uppercase;">
         محتوى السيرة (CV Content)
       </div>
       <div class="sections-list" id="sections-list">
@@ -93,7 +93,7 @@
       <!-- Tab: Overview -->
       <div class="coach-tab-pane active" id="coach-pane-overview">
         <div class="rpanel-block" id="coach-overview-panel">
-          <div class="coach-loading">Analyzing...</div>
+          <div class="coach-loading" data-i18n="coach.loading">Analyzing...</div>
         </div>
         <div class="rpanel-block" id="coach-overview-templates-panel" style="display: none;">
           <div class="rpanel-label" data-i18n="editor.template">Template</div>
@@ -105,14 +105,14 @@
       <!-- Tab: Mentor -->
       <div class="coach-tab-pane" id="coach-pane-mentor">
         <div class="rpanel-block" id="coach-mentor-panel">
-          <div class="coach-loading">Analyzing...</div>
+          <div class="coach-loading" data-i18n="coach.loading">Analyzing...</div>
         </div>
       </div>
 
       <!-- Tab: ATS -->
       <div class="coach-tab-pane" id="coach-pane-ats">
         <div class="rpanel-block" id="coach-ats-panel">
-          <div class="coach-loading">Analyzing...</div>
+          <div class="coach-loading" data-i18n="coach.loading">Analyzing...</div>
         </div>
       </div>
 
@@ -152,22 +152,12 @@
           <span class="export-label">PDF</span>
           <span class="export-hint" data-i18n="ed.modal.best_print">Best for printing</span>
         </button>
-        <button class="export-card" onclick="Editor.exportPng()">
-          <span class="export-icon">🖼️</span>
-          <span class="export-label">PNG</span>
-          <span class="export-hint" data-i18n="ed.modal.image_ver">Image format</span>
-        </button>
-        <button class="export-card" onclick="Editor.exportDocx()">
-          <span class="export-icon">📝</span>
-          <span class="export-label">DOCX</span>
-          <span class="export-hint" data-i18n="ed.modal.word_ver">Word document</span>
-        </button>
       </div>
       <details class="advanced-export">
-        <summary>Advanced</summary>
+        <summary data-i18n="ed.modal.advanced">Advanced</summary>
         <div class="advanced-export-actions">
           <button class="topbar-btn" onclick="Editor.exportHtml()">HTML</button>
-          <button class="topbar-btn" onclick="Editor.exportJson()">Backup</button>
+          <button class="topbar-btn" onclick="Editor.exportJson()" data-i18n="ed.modal.backup">Backup</button>
         </div>
       </details>
       <label class="import-link advanced-import">
@@ -181,15 +171,15 @@
   <nav class="mobile-bottom-bar no-print" id="mob-bottom-nav">
     <button type="button" class="mob-bar-btn active" id="mob-btn-edit" onclick="Editor.setMobileView('edit')">
       <span class="mob-btn-icon">✏️</span>
-      <span class="mob-btn-label">تعديل</span>
+      <span class="mob-btn-label" data-i18n="ed.mobile.edit">تعديل</span>
     </button>
     <button type="button" class="mob-bar-btn" id="mob-btn-preview" onclick="Editor.setMobileView('preview')">
       <span class="mob-btn-icon">👁</span>
-      <span class="mob-btn-label">معاينة</span>
+      <span class="mob-btn-label" data-i18n="ed.mobile.preview">معاينة</span>
     </button>
     <button type="button" class="mob-bar-btn mob-bar-btn-export" onclick="Editor.showExportModal()">
       <span class="mob-btn-icon">⬇</span>
-      <span class="mob-btn-label">تصدير</span>
+      <span class="mob-btn-label" data-i18n="ed.mobile.export">تصدير</span>
     </button>
   </nav>
 

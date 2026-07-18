@@ -312,6 +312,8 @@
   },
   "ed": {
     "myResume": "My Resume",
+    "resumeFor": "{name}'s Resume",
+    "sections_title": "CV Content",
     "groups": {
       "basics": "Resume Sections",
       "extras": "Additional"
@@ -436,9 +438,18 @@
       "best_print": "Best for printing",
       "web_ver": "Web version",
       "data_backup": "Data backup",
+      "advanced": "Advanced",
+      "backup": "Backup",
+      "image_ver": "Image format",
+      "word_ver": "Word document",
       "import_json": "Import JSON backup",
       "save_changes": "Save Changes",
       "edit": "Edit"
+    },
+    "mobile": {
+      "edit": "Edit",
+      "preview": "Preview",
+      "export": "Download"
     },
     "empty_states": {
       "experience": "No experience yet. Add your first job below.",
@@ -467,6 +478,7 @@
     "search": "🔍 Search sections..."
   },
   "coach": {
+    "loading": "Analyzing...",
     "tabs": {
       "overview": "📋 Overview",
       "mentor": "🎯 Mentor",
@@ -526,7 +538,8 @@
       "do_you_have_exp": "Do you have actual experience with {keyword}?",
       "yes_add": "Yes, add",
       "no": "No",
-      "added": "Added"
+      "added": "Added",
+      "skills_category": "Core Skills"
     }
   }
 }

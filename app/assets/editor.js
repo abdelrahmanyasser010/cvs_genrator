@@ -201,7 +201,16 @@ const Editor = (function () {
 
   function updateTopbarName() {
     const nameEl = el('topbar-name');
-    if (nameEl) nameEl.textContent = career.personalInfo?.name ? `${career.personalInfo.name}'s Resume` : t('ed.myResume', 'My Resume');
+    const displayTitle = resumeDisplayTitle();
+    if (nameEl) nameEl.textContent = displayTitle;
+    const mobName = el('mob-topbar-name');
+    if (mobName) mobName.textContent = displayTitle;
+  }
+
+  function resumeDisplayTitle() {
+    const name = career.personalInfo?.name?.trim();
+    if (!name) return t('ed.myResume', isAr() ? 'سيرتي الذاتية' : 'My Resume');
+    return t('ed.resumeFor', isAr() ? `سيرة ${name}` : `${name}'s Resume`).replace('{name}', name);
   }
 
   function fallbackJobTitle() {
@@ -1436,6 +1445,9 @@ const Editor = (function () {
     if (!frame) return;
     requestAnimationFrame(() => {
       frame.innerHTML = CVRenderer.renderBody(career);
+      if (currentMobileView === 'preview') {
+        requestAnimationFrame(() => applyMobileScale());
+      }
     });
   }
 
@@ -1530,13 +1542,14 @@ const Editor = (function () {
     const canvas = el('editor-canvas');
     const paper = el('a4-wrapper');
     if (!canvas || !paper) return;
-    const availW = canvas.clientWidth - 16; // 8px padding each side
-    const scale = availW / 794;
+    const availW = Math.max(280, canvas.clientWidth - 16);
+    const scale = Math.min(1, availW / 794);
     paper.style.width = '794px';
     paper.style.transform = `scale(${scale})`;
     paper.style.transformOrigin = 'top center';
-    // Use true scrollHeight for accurate whitespace collapse
-    paper.style.marginBottom = `${-(paper.scrollHeight * (1 - scale))}px`;
+    const frame = el('preview-frame');
+    const height = frame?.scrollHeight || paper.scrollHeight || 1123;
+    paper.style.marginBottom = `${-(height * (1 - scale))}px`;
   }
 
   function updateMobScoreBar() {
@@ -1586,10 +1599,7 @@ const Editor = (function () {
     CareerStorage.save(career);
     renderAll();
     updateMobScoreBar();
-    // Sync mobile topbar title
-    const mobName = el('mob-topbar-name');
-    const topbarName = el('topbar-name');
-    if (mobName && topbarName) mobName.textContent = topbarName.textContent;
+    updateTopbarName();
     
     // Update edit panel save button if open
     const saveBtn = el('edit-save-btn');
@@ -1864,6 +1874,65 @@ const Editor = (function () {
     if (event && event.target !== el('export-modal')) return;
     el('export-modal').style.display = 'none';
   }
+  function cssHref(path) {
+    return new URL(path, window.location.origin).href;
+  }
+
+  function exportFilename(ext) {
+    const name = career.personalInfo?.name?.trim() || 'cv';
+    return name.replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, '_') + ext;
+  }
+
+  function buildStandaloneCvHtml({ print = false } = {}) {
+    const cvHtml = CVRenderer.renderBody(career);
+    const name = career.personalInfo?.name || 'cv';
+    const themePath = TemplateSelector.getThemeCssPath(TemplateSelector.getEffectiveThemeId(career));
+    const lang = career.meta?.locale || 'en';
+    const dir = lang === 'ar' ? 'rtl' : 'ltr';
+    return `<!DOCTYPE html>
+<html lang="${a(lang)}" dir="${a(dir)}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${h(name)}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="${cssHref('/templates/shared/base.css')}">
+  <link rel="stylesheet" href="${cssHref(TemplateSelector.getLayoutCssPath())}">
+  <link rel="stylesheet" href="${cssHref(themePath)}">
+  <style>
+    html, body { margin: 0; padding: 0; background: #fff; }
+    body { font-family: ${dir === 'rtl' ? "'Cairo', 'Segoe UI', Arial, sans-serif" : "'Inter', 'Segoe UI', Arial, sans-serif"}; }
+    .cv-paper { margin: 0 auto; box-shadow: none !important; border-radius: 0 !important; }
+    ${print ? '@page { size: A4; margin: 0; } @media print { body { margin: 0; } .cv-paper { width: 210mm !important; min-height: 297mm !important; } }' : ''}
+  </style>
+</head>
+<body>${cvHtml}</body>
+</html>`;
+  }
+
+  function printCvOnly() {
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    iframe.style.inset = '0';
+    iframe.setAttribute('aria-hidden', 'true');
+    iframe.onload = () => {
+      const win = iframe.contentWindow;
+      if (!win) return;
+      setTimeout(() => {
+        win.focus();
+        win.print();
+        setTimeout(() => iframe.remove(), 1200);
+      }, 500);
+    };
+    iframe.srcdoc = buildStandaloneCvHtml({ print: true });
+    document.body.appendChild(iframe);
+  }
+
   async function exportPdf() {
     if (typeof AICoach !== 'undefined') {
       const review = AICoach.getPreExportReview(career);
@@ -1877,22 +1946,16 @@ const Editor = (function () {
         return;
       }
     }
-    window.print();
+    closeExportModal();
+    printCvOnly();
   }
   function exportJson() { CareerStorage.download(career); }
   function exportHtml() {
-    const cvHtml = CVRenderer.renderBody(career);
-    const name = career.personalInfo?.name || 'cv';
-    const themePath = TemplateSelector.getThemeCssPath(TemplateSelector.getEffectiveThemeId(career)).replace(/^\//, '');
-    const full = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${h(name)}</title>
-      <link rel="stylesheet" href="templates/shared/base.css">
-      <link rel="stylesheet" href="templates/layouts/layouts.css">
-      <link rel="stylesheet" href="${themePath}">
-      </head><body>${cvHtml}</body></html>`;
+    const full = buildStandaloneCvHtml();
     const blob = new Blob([full], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = name.replace(/\s+/g, '_') + '.html';
+    a.href = url; a.download = exportFilename('.html');
     a.click(); URL.revokeObjectURL(url);
   }
 
@@ -1907,9 +1970,8 @@ const Editor = (function () {
       const canvas = await html2canvas(frame, { scale: 2, useCORS: true });
       const url = canvas.toDataURL('image/png');
       const a = document.createElement('a');
-      const name = career.personalInfo?.name || 'cv';
       a.href = url;
-      a.download = name.replace(/\s+/g, '_') + '.png';
+      a.download = exportFilename('.png');
       a.click();
     } catch (err) {
       console.error('PNG export failed:', err);
@@ -1918,26 +1980,24 @@ const Editor = (function () {
   }
 
   function exportDocx() {
-    const cvHtml = CVRenderer.renderBody(career);
-    const name = career.personalInfo?.name || 'cv';
     if (typeof htmlDocx === 'undefined') {
-      const full = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${h(name)}</title></head><body>${cvHtml}</body></html>`;
+      const full = buildStandaloneCvHtml();
       const blob = new Blob(['\ufeff', full], { type: 'application/msword' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = name.replace(/\s+/g, '_') + '.doc';
+      a.download = exportFilename('.doc');
       a.click();
       URL.revokeObjectURL(url);
       return;
     }
     try {
-      const full = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${h(name)}</title></head><body>${cvHtml}</body></html>`;
+      const full = buildStandaloneCvHtml();
       const converted = htmlDocx.asBlob(full);
       const url = URL.createObjectURL(converted);
       const a = document.createElement('a');
       a.href = url;
-      a.download = name.replace(/\s+/g, '_') + '.docx';
+      a.download = exportFilename('.docx');
       a.click();
       URL.revokeObjectURL(url);
     } catch (err) {
@@ -2140,6 +2200,10 @@ const Editor = (function () {
     return typeof I18n !== 'undefined' ? I18n.t(key, fallback) : fallback;
   }
 
+  function _label(en, ar) {
+    return isAr() ? ar : en;
+  }
+
   function switchCoachTab(tab) {
     ['overview', 'mentor', 'ats'].forEach(t => {
       const btn = el('coach-tab-' + t);
@@ -2313,21 +2377,25 @@ const Editor = (function () {
     const { issues, quality } = CareerCoach.analyzeQuality(career);
 
     const qualityColor = { excellent: '#16a34a', good: '#2563eb', needs_work: '#dc2626' };
-    const qualityLabel = { excellent: '🏆 Excellent', good: '✅ Good', needs_work: '⚠️ Needs Work' };
+    const qualityLabel = {
+      excellent: _label('🏆 Excellent', '🏆 ممتازة'),
+      good: _label('✅ Good', '✅ جيدة'),
+      needs_work: _label('⚠️ Needs Work', '⚠️ تحتاج تحسين')
+    };
 
     if (issues.length === 0) {
       panel.innerHTML = `
-        <div class="rpanel-label">⭐ Quality Analysis</div>
+        <div class="rpanel-label">⭐ ${_label('Quality Analysis', 'تحليل الجودة')}</div>
         <div class="coach-success">
           <div style="font-size:32px;margin-bottom:8px;">🏆</div>
-          <div style="font-weight:700;color:#16a34a;margin-bottom:4px;">Excellent Quality!</div>
-          <div style="font-size:12px;color:#475569;">Your bullets are strong, measurable, and well-written.</div>
+          <div style="font-weight:700;color:#16a34a;margin-bottom:4px;">${_label('Excellent Quality!', 'جودة ممتازة!')}</div>
+          <div style="font-size:12px;color:#475569;">${_label('Your bullets are strong, measurable, and well-written.', 'نقاط الخبرة قوية وواضحة ومكتوبة بشكل جيد.')}</div>
         </div>`;
       return;
     }
 
     panel.innerHTML = `
-      <div class="rpanel-label">⭐ Quality Analysis
+      <div class="rpanel-label">⭐ ${_label('Quality Analysis', 'تحليل الجودة')}
         <span style="float:right;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:${qualityColor[quality]}20;color:${qualityColor[quality]};">${qualityLabel[quality]}</span>
       </div>
       ${issues.map(issue => `
@@ -2342,13 +2410,13 @@ const Editor = (function () {
               <div class="coach-ex-bad">❌ ${h(issue.example.bad)}</div>
               <div class="coach-ex-good">✅ ${h(issue.example.good)}</div>
             </div>` : ''}
-          ${issue.action ? `<button class="coach-fix-btn" onclick="Editor.openEditPanel('${issue.action.replace('edit-', '')}')">Fix Now →</button>` : ''}
+          ${issue.action ? `<button class="coach-fix-btn" onclick="Editor.openEditPanel('${issue.action.replace('edit-', '')}')">${_label('Fix Now →', 'عدّل الآن ←')}</button>` : ''}
         </div>
       `).join('')}`;
   }
 
   // Level 3 — ATS Keyword Gap
-  function renderCoachATS() {
+  function renderCoachKeywordGapLegacy() {
     const panel = el('coach-ats-panel');
     if (!panel || typeof CareerCoach === 'undefined') return;
     const { present, missing, coverage, total } = CareerCoach.analyzeATS(career);
@@ -2357,29 +2425,29 @@ const Editor = (function () {
     const barColor = coverage >= 70 ? '#16a34a' : coverage >= 40 ? '#d97706' : '#dc2626';
 
     panel.innerHTML = `
-      <div class="rpanel-label">🔍 ATS Keyword Check</div>
+      <div class="rpanel-label">🔍 ${_label('ATS Keyword Check', 'فحص كلمات ATS')}</div>
       <div class="coach-ats-coverage">
         <div class="coach-ats-bar-wrap">
           <div class="coach-ats-bar" style="width:${coverage}%;background:${barColor};"></div>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:4px;">
-          <span style="color:${barColor};font-weight:700;">${coverage}% keyword match</span>
-          <span style="color:#94a3b8;">${present.length}/${total} found</span>
+          <span style="color:${barColor};font-weight:700;">${coverage}% ${_label('keyword match', 'مطابقة كلمات')}</span>
+          <span style="color:#94a3b8;">${present.length}/${total} ${_label('found', 'موجود')}</span>
         </div>
       </div>
 
       ${missing.length > 0 ? `
         <div class="coach-kw-section">
-          <div style="font-size:11px;font-weight:700;color:#dc2626;margin-bottom:6px;">❌ Missing Keywords</div>
+          <div style="font-size:11px;font-weight:700;color:#dc2626;margin-bottom:6px;">❌ ${_label('Missing Keywords', 'كلمات ناقصة')}</div>
           <div class="coach-kw-chips">
             ${missing.map(kw => `<span class="coach-kw-chip coach-kw-missing">${h(kw)}</span>`).join('')}
           </div>
-          <div style="font-size:11px;color:#64748b;margin-top:8px;">Add these to your Skills or Experience section to improve ATS score.</div>
+          <div style="font-size:11px;color:#64748b;margin-top:8px;">${_label('Add these to your Skills or Experience section to improve ATS score.', 'أضف الكلمات المناسبة منها في المهارات أو الخبرات لتحسين نتيجة ATS.')}</div>
         </div>` : ''}
 
       ${present.length > 0 ? `
         <div class="coach-kw-section" style="margin-top:10px;">
-          <div style="font-size:11px;font-weight:700;color:#16a34a;margin-bottom:6px;">✅ Keywords Found</div>
+          <div style="font-size:11px;font-weight:700;color:#16a34a;margin-bottom:6px;">✅ ${_label('Keywords Found', 'كلمات موجودة')}</div>
           <div class="coach-kw-chips">
             ${present.map(kw => `<span class="coach-kw-chip coach-kw-present">${h(kw)}</span>`).join('')}
           </div>
@@ -2397,14 +2465,14 @@ const Editor = (function () {
     const typeBg = { critical: '#fef2f2', warning: '#fffbeb', info: '#eff6ff', path: '#f5f3ff' };
 
     panel.innerHTML = `
-      <div class="rpanel-label">🎯 Career Coach
+      <div class="rpanel-label">🎯 ${_label('Career Coach', 'مدرب المسار')}
         <span style="float:right;font-size:11px;padding:2px 8px;border-radius:20px;background:#e0e7ff;color:#4338ca;font-weight:700;">${h(levelLabel)}</span>
       </div>
       ${advice.length === 0 ? `
         <div class="coach-success">
           <div style="font-size:28px;margin-bottom:6px;">🎯</div>
-          <div style="font-weight:700;color:#16a34a;">Strong Profile!</div>
-          <div style="font-size:12px;color:#475569;margin-top:4px;">Your CV is well-aligned with your career level.</div>
+          <div style="font-weight:700;color:#16a34a;">${_label('Strong Profile!', 'ملف قوي!')}</div>
+          <div style="font-size:12px;color:#475569;margin-top:4px;">${_label('Your CV is well-aligned with your career level.', 'سيرتك مناسبة لمستواك المهني بشكل جيد.')}</div>
         </div>` :
         advice.map(item => `
           <div class="coach-advice-card" style="border-left:3px solid ${typeColor[item.type] || '#2563eb'};background:${typeBg[item.type] || '#eff6ff'};">
@@ -2414,7 +2482,7 @@ const Editor = (function () {
               <ul class="coach-advice-list">
                 ${item.items.map(i => `<li>${h(i)}</li>`).join('')}
               </ul>` : ''}
-            ${item.action ? `<button class="coach-fix-btn" onclick="Editor.openEditPanel('${item.action.replace('edit-', '')}')">Fix Now →</button>` : ''}
+            ${item.action ? `<button class="coach-fix-btn" onclick="Editor.openEditPanel('${item.action.replace('edit-', '')}')">${_label('Fix Now →', 'عدّل الآن ←')}</button>` : ''}
           </div>
         `).join('')
       }`;
@@ -2430,20 +2498,20 @@ const Editor = (function () {
 
     if (steps.length === 0) {
       panel.innerHTML = `
-        <div class="rpanel-label">🗺️ Action Plan</div>
+        <div class="rpanel-label">🗺️ ${_label('Action Plan', 'خطة التحسين')}</div>
         <div class="coach-success">
           <div style="font-size:32px;margin-bottom:8px;">🏆</div>
-          <div style="font-weight:700;color:#16a34a;margin-bottom:4px;">Roadmap Complete!</div>
-          <div style="font-size:12px;color:#475569;">Your CV is strong. Keep it updated!</div>
+          <div style="font-weight:700;color:#16a34a;margin-bottom:4px;">${_label('Roadmap Complete!', 'الخطة مكتملة!')}</div>
+          <div style="font-size:12px;color:#475569;">${_label('Your CV is strong. Keep it updated!', 'سيرتك قوية. حافظ على تحديثها باستمرار.')}</div>
         </div>`;
       return;
     }
 
     panel.innerHTML = `
-      <div class="rpanel-label">🗺️ Action Plan
-        <span style="float:right;font-size:11px;padding:2px 8px;border-radius:20px;background:#fef3c7;color:#b45309;font-weight:700;">Score: ${currentScore}%</span>
+      <div class="rpanel-label">🗺️ ${_label('Action Plan', 'خطة التحسين')}
+        <span style="float:right;font-size:11px;padding:2px 8px;border-radius:20px;background:#fef3c7;color:#b45309;font-weight:700;">${_label('Score', 'النتيجة')}: ${currentScore}%</span>
       </div>
-      <div style="font-size:11.5px;color:#64748b;margin-bottom:12px;">Follow these steps to improve your resume score:</div>
+      <div style="font-size:11.5px;color:#64748b;margin-bottom:12px;">${_label('Follow these steps to improve your resume score:', 'اتبع الخطوات دي لتحسين قوة السيرة:')}</div>
       <div class="coach-roadmap">
         ${steps.map((step, idx) => `
           <div class="coach-roadmap-step" ${step.sectionKey ? `onclick="Editor.openEditPanel('${step.sectionKey.replace('edit-', '')}')"` : ''} style="cursor:${step.sectionKey ? 'pointer' : 'default'};">

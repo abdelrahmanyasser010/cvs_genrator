@@ -4814,33 +4814,54 @@ justify-content: space-between;
     min-height: 100dvh !important;
     overflow: auto !important;
     display: block !important;
-    background: #f1f5f9 !important;
+    background: #eef2f7 !important;
   }
 
   .mob-topbar {
-    height: 52px !important;
+    height: 58px !important;
     z-index: 120 !important;
+    padding: 0 12px !important;
+    box-shadow: 0 1px 0 rgba(15,23,42,0.06) !important;
+  }
+
+  .mob-topbar-back,
+  .mob-topbar-menu {
+    width: 38px !important;
+    height: 38px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    background: #f8fafc !important;
+  }
+
+  .mob-topbar-title {
+    font-size: 14px !important;
+    font-weight: 800 !important;
   }
 
   .mob-score-bar {
-    height: 24px !important;
+    height: 30px !important;
     position: sticky !important;
-    top: 52px !important;
+    top: 58px !important;
     z-index: 119 !important;
+    background: #e2e8f0 !important;
   }
 
   .mob-score-label {
     font-size: 11px !important;
+    color: #fff !important;
   }
 
   .editor-layout {
-    min-height: calc(100dvh - 76px) !important;
-    padding-bottom: 72px !important;
+    min-height: calc(100dvh - 88px) !important;
+    padding-bottom: 82px !important;
   }
 
   .editor-panel-left {
-    min-height: calc(100dvh - 148px) !important;
-    background: #f8fafc !important;
+    min-height: calc(100dvh - 170px) !important;
+    background: #eef2f7 !important;
   }
 
   #resume-score-header,
@@ -4850,19 +4871,20 @@ justify-content: space-between;
   }
 
   .sections-list {
-    padding: 10px 10px 84px !important;
-    gap: 8px !important;
+    padding: 12px 12px 96px !important;
+    gap: 10px !important;
   }
 
   .section-row {
-    min-height: 50px !important;
-    padding: 9px 12px !important;
-    border-radius: 10px !important;
+    min-height: 58px !important;
+    padding: 11px 12px !important;
+    border-radius: 12px !important;
     background: #fff !important;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.055) !important;
   }
 
   .section-row-label {
-    font-size: 13px !important;
+    font-size: 13.5px !important;
   }
 
   .section-row-preview {
@@ -4877,10 +4899,10 @@ justify-content: space-between;
   }
 
   .editor-canvas {
-    min-height: calc(100dvh - 148px) !important;
-    padding: 14px 8px 86px !important;
+    min-height: calc(100dvh - 170px) !important;
+    padding: 16px 8px 96px !important;
     overflow: visible !important;
-    background: #e5e7eb !important;
+    background: linear-gradient(180deg, #dbe3ee 0%, #eef2f7 100%) !important;
   }
 
   body.mobile-edit-mode .editor-canvas {
@@ -4901,11 +4923,19 @@ justify-content: space-between;
 
   .mobile-bottom-bar {
     z-index: 130 !important;
-    padding: 7px 10px calc(10px + env(safe-area-inset-bottom)) !important;
+    width: calc(100% - 20px) !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 10px !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 18px !important;
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom)) !important;
+    box-shadow: 0 14px 38px rgba(15, 23, 42, 0.18) !important;
   }
 
   .mob-bar-btn {
-    min-height: 48px !important;
+    min-height: 50px !important;
+    border-radius: 13px !important;
   }
 
   .mob-btn-icon {
@@ -4913,7 +4943,7 @@ justify-content: space-between;
   }
 
   .mob-btn-label {
-    font-size: 10.5px !important;
+    font-size: 11px !important;
   }
 
   .edit-panel {
@@ -4947,9 +4977,30 @@ justify-content: space-between;
 
   .ai-decision-box,
   .modal-box {
-    width: calc(100vw - 24px) !important;
-    max-height: calc(100dvh - 28px) !important;
+    width: 100vw !important;
+    max-height: calc(100dvh - 18px) !important;
     padding: 16px !important;
+    border-radius: 18px 18px 0 0 !important;
+    margin-top: auto !important;
+    align-self: flex-end !important;
+  }
+
+  .modal-overlay {
+    align-items: flex-end !important;
+    justify-content: center !important;
+  }
+
+  .modal-header h3 {
+    font-size: 18px !important;
+  }
+
+  .export-options {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .export-card {
+    min-height: 78px !important;
     border-radius: 12px !important;
   }
 

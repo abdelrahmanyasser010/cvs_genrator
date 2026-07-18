@@ -312,6 +312,8 @@
   },
   "ed": {
     "myResume": "سيرتي الذاتية",
+    "resumeFor": "سيرة {name}",
+    "sections_title": "محتوى السيرة",
     "groups": {
       "basics": "أقسام السيرة الذاتية",
       "extras": "إضافي"
@@ -436,9 +438,18 @@
       "best_print": "الأفضل للطباعة",
       "web_ver": "نسخة الويب",
       "data_backup": "نسخة احتياطية للبيانات",
+      "advanced": "خيارات متقدمة",
+      "backup": "نسخة احتياطية",
+      "image_ver": "صيغة صورة",
+      "word_ver": "ملف وورد",
       "import_json": "استيراد نسخة JSON",
       "save_changes": "حفظ التغييرات",
       "edit": "تعديل"
+    },
+    "mobile": {
+      "edit": "تعديل",
+      "preview": "معاينة",
+      "export": "تحميل"
     },
     "empty_states": {
       "experience": "لا توجد خبرات. أضف وظيفتك الأولى بالأسفل.",
@@ -467,6 +478,7 @@
     "search": "🔍 ابحث في الأقسام..."
   },
   "coach": {
+    "loading": "جاري التحليل...",
     "tabs": {
       "overview": "📋 نظرة عامة",
       "mentor": "🎯 المدرب",
@@ -526,7 +538,8 @@
       "do_you_have_exp": "هل تمتلك خبرة فعلية في {keyword}؟",
       "yes_add": "نعم، أضفها",
       "no": "لا",
-      "added": "تمت الإضافة"
+      "added": "تمت الإضافة",
+      "skills_category": "المهارات الأساسية"
     }
   }
 }
