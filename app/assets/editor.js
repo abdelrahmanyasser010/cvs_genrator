@@ -2730,7 +2730,6 @@ const Editor = (function () {
     exportPdf, exportJson, exportHtml, exportPng, exportDocx,
     switchCoachTab, triggerSmartFix, applyJDMatch, clearJDMatch,
     addKeywordWithConfirm, confirmAddKeyword, cancelAddKeyword,
-    showVersionManagerModal, closeVersionManager, handleCreateVersion, handleSwitchVersion, handleDeleteVersion,
     showMobMenu, setMobileView
   };
 })();
