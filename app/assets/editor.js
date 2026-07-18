@@ -2728,7 +2728,10 @@ const Editor = (function () {
     saveAndRender, renderPreview, handleZoomSelect, toggleGroup,
     showExportModal, closeExportModal,
     exportPdf, exportJson, exportHtml, exportPng, exportDocx,
-    switchCoachTab,
+    switchCoachTab, triggerSmartFix, applyJDMatch, clearJDMatch,
+    addKeywordWithConfirm, confirmAddKeyword, cancelAddKeyword,
+    showVersionManagerModal, closeVersionManager, handleCreateVersion, handleSwitchVersion, handleDeleteVersion,
+    showMobMenu, setMobileView
   };
 })();
 
