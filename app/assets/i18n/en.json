@@ -331,10 +331,8 @@
       "references": "References"
     },
     "ai_pills": {
-      "improve": "✨ Improve",
-      "shorten": "✂️ Shorten",
-      "professional": "🎯 Professional",
-      "translate": "🌐 Translate",
+      "improve": "✨ Improve & Professionalize",
+      "translate": "🌐 Translate (En/Ar)",
       "suggest_skills": "💡 Suggest Skills"
     },
     "empty_edit": "Click a field to edit this section.",
