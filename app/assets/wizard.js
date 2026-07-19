@@ -192,6 +192,7 @@ const Wizard = (function () {
         else { career.careerProfile.level = lvl.value; }
         break;
       case 'contact':
+        if (!career.personalInfo) career.personalInfo = {};
         const nameVal = el('wz-input-name')?.value.trim() || '';
         if (!nameVal) { valid = false; showError(t('wz.errRequired')); break; }
         career.personalInfo.name = nameVal;
@@ -269,9 +270,11 @@ const Wizard = (function () {
     input.addEventListener('input', (e) => {
       if (isNested) {
         if (obj === 'links') {
+          if (!career.personalInfo) career.personalInfo = {};
           if (!career.personalInfo.links) career.personalInfo.links = {};
           career.personalInfo.links[prop] = e.target.value;
         } else {
+          if (!career[obj]) career[obj] = {};
           career[obj][prop] = e.target.value;
         }
       } else {
@@ -492,12 +495,19 @@ const Wizard = (function () {
     area.innerHTML = html;
     
     // Auto focus and handle enter
-    const inputs = area.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="url"]');
+    const inputs = Array.from(area.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], input[type="url"]'));
     if (inputs.length > 0) {
       setTimeout(() => inputs[0].focus(), 100);
-      inputs.forEach(input => {
+      inputs.forEach((input, index) => {
         input.addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') handleNext();
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            if (index < inputs.length - 1) {
+              inputs[index + 1].focus();
+            } else {
+              handleNext();
+            }
+          }
         });
       });
     }
