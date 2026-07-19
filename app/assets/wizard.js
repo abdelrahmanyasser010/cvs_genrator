@@ -3,7 +3,7 @@
  */
 const Wizard = (function () {
   const STEPS = [
-    'welcome', 'locale', 'name', 'nice_to_meet', 'field', 'experience_years', 'contact', 
+    'welcome', 'locale', 'field', 'experience_years', 'contact', 
     'education', 'experience', 'projects', 'skills', 'template', 'done'
   ];
   const LINK_PROOF_FIELDS = ['developer', 'designer', 'graphic_designer', 'ui_ux_designer', 'marketing', 'data_analyst'];
@@ -12,6 +12,7 @@ const Wizard = (function () {
 
   let career = null;
   let stepIndex = 0;
+  let activeTimer = null;
 
   const el = id => document.getElementById(id);
   const t = (key, fb) => (typeof I18n !== 'undefined' ? I18n.t(key, fb) : fb || key);
@@ -90,7 +91,7 @@ const Wizard = (function () {
     const leftSec = document.querySelector('.wizard-left');
     if (!target) return;
 
-    const earlySteps = ['welcome', 'locale', 'name', 'nice_to_meet', 'field', 'experience_years', 'contact'];
+    const earlySteps = ['welcome', 'locale', 'field', 'experience_years', 'contact'];
     const currentStep = STEPS[stepIndex];
     if (earlySteps.includes(currentStep)) {
       if (rightSec) rightSec.style.display = 'none';
@@ -178,23 +179,22 @@ const Wizard = (function () {
   }
 
   async function handleNext() {
+    if (activeTimer) { clearTimeout(activeTimer); activeTimer = null; }
     hideError();
     const step = STEPS[stepIndex];
     let valid = true;
 
     // Validation & Data Extraction before moving next
     switch (step) {
-      case 'name':
-        const nameVal = el('wz-input-name').value.trim();
-        if (!nameVal) { valid = false; showError(t('wz.errRequired')); }
-        else { career.personalInfo.name = nameVal; }
-        break;
       case 'experience_years':
         const lvl = document.querySelector('input[name="wz-level"]:checked');
         if (!lvl) { valid = false; showError(t('wz.errRequired')); }
         else { career.careerProfile.level = lvl.value; }
         break;
       case 'contact':
+        const nameVal = el('wz-input-name')?.value.trim() || '';
+        if (!nameVal) { valid = false; showError(t('wz.errRequired')); break; }
+        career.personalInfo.name = nameVal;
         const em = el('wz-input-email')?.value.trim() || '';
         if (em && !em.includes('@')) { valid = false; showError(t('wz.errEmail')); break; }
         career.personalInfo.email = em;
@@ -243,6 +243,7 @@ const Wizard = (function () {
   }
 
   function handlePrev() {
+    if (activeTimer) { clearTimeout(activeTimer); activeTimer = null; }
     hideError();
     if (stepIndex === 0) {
       window.location.href = 'landing.html';
@@ -293,6 +294,7 @@ const Wizard = (function () {
   }
 
   function renderStep() {
+    if (activeTimer) { clearTimeout(activeTimer); activeTimer = null; }
     const area = el('wz-content-area');
     const step = STEPS[stepIndex];
     const btn = el('wz-next-btn');
@@ -334,23 +336,6 @@ const Wizard = (function () {
         btn.style.display = 'none'; 
         break;
 
-      case 'name':
-        html = `
-          <div class="wz-encouragement">${t('wz.msgGreat')}</div>
-          <h1 class="wz-title">${t('wz.stepName')}</h1>
-          <input type="text" id="wz-input-name" class="wz-input-huge" placeholder="${t('wz.stepNamePh')}" value="${a(career.personalInfo?.name || '')}" autofocus>
-        `;
-        setTimeout(() => bindLiveInput('wz-input-name', 'personalInfo', 'name', true), 0);
-        break;
-
-      case 'nice_to_meet':
-        html = `
-          <h1 class="wz-title-heart">${h(t('wz.stepNice').replace('{name}', career.personalInfo?.name || ''))}</h1>
-        `;
-        setTimeout(handleNext, 1800); 
-        btn.style.display = 'none';
-        break;
-
       case 'field':
         html = `
           <h1 class="wz-title">${t('wz.stepJob')}</h1>
@@ -387,11 +372,15 @@ const Wizard = (function () {
         const curField = career.careerProfile?.field || '';
         const showLinks = LINK_PROOF_FIELDS.includes(curField);
         html = `
-          <h1 class="wz-title">${career.meta?.locale === 'ar' ? 'بيانات التواصل الأساسية' : 'Contact Information'}</h1>
+          <h1 class="wz-title">${career.meta?.locale === 'ar' ? 'البيانات الشخصية والتواصل الأساسية' : 'Personal & Contact Information'}</h1>
           <div style="display:flex;flex-direction:column;gap:16px;margin-top:16px;text-align:left;">
             <div>
+              <label style="font-size:13px;font-weight:700;color:var(--text,#1e293b);display:block;margin-bottom:6px;">${t('wz.stepName', career.meta?.locale === 'ar' ? 'الاسم الكامل (مطلوب)' : 'Full Name (Required)')}</label>
+              <input type="text" id="wz-input-name" class="wz-input-huge" style="margin:0;width:100%;" placeholder="${t('wz.stepNamePh', 'مثال: أحمد علي')}" value="${a(career.personalInfo?.name || '')}" autofocus>
+            </div>
+            <div>
               <label style="font-size:13px;font-weight:700;color:var(--text,#1e293b);display:block;margin-bottom:6px;">${t('wz.stepEmail', career.meta?.locale === 'ar' ? 'البريد الإلكتروني' : 'Email Address')}</label>
-              <input type="email" id="wz-input-email" class="wz-input-huge" style="margin:0;width:100%;" placeholder="${t('wz.stepEmailPh')}" value="${a(career.personalInfo?.email || '')}" autofocus>
+              <input type="email" id="wz-input-email" class="wz-input-huge" style="margin:0;width:100%;" placeholder="${t('wz.stepEmailPh')}" value="${a(career.personalInfo?.email || '')}">
             </div>
             <div>
               <label style="font-size:13px;font-weight:700;color:var(--text,#1e293b);display:block;margin-bottom:6px;">${t('wz.stepPhone', career.meta?.locale === 'ar' ? 'رقم الهاتف' : 'Phone Number')}</label>
@@ -415,6 +404,7 @@ const Wizard = (function () {
           </div>
         `;
         setTimeout(() => {
+          bindLiveInput('wz-input-name', 'personalInfo', 'name', true);
           bindLiveInput('wz-input-email', 'personalInfo', 'email', true);
           bindLiveInput('wz-input-phone', 'personalInfo', 'phone', true);
           bindLiveInput('wz-input-loc', 'personalInfo', 'location', true);
