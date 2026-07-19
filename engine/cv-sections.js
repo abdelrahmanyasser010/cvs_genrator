@@ -136,7 +136,8 @@ const CVSections = (function () {
       if (!catName || catName.toLowerCase() === 'core' || catName.toLowerCase() === 'skills' || catName === 'المهارات' || catName === 'مهارات' || catName === 'عام' || catName.toLowerCase() === 'general' || catName.trim() === (labels.skills || '').trim()) {
         catName = isAr ? 'المهارات الأساسية' : 'Core Competencies';
       }
-      return `<div class="cv-skill-row"><span class="cv-skill-cat">${esc(catName)}</span><span class="cv-skill-val">${vals.map(v => esc(v)).join(', ')}</span></div>`;
+      const arr = Array.isArray(vals) ? vals : typeof vals === 'string' ? vals.split(',').map(s => s.trim()).filter(Boolean) : [String(vals || '')].filter(Boolean);
+      return `<div class="cv-skill-row"><span class="cv-skill-cat">${esc(catName)}</span><span class="cv-skill-val">${arr.map(v => esc(v)).join(', ')}</span></div>`;
     }).join('');
     return `<section class="cv-section"><h2 class="cv-section-title">${esc(labels.skills)}</h2><div class="cv-skills-table">${rows}</div></section>`;
   }

@@ -110,12 +110,20 @@ const Wizard = (function () {
 
     target.innerHTML = '';
     const tId = career.meta.templateId === 'ai-recommended' ? 'classic' : career.meta.templateId;
-    CVRenderer.render(career, tId, target);
+    try {
+      CVRenderer.render(career, tId, target);
+    } catch (err) {
+      console.warn('Preview render fallback:', err);
+    }
   }
 
   function saveAndPreview() {
-    CareerStorage.save(career);
-    updatePreview();
+    try {
+      CareerStorage.save(career);
+      updatePreview();
+    } catch (err) {
+      console.warn('saveAndPreview fallback:', err);
+    }
   }
   async function loadProfessionFields() {
     try {
@@ -188,7 +196,7 @@ const Wizard = (function () {
     switch (step) {
       case 'name':
         if (!career.personalInfo) career.personalInfo = {};
-        const nameVal = el('wz-input-name')?.value.trim() || '';
+        const nameVal = el('wz-input-name')?.value?.trim() || '';
         if (!nameVal) { valid = false; showError(t('wz.errRequired')); break; }
         career.personalInfo.name = nameVal;
         break;
@@ -199,35 +207,35 @@ const Wizard = (function () {
         break;
       case 'contact':
         if (!career.personalInfo) career.personalInfo = {};
-        const em = el('wz-input-email')?.value.trim() || '';
+        const em = el('wz-input-email')?.value?.trim() || '';
         if (em && !em.includes('@')) { valid = false; showError(t('wz.errEmail')); break; }
         career.personalInfo.email = em;
-        career.personalInfo.phone = el('wz-input-phone')?.value.trim() || '';
-        career.personalInfo.location = el('wz-input-loc')?.value.trim() || '';
+        career.personalInfo.phone = el('wz-input-phone')?.value?.trim() || '';
+        career.personalInfo.location = el('wz-input-loc')?.value?.trim() || '';
         if (!career.personalInfo.links) career.personalInfo.links = {};
-        if (el('wz-input-linkedin')) career.personalInfo.links.linkedin = el('wz-input-linkedin').value.trim();
-        if (el('wz-input-github')) career.personalInfo.links.github = el('wz-input-github').value.trim();
+        if (el('wz-input-linkedin')) career.personalInfo.links.linkedin = el('wz-input-linkedin')?.value?.trim() || '';
+        if (el('wz-input-github')) career.personalInfo.links.github = el('wz-input-github')?.value?.trim() || '';
         break;
       case 'education':
-        const edu = el('wz-input-edu').value.trim();
+        const edu = el('wz-input-edu')?.value?.trim() || '';
         if (edu) {
           career.education = [{ degree: edu, school: '', year: '' }];
         }
         break;
       case 'experience':
-        const exp = el('wz-input-exp').value.trim();
+        const exp = el('wz-input-exp')?.value?.trim() || '';
         if (exp) {
           career.experience = [{ role: exp, company: '', period: '', bullets: [] }];
         }
         break;
       case 'projects':
-        const proj = el('wz-input-proj').value.trim();
+        const proj = el('wz-input-proj')?.value?.trim() || '';
         if (proj) {
           career.projects = [CareerNormalize.normalizeProject({ name: proj })];
         }
         break;
       case 'skills':
-        const sk = el('wz-input-skills').value.trim();
+        const sk = el('wz-input-skills')?.value?.trim() || '';
         if (sk) {
           career.skills = { core: sk.split(',').map(s => s.trim()).filter(Boolean) };
         }
@@ -396,7 +404,7 @@ const Wizard = (function () {
         const showLinks = LINK_PROOF_FIELDS.includes(curField);
         html = `
           <h1 class="wz-title">${career.meta?.locale === 'ar' ? 'بيانات التواصل الأساسية' : 'Contact Information'}</h1>
-          <div style="display:flex;flex-direction:column;gap:16px;margin-top:16px;text-align:left;">
+          <div dir="${career.meta?.locale === 'ar' ? 'rtl' : 'ltr'}" style="display:flex;flex-direction:column;gap:16px;margin-top:16px;text-align:${career.meta?.locale === 'ar' ? 'right' : 'left'};">
             <div>
               <label style="font-size:13px;font-weight:700;color:var(--text,#1e293b);display:block;margin-bottom:6px;">${t('wz.stepEmail', career.meta?.locale === 'ar' ? 'البريد الإلكتروني' : 'Email Address')}</label>
               <input type="email" id="wz-input-email" class="wz-input-huge" style="margin:0;width:100%;" placeholder="${t('wz.stepEmailPh')}" value="${a(career.personalInfo?.email || '')}" autofocus>
