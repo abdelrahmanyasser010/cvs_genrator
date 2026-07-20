@@ -445,8 +445,9 @@
       "edit": "Edit"
     },
     "mobile": {
-      "edit": "Edit",
+      "edit": "Sections",
       "preview": "Preview",
+      "coach": "AI Advisor",
       "export": "Download"
     },
     "empty_states": {
@@ -479,8 +480,8 @@
     "loading": "Analyzing...",
     "tabs": {
       "overview": "📋 Overview",
-      "mentor": "🎯 Mentor",
-      "ats": "🔍 ATS"
+      "mentor": "💡 AI Advisor",
+      "ats": "🔍 ATS Check"
     },
     "overview": {
       "score": "Resume Score",

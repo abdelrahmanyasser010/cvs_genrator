@@ -20,7 +20,7 @@ const Editor = (function () {
   const h = value => (typeof Safety !== 'undefined' ? Safety.escapeHtml(value) : String(value || ''));
   const a = value => (typeof Safety !== 'undefined' ? Safety.escapeAttr(value) : String(value || '').replace(/"/g, '&quot;'));
   const isAr = () => (career?.meta?.locale || I18n?.getLocale?.()) === 'ar';
-  const coachName = () => isAr() ? 'عبود Studio' : 'Aboud Studio';
+  const coachName = () => isAr() ? 'المساعد الذكي (AI Advisor)' : 'AI Advisor & Optimizer';
 
   function debounce(func, wait) {
     return function (...args) {
@@ -409,54 +409,62 @@ const Editor = (function () {
     if (!list) return;
 
     const isAr = career.meta?.locale === 'ar' || document.documentElement.lang === 'ar';
-    const bannerHtml = `
-      <div style="margin-bottom:14px;padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;">
+    const starterHtml = `
+      <div style="margin-bottom:12px;padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;">
         <div style="font-size:11px;font-weight:800;color:#1d4ed8;margin-bottom:4px;">💡 ${isAr ? 'مش عارف تكتب إيه خالص؟' : 'Not sure what to write?'}</div>
         <div style="font-size:12px;color:#1e293b;margin-bottom:8px;">${isAr ? 'املأ سيرة ذاتية نموذجية متكاملة لمجالك ومستواك بضغطة واحدة، وعدّل عليها بسهولة!' : 'Generate a complete model resume for your field in 1 click!'}</div>
         <button type="button" style="width:100%;padding:8px 12px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer;" onclick="Editor.autoFillStarterCV()">
           🪄 ${isAr ? 'ملء نموذج سيرة ذاتية كامل (1-Click Auto-Fill)' : 'Auto-Fill Complete Sample Resume'}
         </button>
       </div>
+      <button type="button" onclick="document.getElementById('style-drawer-modal').style.display='flex'" style="width:100%;margin-bottom:12px;padding:10px 14px;background:#fff;border:1.5px solid #3b82f6;border-radius:10px;color:#1d4ed8;font-weight:800;font-size:12.5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.05);transition:all 0.2s;">
+        <span>🎨 ${isAr ? 'تخصيص المظهر (الخط، الألوان، الترتيب)' : 'Style & Layout Drawer'}</span>
+        <span>←</span>
+      </button>
+    `;
 
-      <div style="margin-bottom:14px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
-        <div style="font-size:11px;font-weight:700;color:#334155;margin-bottom:6px;">🎨 ${isAr ? 'لون السيرة الذاتية (Accent Color)' : 'Accent Color'}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-          ${[
-            { color: '#2563eb', label: 'أزرق ملكي' },
-            { color: '#059669', label: 'أخضر زمردي' },
-            { color: '#7c3aed', label: 'بنفسجي فاخر' },
-            { color: '#be123c', label: 'عنابي أنيق' },
-            { color: '#1e293b', label: 'كحلي داكن' }
-          ].map(c => `
-            <button type="button" title="${c.label}" style="width:30px;height:30px;border-radius:50%;background:${c.color};border:2.5px solid ${career.meta.accentColor === c.color ? '#0f172a' : '#fff'};box-shadow:0 1px 4px rgba(0,0,0,0.25);cursor:pointer;" onclick="Editor.setAccentColor('${c.color}')"></button>
-          `).join('')}
-        </div>
+    const styleHtml = `
+      <div style="padding:8px 12px;">
+        <div style="margin-bottom:16px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
+          <div style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;">🎨 ${isAr ? 'لون السيرة الذاتية (Accent Color)' : 'Accent Color'}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+            ${[
+              { color: '#2563eb', label: 'أزرق ملكي' },
+              { color: '#059669', label: 'أخضر زمردي' },
+              { color: '#7c3aed', label: 'بنفسجي فاخر' },
+              { color: '#be123c', label: 'عنابي أنيق' },
+              { color: '#1e293b', label: 'كحلي داكن' }
+            ].map(c => `
+              <button type="button" title="${c.label}" style="width:34px;height:34px;border-radius:50%;background:${c.color};border:2.5px solid ${career.meta.accentColor === c.color ? '#0f172a' : '#fff'};box-shadow:0 1px 4px rgba(0,0,0,0.25);cursor:pointer;" onclick="Editor.setAccentColor('${c.color}')"></button>
+            `).join('')}
+          </div>
 
-        <div style="font-size:11px;font-weight:700;color:#334155;margin-bottom:6px;">🔤 ${isAr ? 'الخط العربي (Font Style)' : 'Font Style'}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
-          ${['Inter', 'Cairo', 'Tajawal', 'Almarai'].map(f => `
-            <button type="button" style="padding:6px 10px;font-size:11.5px;border-radius:6px;border:1px solid #cbd5e1;background:${career.meta.fontFamily === f ? '#e2e8f0' : '#fff'};font-family:'${f}',sans-serif;cursor:pointer;font-weight:600;" onclick="Editor.setCvFont('${f}')">${f}</button>
-          `).join('')}
-        </div>
+          <div style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;">🔤 ${isAr ? 'الخط العربي (Font Style)' : 'Font Style'}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+            ${['Inter', 'Cairo', 'Tajawal', 'Almarai'].map(f => `
+              <button type="button" style="flex:1 1 110px;padding:8px 10px;font-size:12px;border-radius:6px;border:1.5px solid ${career.meta.fontFamily === f ? '#3b82f6' : '#cbd5e1'};background:${career.meta.fontFamily === f ? '#eff6ff' : '#fff'};color:${career.meta.fontFamily === f ? '#1d4ed8' : '#334155'};font-family:'${f}',sans-serif;cursor:pointer;font-weight:700;" onclick="Editor.setCvFont('${f}')">${f}</button>
+            `).join('')}
+          </div>
 
-        <div style="font-size:11px;font-weight:700;color:#334155;margin-bottom:6px;">📷 ${isAr ? 'الصورة الشخصية (Profile Photo)' : 'Profile Photo'}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
-          <button type="button" style="flex:1 1 130px;padding:8px;font-size:11.5px;border-radius:6px;border:1px solid #cbd5e1;background:${career.meta.showPhoto ? '#dcfce7' : '#fff'};color:#15803d;font-weight:600;cursor:pointer;" onclick="Editor.togglePhoto(true)">
-            ✅ ${isAr ? 'إظهار الصورة' : 'Show Photo'}
-          </button>
-          <button type="button" style="flex:1 1 130px;padding:8px;font-size:11.5px;border-radius:6px;border:1px solid #cbd5e1;background:${!career.meta.showPhoto ? '#fee2e2' : '#fff'};color:#b91c1c;font-weight:600;cursor:pointer;" onclick="Editor.togglePhoto(false)">
-            🚫 ${isAr ? 'إخفاء (لـ ATS)' : 'Hide (ATS)'}
-          </button>
-        </div>
+          <div style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;">📷 ${isAr ? 'الصورة الشخصية (Profile Photo)' : 'Profile Photo'}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+            <button type="button" style="flex:1 1 130px;padding:8px;font-size:12px;border-radius:6px;border:1.5px solid ${career.meta.showPhoto ? '#16a34a' : '#cbd5e1'};background:${career.meta.showPhoto ? '#dcfce7' : '#fff'};color:#15803d;font-weight:700;cursor:pointer;" onclick="Editor.togglePhoto(true)">
+              ✅ ${isAr ? 'إظهار الصورة' : 'Show Photo'}
+            </button>
+            <button type="button" style="flex:1 1 130px;padding:8px;font-size:12px;border-radius:6px;border:1.5px solid ${!career.meta.showPhoto ? '#dc2626' : '#cbd5e1'};background:${!career.meta.showPhoto ? '#fee2e2' : '#fff'};color:#b91c1c;font-weight:700;cursor:pointer;" onclick="Editor.togglePhoto(false)">
+              🚫 ${isAr ? 'إخفاء (لـ ATS)' : 'Hide (ATS)'}
+            </button>
+          </div>
 
-        <div style="font-size:11px;font-weight:700;color:#334155;margin-bottom:6px;">↕️ ${isAr ? 'ترتيب الأقسام (التعليم أولاً أم الخبرة؟)' : 'Section Order'}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-          <button type="button" style="flex:1 1 130px;padding:8px;font-size:11.5px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-weight:600;cursor:pointer;" onclick="Editor.setSectionOrder(['summary', 'education', 'experience', 'projects', 'skills', 'languages'])">
-            🎓 ${isAr ? 'التعليم أولاً' : 'Education First'}
-          </button>
-          <button type="button" style="flex:1;padding:6px;font-size:11px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;color:#334155;font-weight:600;cursor:pointer;" onclick="Editor.setSectionOrder(['summary', 'experience', 'education', 'projects', 'skills', 'languages'])">
-            💼 ${isAr ? 'الخبرة أولاً' : 'Experience First'}
-          </button>
+          <div style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;">↕️ ${isAr ? 'ترتيب الأقسام (التعليم أولاً أم الخبرة؟)' : 'Section Order'}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <button type="button" style="flex:1 1 130px;padding:8px;font-size:12px;border-radius:6px;border:1.5px solid #cbd5e1;background:#fff;color:#334155;font-weight:700;cursor:pointer;" onclick="Editor.setSectionOrder(['summary', 'education', 'experience', 'projects', 'skills', 'languages'])">
+              🎓 ${isAr ? 'التعليم أولاً' : 'Education First'}
+            </button>
+            <button type="button" style="flex:1 1 130px;padding:8px;font-size:12px;border-radius:6px;border:1.5px solid #cbd5e1;background:#fff;color:#334155;font-weight:700;cursor:pointer;" onclick="Editor.setSectionOrder(['summary', 'experience', 'education', 'projects', 'skills', 'languages'])">
+              💼 ${isAr ? 'الخبرة أولاً' : 'Experience First'}
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -467,7 +475,10 @@ const Editor = (function () {
     ];
 
     const gs = document.getElementById('global-settings');
-    if (gs) gs.innerHTML = bannerHtml;
+    if (gs) gs.innerHTML = starterHtml;
+
+    const drawerContent = document.getElementById('style-drawer-content');
+    if (drawerContent) drawerContent.innerHTML = styleHtml;
 
     list.innerHTML = groups.map(group => {
       const isCollapsed = career.meta.collapsedGroups.includes(group.id);
@@ -498,9 +509,9 @@ const Editor = (function () {
     const isAr = career.meta?.locale === 'ar' || document.documentElement.lang === 'ar';
     let statusHtml = status === 'done' ? `<span class="section-status status-done">✓ ${isAr ? 'مكتمل' : 'Done'}</span>` : '';
     if (issue) {
-      if (issue.severity === 'high') statusHtml = `<span class="section-status status-missing">↑ ${isAr ? 'أثر عالي' : 'High Impact'}</span>`;
-      else if (issue.severity === 'medium') statusHtml = `<span class="section-status status-warn">↗ ${isAr ? 'أثر متوسط' : 'Med Impact'}</span>`;
-      else statusHtml = `<span class="section-status status-warn">→ ${isAr ? 'تحسين' : 'Low Impact'}</span>`;
+      if (issue.severity === 'high') statusHtml = `<span class="section-status status-missing">↑ ${isAr ? 'تنبيه هام' : 'High Priority'}</span>`;
+      else if (issue.severity === 'medium') statusHtml = `<span class="section-status status-warn">↗ ${isAr ? 'مقترح تحسين' : 'Suggested'}</span>`;
+      else statusHtml = `<span class="section-status status-warn">→ ${isAr ? 'إضافة اختيارية' : 'Optional'}</span>`;
     } else if (status !== 'done') {
       statusHtml = `<span class="section-status status-missing">+ ${isAr ? 'مفقود' : 'Add'}</span>`;
     }
@@ -1212,12 +1223,11 @@ const Editor = (function () {
   }
 
   // ─────────────────────────────────────────────────
-  // AI COACH
   function severityLabel(severity) {
-    if (severity === 'blocker') return t('ed.coach.blocker', 'Must fix');
-    if (severity === 'warn') return t('ed.coach.warn', 'Improve');
-    if (severity === 'good') return t('ed.coach.good', 'Good');
-    return t('ed.coach.tip', 'Tip');
+    if (severity === 'blocker' || severity === 'high') return t('ed.coach.blocker', 'تنبيه هام');
+    if (severity === 'warn' || severity === 'medium') return t('ed.coach.warn', 'مقترح تحسين');
+    if (severity === 'good') return t('ed.coach.good', 'جيد');
+    return t('ed.coach.tip', 'إضافة اختيارية');
   }
 
   function buildSectionCoach(sectionKey) {
@@ -1564,7 +1574,8 @@ const Editor = (function () {
     menu.className = 'mob-dropdown-menu';
     menu.innerHTML = `
       <button onclick="Editor.undoAction(); el('mob-dropdown-menu')?.remove();"><span class="icon">↩️</span> <span data-i18n="ed.topbar.undo">تراجع عن آخر تعديل</span></button>
-      <button onclick="Editor.setMobileView('coach'); el('mob-dropdown-menu')?.remove();"><span class="icon">🎯</span> <span data-i18n="ed.mobile.coach">المدرب المهني و ATS</span></button>
+      <button onclick="document.getElementById('style-drawer-modal').style.display='flex'; el('mob-dropdown-menu')?.remove();"><span class="icon">🎨</span> <span>القائمة الجانبية للمظهر (الخط والألوان)</span></button>
+      <button onclick="Editor.setMobileView('coach'); el('mob-dropdown-menu')?.remove();"><span class="icon">💡</span> <span>المساعدة الذكية وفحص ATS</span></button>
       <button onclick="Editor.showExportModal(); el('mob-dropdown-menu')?.remove();"><span class="icon">⬇️</span> <span data-i18n="ed.topbar.download">تصدير / تحميل الملف</span></button>
       <a href="landing.html" class="menu-link"><span class="icon">🚪</span> <span data-i18n="ed.topbar.exit">خروج إلى الرئيسية</span></a>
     `;
@@ -1584,24 +1595,42 @@ const Editor = (function () {
     const canvas = el('editor-canvas');
     const paper = el('a4-wrapper');
     if (!canvas || !paper) return;
+    const availW = Math.max(280, canvas.clientWidth - 12);
+    const scale = Math.min(1, availW / 794);
     if (career && career.meta?.zoomLevel && career.meta.zoomLevel !== 'fit-width' && career.meta.zoomLevel !== 'fit-page') {
       const customScale = parseInt(career.meta.zoomLevel, 10) / 100;
-      paper.style.width = '794px';
-      paper.style.transform = `scale(${customScale})`;
-      paper.style.transformOrigin = 'top center';
+      paper.style.width = `${availW}px`;
+      paper.style.display = 'flex';
+      paper.style.justifyContent = 'center';
+      paper.style.alignItems = 'flex-start';
+      paper.style.margin = '0 auto';
       const frame = el('preview-frame');
-      const height = frame?.scrollHeight || paper.scrollHeight || 1123;
-      paper.style.marginBottom = `${-(height * (1 - customScale))}px`;
+      if (frame) {
+        frame.style.width = '794px';
+        frame.style.flex = '0 0 794px';
+        frame.style.transform = `scale(${customScale})`;
+        frame.style.transformOrigin = 'top center';
+        const height = frame.scrollHeight || 1123;
+        paper.style.height = `${height * customScale}px`;
+        paper.style.marginBottom = '24px';
+      }
       return;
     }
-    const availW = Math.max(280, canvas.clientWidth - 16);
-    const scale = Math.min(1, availW / 794);
-    paper.style.width = '794px';
-    paper.style.transform = `scale(${scale})`;
-    paper.style.transformOrigin = 'top center';
+    paper.style.width = `${availW}px`;
+    paper.style.display = 'flex';
+    paper.style.justifyContent = 'center';
+    paper.style.alignItems = 'flex-start';
+    paper.style.margin = '0 auto';
     const frame = el('preview-frame');
-    const height = frame?.scrollHeight || paper.scrollHeight || 1123;
-    paper.style.marginBottom = `${-(height * (1 - scale))}px`;
+    if (frame) {
+      frame.style.width = '794px';
+      frame.style.flex = '0 0 794px';
+      frame.style.transform = `scale(${scale})`;
+      frame.style.transformOrigin = 'top center';
+      const height = frame.scrollHeight || 1123;
+      paper.style.height = `${height * scale}px`;
+      paper.style.marginBottom = '24px';
+    }
   }
 
   function updateMobScoreBar() {

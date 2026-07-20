@@ -61,9 +61,9 @@
   </header>
 
   <!-- Mobile: Clickable ATS Score Card (under topbar) -->
-  <div class="mob-score-bar no-print" id="mob-score-bar" onclick="Editor.setMobileView('coach')" title="اضغط لفتح المدرب المهني">
+  <div class="mob-score-bar no-print" id="mob-score-bar" onclick="Editor.setMobileView('coach')" title="اضغط لفتح المساعد الذكي والتحسين">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:12px;font-weight:800;">
-      <span style="color:#1e293b;">🎯 المدرب المهني ←</span>
+      <span style="color:#1e293b;">💡 المساعد الذكي والتحسين ←</span>
       <span id="mob-score-label" style="color:#2563eb;">تقييم السيرة: 0%</span>
     </div>
     <div style="height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden;width:100%;">
@@ -113,8 +113,8 @@
       <!-- Coach Tab Navigation -->
       <div class="coach-tabs no-print">
         <button class="coach-tab active" id="coach-tab-overview" onclick="Editor.switchCoachTab('overview')" data-i18n="coach.tabs.overview">📋 نظرة عامة</button>
-        <button class="coach-tab" id="coach-tab-mentor" onclick="Editor.switchCoachTab('mentor')" data-i18n="coach.tabs.mentor">🎯 المدرب</button>
-        <button class="coach-tab" id="coach-tab-ats" onclick="Editor.switchCoachTab('ats')" data-i18n="coach.tabs.ats">🔍 ATS</button>
+        <button class="coach-tab" id="coach-tab-mentor" onclick="Editor.switchCoachTab('mentor')" data-i18n="coach.tabs.mentor">💡 المساعد الذكي</button>
+        <button class="coach-tab" id="coach-tab-ats" onclick="Editor.switchCoachTab('ats')" data-i18n="coach.tabs.ats">🔍 فحص ATS</button>
       </div>
 
       <!-- Tab: Overview -->
@@ -165,32 +165,37 @@
     </div>
   </div>
 
+  <!-- Style Drawer Modal / Slide-over -->
+  <div class="modal-overlay" id="style-drawer-modal" style="display:none;" onclick="if(event.target === this) this.style.display='none'">
+    <div class="modal-box" style="max-width: 520px; text-align: right;">
+      <div class="modal-header">
+        <h3>🎨 تخصيص المظهر والتنسيق</h3>
+        <button class="modal-close" onclick="document.getElementById('style-drawer-modal').style.display='none'">✕</button>
+      </div>
+      <div id="style-drawer-content" style="padding: 4px 0;"></div>
+    </div>
+  </div>
+
   <!-- Export Modal -->
   <div class="modal-overlay" id="export-modal" style="display:none;" onclick="Editor.closeExportModal(event)">
-    <div class="modal-box">
+    <div class="modal-box" style="max-width: 480px;">
       <div class="modal-header">
-        <h3 data-i18n="ed.modal.download">Download Resume</h3>
+        <h3 data-i18n="ed.modal.download">تحميل السيرة الذاتية</h3>
         <button class="modal-close" onclick="Editor.closeExportModal()">✕</button>
       </div>
       <div id="export-review"></div>
-      <div class="export-options">
-        <button class="export-card" onclick="Editor.exportPdf()">
-          <span class="export-icon">📄</span>
-          <span class="export-label">PDF</span>
-          <span class="export-hint" data-i18n="ed.modal.best_print">Best for printing</span>
+      <div class="export-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px;">
+        <button class="export-card" onclick="Editor.exportPdf()" style="padding: 16px; border-radius: 12px; border: 2px solid #3b82f6; background: #eff6ff; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: all 0.2s;">
+          <span class="export-icon" style="font-size: 28px; margin-bottom: 6px;">📄</span>
+          <span class="export-label" style="font-size: 15px; font-weight: 800; color: #1e293b;">PDF</span>
+          <span class="export-hint" style="font-size: 11px; color: #64748b; margin-top: 4px;">الأفضل للطباعة والتقديم</span>
+        </button>
+        <button class="export-card" onclick="Editor.exportDocx()" style="padding: 16px; border-radius: 12px; border: 2px solid #10b981; background: #f0fdf4; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: all 0.2s;">
+          <span class="export-icon" style="font-size: 28px; margin-bottom: 6px;">📝</span>
+          <span class="export-label" style="font-size: 15px; font-weight: 800; color: #1e293b;">Word</span>
+          <span class="export-hint" style="font-size: 11px; color: #64748b; margin-top: 4px;">ملف وورد قابل للتعديل</span>
         </button>
       </div>
-      <details class="advanced-export">
-        <summary data-i18n="ed.modal.advanced">Advanced</summary>
-        <div class="advanced-export-actions">
-          <button class="topbar-btn" onclick="Editor.exportHtml()">HTML</button>
-          <button class="topbar-btn" onclick="Editor.exportJson()" data-i18n="ed.modal.backup">Backup</button>
-        </div>
-      </details>
-      <label class="import-link advanced-import">
-        <input type="file" id="import-file" accept=".json" style="display:none">
-        <span data-i18n="ed.modal.import_json">Import JSON backup</span>
-      </label>
     </div>
   </div>
 
@@ -198,19 +203,19 @@
   <nav class="mobile-bottom-bar no-print" id="mob-bottom-nav">
     <button type="button" class="mob-bar-btn active" id="mob-btn-edit" onclick="Editor.setMobileView('edit')">
       <span class="mob-btn-icon">✏️</span>
-      <span class="mob-btn-label" data-i18n="ed.mobile.edit">تعديل</span>
+      <span class="mob-btn-label" data-i18n="ed.mobile.edit">الفقرات والبيانات</span>
     </button>
     <button type="button" class="mob-bar-btn" id="mob-btn-preview" onclick="Editor.setMobileView('preview')">
       <span class="mob-btn-icon">👁</span>
       <span class="mob-btn-label" data-i18n="ed.mobile.preview">معاينة</span>
     </button>
     <button type="button" class="mob-bar-btn" id="mob-btn-coach" onclick="Editor.setMobileView('coach')">
-      <span class="mob-btn-icon">🎯</span>
-      <span class="mob-btn-label" data-i18n="ed.mobile.coach">المدرب</span>
+      <span class="mob-btn-icon">💡</span>
+      <span class="mob-btn-label" data-i18n="ed.mobile.coach">المساعدة والتحسين</span>
     </button>
     <button type="button" class="mob-bar-btn mob-bar-btn-export" onclick="Editor.showExportModal()">
       <span class="mob-btn-icon">⬇</span>
-      <span class="mob-btn-label" data-i18n="ed.mobile.export">تصدير</span>
+      <span class="mob-btn-label" data-i18n="ed.mobile.export">تحميل</span>
     </button>
   </nav>
 

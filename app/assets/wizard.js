@@ -264,7 +264,7 @@ const Wizard = (function () {
     
     do {
       stepIndex--;
-    } while (stepIndex > 0 && shouldSkipStep(STEPS[stepIndex]));
+    } while (stepIndex > 0 && (shouldSkipStep(STEPS[stepIndex]) || STEPS[stepIndex] === 'nice_to_meet'));
     
     if (stepIndex < 0) {
       window.location.href = 'landing.html';
@@ -372,8 +372,8 @@ const Wizard = (function () {
           <h1 class="wz-title">${t('wz.stepJob')}</h1>
           <div class="wz-grid-options">
             ${FIELDS.map(f => `
-              <label class="wz-grid-card">
-                <input type="radio" name="wz-field" value="${f.id}" ${career.careerProfile?.field === f.id ? 'checked' : ''} onchange="Wizard.setField('${f.id}')">
+              <label class="wz-grid-card" onclick="Wizard.setField('${f.id}')">
+                <input type="radio" name="wz-field" value="${f.id}" ${career.careerProfile?.field === f.id ? 'checked' : ''} style="pointer-events: none;">
                 <span class="wz-card-icon">${h(f.icon)}</span>
                 <span class="wz-card-label">${h(f.label || t(f.key))}</span>
               </label>
@@ -388,8 +388,8 @@ const Wizard = (function () {
           <h1 class="wz-title">${t('wz.stepExpYears')}</h1>
           <div class="wz-list-options">
             ${LEVELS.map(l => `
-              <label class="wz-list-card">
-                <input type="radio" name="wz-level" value="${l.id}" ${career.careerProfile?.level === l.id ? 'checked' : ''} onchange="Wizard.setLevel('${l.id}')">
+              <label class="wz-list-card" onclick="Wizard.setLevel('${l.id}')">
+                <input type="radio" name="wz-level" value="${l.id}" ${career.careerProfile?.level === l.id ? 'checked' : ''} style="pointer-events: none;">
                 <span class="wz-card-icon">${l.icon}</span>
                 <span class="wz-card-label">${t(l.key)}</span>
               </label>
@@ -692,8 +692,7 @@ const Wizard = (function () {
   function shouldSkipStep(step) {
     const field = career.careerProfile?.field || '';
     const level = career.careerProfile?.level || '';
-    if (step === 'experience_years' && level === 'fresh') {
-      career.careerProfile.years = '0';
+    if (step === 'experience' && level === 'fresh') {
       return true;
     }
     if (step === 'projects') return !PROJECT_FIELDS.includes(field);
