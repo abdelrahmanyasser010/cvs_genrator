@@ -33,7 +33,7 @@
           <span style="font-size: 24px;line-height:1;">👑</span>
           <div>
             <div style="font-size:16px;font-weight:700;color:#0f766e;margin-bottom:4px;" data-i18n="onboarding.seniorStart">مسار الخبراء والمحترفين (Senior Quick Start)</div>
-            <div style="font-size:13px;color:#134e4a;line-height:1.4;" data-i18n="onboarding.seniorDesc">تخطي الأسئلة والدخول المباشر للوحة التحكم الشاملة مع قوالب جاهزة واختبار مطابقة ATS فوراً</div>
+            <div style="font-size:13px;color:#134e4a;line-height:1.4;" data-i18n="onboarding.seniorDesc">تخطي الأسئلة الأساسية والدخول إلى لوحة التحرير مع فحص إرشادي لجاهزية ATS ومطابقة إعلان الوظيفة</div>
           </div>
         </button>
 
@@ -68,25 +68,37 @@
   <script src="/engine/normalize-career.js"></script>
   <script src="/engine/career-storage.js"></script>
   <script>
-    function startNewCV() {
-      localStorage.removeItem('cv_studio_career');
-      window.location.href = 'index.html';
-    }
-    
-    function startSeniorCV() {
-      let career = typeof CareerStorage !== 'undefined' ? CareerStorage.load() : null;
-      if (!career) {
-        career = typeof CareerNormalize !== 'undefined' ? CareerNormalize.createEmpty() : {};
-        career.careerProfile = { level: 'senior', field: 'developer', years: '5+' };
-        career.personalInfo = career.personalInfo || {};
-        career.personalInfo.title = career.personalInfo.title || 'Senior Specialist / Leader';
-        if (typeof CareerStorage !== 'undefined') CareerStorage.save(career);
-      }
-      window.location.href = 'editor.html';
+    function emptyCareer() {
+      return typeof CareerNormalize !== 'undefined' ? CareerNormalize.createEmpty() : { personalInfo:{links:{}}, careerProfile:{field:'other',level:'junior'}, meta:{} };
     }
 
-    function openEditor() {
-      window.location.href = 'editor.html';
+    function createFreshVersion(name) {
+      const blank = emptyCareer();
+      if (typeof CareerStorage !== 'undefined' && CareerStorage.createBlankVersion) {
+        CareerStorage.createBlankVersion(name, blank);
+      } else {
+        localStorage.setItem('cv_studio_career', JSON.stringify(blank));
+      }
+    }
+
+    function startNewCV() {
+      createFreshVersion('سيرة جديدة');
+      sessionStorage.removeItem('cv_studio_quick_start');
+      window.location.href = 'index.html';
+    }
+
+    function startSeniorCV() {
+      // Quick start skips beginner framing, but still asks for profession and target title.
+      createFreshVersion('سيرة احترافية جديدة');
+      sessionStorage.setItem('cv_studio_quick_start', 'senior');
+      window.location.href = 'index.html';
+    }
+
+    function openEditor() { window.location.href = 'editor.html'; }
+
+    function openVersion(id) {
+      if (typeof CareerStorage !== 'undefined' && CareerStorage.switchVersion) CareerStorage.switchVersion(id);
+      openEditor();
     }
 
     function handleImportJson(event) {
@@ -95,12 +107,8 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
-          const data = JSON.parse(e.target.result);
-          if (typeof CareerStorage !== 'undefined') {
-            CareerStorage.save(data);
-          } else {
-            localStorage.setItem('cv_studio_career', JSON.stringify(data));
-          }
+          if (typeof CareerStorage !== 'undefined' && CareerStorage.importJson) CareerStorage.importJson(e.target.result);
+          else localStorage.setItem('cv_studio_career', JSON.stringify(JSON.parse(e.target.result)));
           window.location.href = 'editor.html';
         } catch(err) {
           alert('ملف JSON غير صالح. يرجى اختيار ملف سيرة ذاتية صحيح.');
@@ -109,36 +117,38 @@
       reader.readAsText(file);
     }
 
+    function esc(value) {
+      return String(value || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    }
+
     function checkSavedCV() {
       const container = document.getElementById('saved-cv-container');
       if (!container) return;
       try {
-        const saved = localStorage.getItem('cv_studio_career');
-        if (saved) {
-          const data = JSON.parse(saved);
-          const name = data?.personalInfo?.name || data?.personalInfo?.title || 'سيرة ذاتية محفوظة';
-          const level = data?.careerProfile?.level || '';
-          const isAr = (data?.meta?.locale || typeof I18n !== 'undefined' && I18n.getLocale?.()) === 'ar';
-          container.innerHTML = `
-            <div style="display:flex;align-items:center;justify-content:space-between;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;margin-bottom:8px;">
-              <div>
-                <div style="font-size:13px;font-weight:700;color:#1e40af;">📄 ${name}</div>
-                <div style="font-size:11px;color:#3b82f6;">${level ? `المستوى: ${level.toUpperCase()}` : (isAr ? 'آخر تعديل محفوظ' : 'Saved draft')}</div>
-              </div>
-              <button onclick="openEditor()" style="background:#2563eb;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">فتح ✏️</button>
-            </div>
-          `;
-        } else {
-          container.innerHTML = `<div style="font-size:12px;color:#94a3b8;font-style:italic;text-align:center;padding:6px;">لا توجد سيرة محفوظة حالياً في هذا المتصفح</div>`;
+        const versions = typeof CareerStorage !== 'undefined' && CareerStorage.listVersions
+          ? CareerStorage.listVersions()
+          : [];
+        if (!versions.length) {
+          container.innerHTML = `<div class="onboarding-empty-saved">لا توجد سيرة محفوظة حاليًا في هذا المتصفح</div>`;
+          return;
         }
-      } catch(e) {}
+        container.innerHTML = versions.slice(0, 5).map(version => {
+          const date = version.updatedAt ? new Date(version.updatedAt).toLocaleDateString('ar-EG') : '';
+          const detail = [version.field && version.field !== 'other' ? version.field : '', version.level || '', date].filter(Boolean).join(' · ');
+          return `<button type="button" class="saved-cv-row" onclick="openVersion('${esc(version.id)}')">
+            <span class="saved-cv-icon">📄</span>
+            <span class="saved-cv-copy"><strong>${esc(version.name || 'سيرة محفوظة')}</strong><small>${esc(detail || 'مسودة محفوظة')}</small></span>
+            <span class="saved-cv-open">فتح</span>
+          </button>`;
+        }).join('');
+      } catch(e) {
+        container.innerHTML = `<div class="onboarding-empty-saved">تعذر قراءة السير المحفوظة</div>`;
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       checkSavedCV();
-      if (typeof I18n !== 'undefined') {
-        I18n.init().then(() => I18n.translateDom());
-      }
+      if (typeof I18n !== 'undefined') I18n.init().then(() => I18n.translateDom());
     });
   </script>
 </body>

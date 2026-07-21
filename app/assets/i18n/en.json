@@ -98,7 +98,9 @@
     "projects": "Projects",
     "skills": "Skills",
     "education": "Education",
-    "languages": "Languages"
+    "languages": "Languages",
+    "certificates": "Certificates & Courses",
+    "awards": "Awards & Achievements"
   },
   "editor": {
     "atsScore": "Resume Strength",
@@ -162,7 +164,7 @@
   "templates": {
     "ai-recommended": "AI Recommended",
     "classic": "Classic",
-    "ats": "ATS Optimized",
+    "ats": "ATS Friendly",
     "modern": "Modern",
     "sidebar": "Sidebar",
     "timeline": "Timeline",
@@ -214,7 +216,7 @@
   },
   "landing": {
     "title": "Build a resume that gets you hired",
-    "subtitle": "Professional templates. AI-powered writing. ATS-optimized. Create your resume in minutes, not hours.",
+    "subtitle": "Professional templates, AI-assisted writing, and ATS-readiness guidance. Build a focused resume in minutes.",
     "createBtn": "Create My Resume",
     "createBtnFree": "Create My Resume — It's Free",
     "viewTemplates": "View Templates",
@@ -222,7 +224,7 @@
     "navExamples": "Examples",
     "navPricing": "Pricing",
     "navAbout": "About",
-    "trustAts": "ATS Optimized",
+    "trustAts": "ATS Readiness Guidance",
     "trustAi": "AI Writing",
     "trustPro": "Professional Templates",
     "featFastTitle": "Fast & Easy",
@@ -231,7 +233,7 @@
     "featTemplatesDesc": "Choose from 12+ professionally designed templates for every industry.",
     "featAiTitle": "AI-Powered",
     "featAiDesc": "Let AI write your summary, improve your bullets, and suggest skills.",
-    "featAtsTitle": "ATS Optimized",
+    "featAtsTitle": "ATS-Friendly Guidance",
     "featAtsDesc": "Beat applicant tracking systems with our optimized formats.",
     "chooseTemplateTitle": "Choose Your Template",
     "chooseTemplateSubtitle": "12+ professional templates designed by experts",
@@ -245,7 +247,7 @@
     "featAiWrite": "⚡ AI Writing Assistant",
     "featAiWriteDesc": "Our AI helps you craft the perfect summary and professional bullets tailored to your industry.",
     "featProTmpl": "🎨 Professional Templates",
-    "featProTmplDesc": "Choose from our library of beautiful, ATS-optimized layouts.",
+    "featProTmplDesc": "Choose clean, readable layouts designed to reduce common ATS parsing risks.",
     "featPdfExport": "📄 PDF Export",
     "featPdfExportDesc": "Download your pixel-perfect resume in PDF format instantly.",
     "featBilingual": "🌍 Arabic & English",
@@ -256,13 +258,13 @@
     "hiwStep1": "Answer simple questions",
     "hiwStep2": "Customize your resume",
     "hiwStep3": "Download PDF",
-    "testTitle": "What our users say",
-    "test1Text": "CV Studio helped me land my dream job in tech. The AI suggestions were incredibly helpful!",
-    "test1Author": "- Ahmed Y., Software Engineer",
-    "test2Text": "I loved how easy it was to create a bilingual resume. Highly recommended.",
-    "test2Author": "- Sarah M., Marketing Manager",
-    "test3Text": "The ATS-optimized templates are top-notch. I started getting interviews immediately.",
-    "test3Author": "- Omar K., Data Analyst"
+    "testTitle": "Built for trust, not inflated scores",
+    "test1Text": "AI suggestions never replace your facts. Review every change before applying it.",
+    "test1Author": "Facts first",
+    "test2Text": "Names, emails, phone numbers, addresses, and links are excluded from AI requests.",
+    "test2Author": "Privacy-minimized AI",
+    "test3Text": "ATS scores are guidance based on structure and keywords, never a guarantee of hiring.",
+    "test3Author": "Transparent guidance"
   },
   "onboarding": {
     "title": "Let's build your resume",
@@ -495,7 +497,9 @@
       "summary": "Summary",
       "experience": "Experience",
       "education": "Education",
-      "skills": "Skills"
+      "skills": "Skills",
+      "top_problems": "Top 3 improvement priorities",
+      "smart_fix": "Improve now"
     },
     "mentor": {
       "next_steps": "Next Steps:",

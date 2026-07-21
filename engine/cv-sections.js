@@ -53,7 +53,7 @@ const CVSections = (function () {
   function header(career) {
     const p = career.personalInfo || {};
     const l = p.links || {};
-    const title = p.title || career.careerProfile?.title || professionTitle(career);
+    const title = p.title || career.careerProfile?.title || '';
     const contacts = [
       { icon: ICO.phone, label: p.phone, href: p.phone ? `tel:${p.phone}` : null },
       { icon: ICO.mail, label: p.email, href: p.email ? `mailto:${p.email}` : null },
@@ -152,6 +152,22 @@ const CVSections = (function () {
     return `<section class="cv-section"><h2 class="cv-section-title">${esc(labels.education)}</h2><div>${items}</div></section>`;
   }
 
+
+  function certificates(career, labels) {
+    const items = (career.certificates || []).map(c => {
+      const link = validLink(c.url) ? ` <a href="${esc(safeHref(c.url))}" target="_blank" rel="noopener" style="font-size:0.82em;color:var(--primary,#2563eb);text-decoration:none;">↗ Verify</a>` : '';
+      return `<div class="cv-edu-row"><div class="cv-edu-left"><span class="degree">${esc(c.name)}</span>${c.issuer ? `<span class="inst"> · ${esc(c.issuer)}</span>` : ''}${link}</div><span class="cv-edu-period">${esc(c.year)}</span></div>`;
+    }).join('');
+    if (!items) return '';
+    return `<section class="cv-section"><h2 class="cv-section-title">${esc(labels.certificates || (career.meta?.locale === 'ar' ? 'الشهادات والتراخيص' : 'Certifications & Licenses'))}</h2><div>${items}</div></section>`;
+  }
+
+  function awards(career, labels) {
+    const items = (career.awards || []).map(award => `<div class="cv-entry"><div class="cv-entry-head"><div class="cv-entry-left"><span class="cv-role">${esc(award.name)}</span>${award.issuer ? `<span style="color:#ccc">·</span><span class="cv-company">${esc(award.issuer)}</span>` : ''}</div><span class="cv-period">${esc(award.year)}</span></div>${award.description ? `<div class="cv-proj-desc">${esc(award.description)}</div>` : ''}</div>`).join('');
+    if (!items) return '';
+    return `<section class="cv-section"><h2 class="cv-section-title">${esc(labels.awards || (career.meta?.locale === 'ar' ? 'الجوائز والتقدير' : 'Awards'))}</h2><div>${items}</div></section>`;
+  }
+
   function languages(career, labels) {
     const items = (career.languages || []).map(l => {
       const lang = typeof l === 'string' ? l : l.lang;
@@ -162,6 +178,6 @@ const CVSections = (function () {
     return `<section class="cv-section"><h2 class="cv-section-title">${esc(labels.languages)}</h2><div class="cv-langs">${items}</div></section>`;
   }
 
-  return { header, summary, experience, experienceTimeline, projects, skills, education, languages, esc };
+  return { header, summary, experience, experienceTimeline, projects, skills, education, certificates, awards, languages, esc };
 })();
 

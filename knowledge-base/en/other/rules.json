@@ -1,0 +1,25 @@
+{
+  "role": "other",
+  "category": "general",
+  "required_sections": [
+    "summary",
+    "experience",
+    "skills"
+  ],
+  "recommended_sections": [
+    "education",
+    "certifications",
+    "languages"
+  ],
+  "section_weights": {
+    "summary": 20,
+    "experience": 45,
+    "skills": 20,
+    "education": 10,
+    "certifications": 5
+  },
+  "coach_rules": [
+    "Use the exact target title and provide role-relevant evidence.",
+    "Do not add skills, metrics, or credentials without verification."
+  ]
+}

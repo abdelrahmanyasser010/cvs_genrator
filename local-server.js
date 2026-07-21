@@ -2,6 +2,7 @@ const fs = require('fs');
 const http = require('http');
 const path = require('path');
 const { generateWithGemini } = require('./api/ai/gemini-service');
+const { checkRequest } = require('./api/ai/request-guard');
 
 const ROOT = __dirname;
 let PORT = Number(process.env.PORT || 5500);
@@ -34,10 +35,12 @@ function loadEnvFile() {
   }
 }
 
-function sendJson(res, status, body) {
+function sendJson(res, status, body, extraHeaders = {}) {
   res.writeHead(status, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': 'no-store'
+    'Cache-Control': 'no-store',
+    'X-Content-Type-Options': 'nosniff',
+    ...extraHeaders
   });
   res.end(JSON.stringify(body));
 }
@@ -83,10 +86,31 @@ const server = http.createServer(async (req, res) => {
     if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method not allowed.' });
     try {
       const payload = await readBody(req);
+      const guard = checkRequest(req, payload);
+      if (!guard.ok) return sendJson(res, guard.status, guard.body, guard.headers || {});
       const result = await generateWithGemini(payload);
-      return sendJson(res, result.status, result.body);
+      return sendJson(res, result.status, result.body, guard.headers || {});
     } catch (error) {
       return sendJson(res, 500, { error: error.message || 'AI request failed.' });
+    }
+  }
+
+  if (req.url.startsWith('/api/telemetry/client-error')) {
+    if (req.method !== 'POST') return sendJson(res, 405, { error: 'Method not allowed.' });
+    try {
+      const payload = await readBody(req);
+      const clean = {
+        type: String(payload.type || '').slice(0, 30),
+        message: String(payload.message || '').slice(0, 500),
+        stack: String(payload.stack || '').slice(0, 1800),
+        path: String(payload.path || '').slice(0, 180),
+        viewport: String(payload.viewport || '').slice(0, 40),
+        build: String(payload.build || '').slice(0, 40)
+      };
+      console.error('[CLIENT_ERROR]', JSON.stringify(clean));
+      return sendJson(res, 202, { accepted: true });
+    } catch (error) {
+      return sendJson(res, 400, { error: 'Invalid error report.' });
     }
   }
 

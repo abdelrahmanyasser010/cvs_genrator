@@ -7,9 +7,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/app/assets/app.css?v=20260718_11">
-  <link rel="stylesheet" href="/templates/shared/base.css?v=20260718_11">
-  <link rel="stylesheet" href="/templates/layouts/layouts.css?v=20260718_11">
+  <link rel="stylesheet" href="/app/assets/app.css?v=20260720_prod1">
+  <link rel="stylesheet" href="/templates/shared/base.css?v=20260720_prod1">
+  <link rel="stylesheet" href="/templates/layouts/layouts.css?v=20260720_prod1">
 </head>
 <body class="editor-body">
 
@@ -38,7 +38,9 @@
       </div>
     </div>
     <div class="topbar-right" style="display:flex;align-items:center;gap:8px;">
-      <div class="save-indicator" id="save-indicator" style="font-size:12px;font-weight:700;color:#10b981;background:#f0fdf4;padding:4px 10px;border-radius:999px;border:1px solid #bbf7d0;display:flex;align-items:center;gap:4px;">✓ تم الحفظ تلقائياً</div>
+      <button class="topbar-data-status" id="topbar-data-status" onclick="Editor.exportBackup()" title="البيانات محفوظة على هذا الجهاز فقط">هذا الجهاز فقط · نسخة احتياطية</button>
+      <div class="save-indicator" id="save-indicator">✓ تم الحفظ على هذا الجهاز</div>
+      <button class="topbar-btn coach-toggle-btn" id="coach-toggle-btn" onclick="Editor.toggleCoachPanel()">تحسين السيرة</button>
       <button class="topbar-btn" onclick="Editor.undoAction()" title="تراجع (Ctrl+Z)" data-i18n="ed.topbar.undo">↩ تراجع</button>
       <button class="topbar-btn" onclick="Editor.redoAction()" title="إعادة (Ctrl+Y)">↪ إعادة</button>
       <button class="topbar-btn" onclick="Editor.showExportModal()" data-i18n="ed.topbar.download">⬇ Download</button>
@@ -48,15 +50,11 @@
 
   <!-- Mobile: compact topbar -->
   <header class="mob-topbar no-print">
-    <a href="landing.html" class="mob-topbar-back">←</a>
-    <div style="display:flex;align-items:center;gap:6px;flex:1;overflow:hidden;">
-      <span class="mob-topbar-title" id="mob-topbar-name" data-i18n="ed.myResume" style="cursor:pointer;" onclick="Editor.showVersionManagerModal()">My Resume</span>
-      <button onclick="Editor.showVersionManagerModal()" style="background:#e2e8f0;border:none;border-radius:4px;padding:2px 6px;font-size:11px;font-weight:700;color:#1e293b;cursor:pointer;">📂 نسخ</button>
-    </div>
-    <div style="display:flex;align-items:center;gap:4px;">
-      <button class="mob-topbar-btn" onclick="Editor.undoAction()" title="Undo" style="background:none;border:none;font-size:18px;padding:4px;cursor:pointer;">↩</button>
-      <button class="mob-topbar-btn" onclick="Editor.redoAction()" title="Redo" style="background:none;border:none;font-size:18px;padding:4px;cursor:pointer;">↪</button>
-      <button class="mob-topbar-menu" onclick="Editor.showMobMenu(event)">⋮</button>
+    <a href="landing.html" class="mob-topbar-back" aria-label="رجوع">←</a>
+    <button class="mob-topbar-title" id="mob-topbar-name" data-i18n="ed.myResume" onclick="Editor.showVersionManagerModal()">My Resume</button>
+    <div class="mob-topbar-actions">
+      <button class="mob-download-btn" onclick="Editor.showExportModal()" aria-label="تحميل السيرة">⬇</button>
+      <button class="mob-topbar-menu" onclick="Editor.showMobMenu(event)" aria-label="المزيد">⋮</button>
     </div>
   </header>
 
@@ -71,6 +69,11 @@
     </div>
   </div>
 
+  <div class="local-data-banner no-print" id="local-data-banner" hidden>
+    <div><strong>محفوظ على هذا الجهاز فقط</strong><span id="local-data-copy">نزّل نسخة احتياطية حتى لا تفقد سيرك إذا مسحت بيانات المتصفح.</span></div>
+    <div class="local-data-actions"><button onclick="Editor.exportBackup()">تنزيل نسخة احتياطية</button><a href="/app/privacy.html" target="_blank" rel="noopener">الخصوصية</a><button class="local-data-dismiss" onclick="Editor.dismissDataBanner()" aria-label="إخفاء">×</button></div>
+  </div>
+
   <!-- Main Editor Layout -->
   <div class="editor-layout no-print">
 
@@ -79,14 +82,13 @@
       <div class="panel-search">
         <input type="text" class="panel-search-input" id="sections-search" placeholder="🔍 Search sections...">
       </div>
-      <div id="resume-score-header" style="padding: 16px 16px 0 16px;"></div>
-      <div id="global-settings" style="padding: 12px; padding-bottom: 0;"></div>
-      <div class="sections-list-title" data-i18n="ed.sections_title" style="padding: 12px; font-size: 13px; font-weight: 800; color: var(--gray-500); text-transform: uppercase;">
+      <div class="sections-list-title" data-i18n="ed.sections_title" style="padding: 12px 12px 6px; font-size: 13px; font-weight: 800; color: var(--gray-500); text-transform: uppercase;">
         محتوى السيرة (CV Content)
       </div>
       <div class="sections-list" id="sections-list">
         <!-- Injected by editor.js -->
       </div>
+      <div id="global-settings" style="padding: 10px 12px 18px;"></div>
     </aside>
 
     <!-- CENTER: Resume Preview -->
@@ -120,7 +122,7 @@
       <!-- Tab: Overview -->
       <div class="coach-tab-pane active" id="coach-pane-overview">
         <div class="rpanel-block" id="coach-overview-panel">
-          <div class="coach-loading" data-i18n="coach.loading">Analyzing...</div>
+          <div class="coach-loading" data-i18n="coach.loading">جارٍ تحليل السيرة...</div>
         </div>
         <div class="rpanel-block" id="coach-overview-templates-panel" style="display: none;">
           <div class="rpanel-label" data-i18n="editor.template">Template</div>
@@ -132,14 +134,14 @@
       <!-- Tab: Mentor -->
       <div class="coach-tab-pane" id="coach-pane-mentor">
         <div class="rpanel-block" id="coach-mentor-panel">
-          <div class="coach-loading" data-i18n="coach.loading">Analyzing...</div>
+          <div class="coach-loading" data-i18n="coach.loading">جارٍ تحليل السيرة...</div>
         </div>
       </div>
 
       <!-- Tab: ATS -->
       <div class="coach-tab-pane" id="coach-pane-ats">
         <div class="rpanel-block" id="coach-ats-panel">
-          <div class="coach-loading" data-i18n="coach.loading">Analyzing...</div>
+          <div class="coach-loading" data-i18n="coach.loading">جارٍ تحليل السيرة...</div>
         </div>
       </div>
 
@@ -184,38 +186,40 @@
         <button class="modal-close" onclick="Editor.closeExportModal()">✕</button>
       </div>
       <div id="export-review"></div>
-      <div class="export-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px;">
+      <div class="export-trust-note">نتائج ATS إرشادية وليست ضمان قبول. راجع بياناتك قبل إرسال السيرة.</div>
+      <div class="export-options" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px;">
         <button class="export-card" onclick="Editor.exportPdf()" style="padding: 16px; border-radius: 12px; border: 2px solid #3b82f6; background: #eff6ff; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: all 0.2s;">
           <span class="export-icon" style="font-size: 28px; margin-bottom: 6px;">📄</span>
           <span class="export-label" style="font-size: 15px; font-weight: 800; color: #1e293b;">PDF</span>
           <span class="export-hint" style="font-size: 11px; color: #64748b; margin-top: 4px;">الأفضل للطباعة والتقديم</span>
         </button>
-        <button class="export-card" onclick="Editor.exportDocx()" style="padding: 16px; border-radius: 12px; border: 2px solid #10b981; background: #f0fdf4; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: all 0.2s;">
-          <span class="export-icon" style="font-size: 28px; margin-bottom: 6px;">📝</span>
-          <span class="export-label" style="font-size: 15px; font-weight: 800; color: #1e293b;">Word</span>
-          <span class="export-hint" style="font-size: 11px; color: #64748b; margin-top: 4px;">ملف وورد قابل للتعديل</span>
+        <button class="export-card" onclick="Editor.exportDocx()" style="padding:16px;border-radius:12px;border:2px solid #10b981;background:#f0fdf4;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:all .2s;">
+          <span class="export-icon" style="font-size:28px;margin-bottom:6px;">📝</span>
+          <span class="export-label" style="font-size:15px;font-weight:800;color:#1e293b;">Word</span>
+          <span class="export-hint" style="font-size:11px;color:#64748b;margin-top:4px;">ملف DOCX قابل للتعديل</span>
+        </button>
+        <button class="export-card export-backup-card" onclick="Editor.exportBackup()">
+          <span class="export-icon">🛡</span><span class="export-label">نسخة احتياطية</span>
+          <span class="export-hint">كل السير والنسخ في ملف JSON واحد</span>
+        </button>
+        <button class="export-card export-privacy-card" onclick="AISettings.openModal()">
+          <span class="export-icon">🔒</span><span class="export-label">الخصوصية والـAI</span>
+          <span class="export-hint">راجع ما يُرسل للمساعد</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Mobile Bottom Navigation (Edit / Preview / Coach / Export) -->
-  <nav class="mobile-bottom-bar no-print" id="mob-bottom-nav">
+  <!-- Mobile Bottom Navigation (Content / Preview / Improve) -->
+  <nav class="mobile-bottom-bar no-print" id="mob-bottom-nav" aria-label="التنقل الرئيسي">
     <button type="button" class="mob-bar-btn active" id="mob-btn-edit" onclick="Editor.setMobileView('edit')">
-      <span class="mob-btn-icon">✏️</span>
-      <span class="mob-btn-label" data-i18n="ed.mobile.edit">الفقرات والبيانات</span>
+      <span class="mob-btn-icon">✏️</span><span class="mob-btn-label">المحتوى</span>
     </button>
     <button type="button" class="mob-bar-btn" id="mob-btn-preview" onclick="Editor.setMobileView('preview')">
-      <span class="mob-btn-icon">👁</span>
-      <span class="mob-btn-label" data-i18n="ed.mobile.preview">معاينة</span>
+      <span class="mob-btn-icon">👁</span><span class="mob-btn-label">المعاينة</span>
     </button>
     <button type="button" class="mob-bar-btn" id="mob-btn-coach" onclick="Editor.setMobileView('coach')">
-      <span class="mob-btn-icon">💡</span>
-      <span class="mob-btn-label" data-i18n="ed.mobile.coach">المساعدة والتحسين</span>
-    </button>
-    <button type="button" class="mob-bar-btn mob-bar-btn-export" onclick="Editor.showExportModal()">
-      <span class="mob-btn-icon">⬇</span>
-      <span class="mob-btn-label" data-i18n="ed.mobile.export">تحميل</span>
+      <span class="mob-btn-icon">✨</span><span class="mob-btn-label">التحسين</span>
     </button>
   </nav>
 
@@ -223,23 +227,23 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://unpkg.com/html-docx-js@0.3.1/dist/html-docx.js"></script>
-  <script src="/app/assets/safety.js?v=20260718_11"></script>
-  <script src="/engine/i18n.js?v=20260718_11"></script>
-  <script src="/engine/normalize-career.js?v=20260718_11"></script>
-  <script src="/engine/career-storage.js?v=20260718_11"></script>
-  <script src="/engine/content-picker.js?v=20260718_11"></script>
-  <script src="/engine/template-selector.js?v=20260718_11"></script>
-  <script src="/engine/cv-sections.js?v=20260718_11"></script>
-  <script src="/engine/layout-engine.js?v=20260718_11"></script>
-  <script src="/engine/ats-scorer.js?v=20260718_11"></script>
-  <script src="/engine/renderers/cv.js?v=20260718_11"></script>
-  <script src="/engine/ai/offline-helpers.js?v=20260718_11"></script>
-  <script src="/coach/content-improver.js?v=20260718_11"></script>
-  <script src="/coach/suggestions.js?v=20260718_11"></script>
-  <script src="/app/assets/ai-settings.js?v=20260718_11"></script>
-  <script src="/app/assets/ai-client.js?v=20260718_11"></script>
-  <script src="/coach/career-coach.js?v=20260718_11"></script>
-  <script src="/coach/ai-coach.js?v=20260718_11"></script>
-  <script src="/app/assets/editor.js?v=20260718_11"></script>
+  <script src="/app/assets/safety.js?v=20260720_prod1"></script>
+  <script src="/app/assets/telemetry.js?v=20260720_prod1"></script>
+  <script src="/engine/i18n.js?v=20260720_prod1"></script>
+  <script src="/engine/normalize-career.js?v=20260720_prod1"></script>
+  <script src="/engine/career-storage.js?v=20260720_prod1"></script>
+  <script src="/engine/content-picker.js?v=20260720_prod1"></script>
+  <script src="/engine/template-selector.js?v=20260720_prod1"></script>
+  <script src="/engine/cv-sections.js?v=20260720_prod1"></script>
+  <script src="/engine/layout-engine.js?v=20260720_prod1"></script>
+  <script src="/engine/ats-scorer.js?v=20260720_prod1"></script>
+  <script src="/engine/renderers/cv.js?v=20260720_prod1"></script>
+  <script src="/engine/ai/offline-helpers.js?v=20260720_prod1"></script>
+  <script src="/coach/content-improver.js?v=20260720_prod1"></script>
+  <script src="/coach/suggestions.js?v=20260720_prod1"></script>
+  <script src="/app/assets/ai-settings.js?v=20260720_prod1"></script>
+  <script src="/app/assets/ai-client.js?v=20260720_prod1"></script>
+  <script src="/coach/ai-coach.js?v=20260720_prod1"></script>
+  <script src="/app/assets/editor.js?v=20260720_prod1"></script>
 </body>
 </html>

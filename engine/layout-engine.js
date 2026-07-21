@@ -5,18 +5,20 @@
 const LayoutEngine = (function () {
   function labels(career) {
     if (typeof I18n !== 'undefined' && I18n.getCvLabels) return I18n.getCvLabels();
-    return { summary: 'Professional Summary', experience: 'Experience', projects: 'Projects', skills: 'Skills', education: 'Education', languages: 'Languages' };
+    return { summary: 'Professional Summary', experience: 'Experience', projects: 'Projects', skills: 'Skills', education: 'Education', certificates: 'Certifications & Licenses', awards: 'Awards', languages: 'Languages' };
   }
 
   function renderOrdered(career, L) {
-    const order = career?.meta?.sectionOrder || ['summary', 'experience', 'education', 'projects', 'skills', 'languages'];
+    const order = career?.meta?.sectionOrder || ['summary', 'experience', 'education', 'certificates', 'projects', 'skills', 'languages', 'awards'];
     const map = {
       summary: () => CVSections.summary(career, L),
       experience: () => CVSections.experience(career, L),
       education: () => CVSections.education(career, L),
+      certificates: () => CVSections.certificates(career, L),
       projects: () => CVSections.projects(career, L),
       skills: () => CVSections.skills(career, L),
-      languages: () => CVSections.languages(career, L)
+      languages: () => CVSections.languages(career, L),
+      awards: () => CVSections.awards(career, L)
     };
     return CVSections.header(career) + order.map(k => (map[k] ? map[k]() : '')).join('');
   }
@@ -28,35 +30,35 @@ const LayoutEngine = (function () {
 
   function sidebar(career) {
     const L = labels(career);
-    const side = CVSections.skills(career, L) + CVSections.education(career, L) + CVSections.languages(career, L);
-    const main = CVSections.summary(career, L) + CVSections.experience(career, L) + CVSections.projects(career, L);
+    const side = CVSections.skills(career, L) + CVSections.education(career, L) + CVSections.certificates(career, L) + CVSections.languages(career, L);
+    const main = CVSections.summary(career, L) + CVSections.experience(career, L) + CVSections.projects(career, L) + CVSections.awards(career, L);
     return CVSections.header(career) + `<div class="layout-sidebar-wrap"><aside class="cv-sidebar">${side}</aside><main class="cv-main">${main}</main></div>`;
   }
 
   function twocol(career) {
     const L = labels(career);
-    const left = CVSections.skills(career, L) + CVSections.education(career, L);
-    const right = CVSections.summary(career, L) + CVSections.experience(career, L) + CVSections.projects(career, L);
+    const left = CVSections.skills(career, L) + CVSections.education(career, L) + CVSections.certificates(career, L);
+    const right = CVSections.summary(career, L) + CVSections.experience(career, L) + CVSections.projects(career, L) + CVSections.awards(career, L);
     return CVSections.header(career) + `<div class="layout-twocol"><div class="col-left">${left}</div><div class="col-right">${right}</div></div>` + CVSections.languages(career, L);
   }
 
   function timeline(career) {
     const L = labels(career);
     return CVSections.header(career) + CVSections.summary(career, L) + CVSections.experienceTimeline(career, L) +
-      CVSections.projects(career, L) + CVSections.skills(career, L) + CVSections.education(career, L);
+      CVSections.projects(career, L) + CVSections.skills(career, L) + CVSections.education(career, L) + CVSections.certificates(career, L) + CVSections.awards(career, L);
   }
 
   function corporate(career) {
     const L = labels(career);
     return `<div class="layout-corporate">${CVSections.header(career)}${CVSections.summary(career, L)}
       <div class="corp-grid">${CVSections.experience(career, L)}${CVSections.skills(career, L)}</div>
-      ${CVSections.projects(career, L)}${CVSections.education(career, L)}${CVSections.languages(career, L)}</div>`;
+      ${CVSections.projects(career, L)}${CVSections.education(career, L)}${CVSections.certificates(career, L)}${CVSections.awards(career, L)}${CVSections.languages(career, L)}</div>`;
   }
 
   function google(career) {
     const L = labels(career);
     return `<div class="layout-google">${CVSections.header(career)}${CVSections.experience(career, L)}${CVSections.education(career, L)}
-      ${CVSections.projects(career, L)}${CVSections.skills(career, L)}${CVSections.summary(career, L)}${CVSections.languages(career, L)}</div>`;
+      ${CVSections.projects(career, L)}${CVSections.skills(career, L)}${CVSections.certificates(career, L)}${CVSections.awards(career, L)}${CVSections.summary(career, L)}${CVSections.languages(career, L)}</div>`;
   }
 
   function canva_sidebar(career) {
@@ -96,7 +98,9 @@ const LayoutEngine = (function () {
         ${CVSections.summary(career, L)}
         ${CVSections.experience(career, L)}
         ${CVSections.education(career, L)}
+        ${CVSections.certificates(career, L)}
         ${CVSections.projects(career, L)}
+        ${CVSections.awards(career, L)}
       </div>
     `;
 
@@ -134,6 +138,8 @@ const LayoutEngine = (function () {
           <div>${CVSections.skills(career, L)}</div>
         </div>
         ${CVSections.projects(career, L)}
+        ${CVSections.certificates(career, L)}
+        ${CVSections.awards(career, L)}
         ${CVSections.languages(career, L)}
       </div>
     `;

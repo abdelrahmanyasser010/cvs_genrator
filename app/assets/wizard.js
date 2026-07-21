@@ -3,12 +3,12 @@
  */
 const Wizard = (function () {
   const STEPS = [
-    'welcome', 'locale', 'name', 'nice_to_meet', 'field', 'experience_years', 'contact', 
+    'welcome', 'locale', 'field', 'experience_years', 'profile',
     'education', 'experience', 'projects', 'skills', 'template', 'done'
   ];
-  const LINK_PROOF_FIELDS = ['developer', 'designer', 'graphic_designer', 'ui_ux_designer', 'marketing', 'data_analyst'];
+  const LINK_PROOF_FIELDS = ['developer', 'designer', 'graphic_designer', 'ui_ux_designer', 'marketing', 'data_analyst', 'architect'];
   const GITHUB_FIELDS = ['developer', 'data_analyst'];
-  const PROJECT_FIELDS = ['developer', 'designer', 'graphic_designer', 'ui_ux_designer', 'marketing', 'data_analyst'];
+  const PROJECT_FIELDS = ['developer', 'designer', 'graphic_designer', 'ui_ux_designer', 'marketing', 'data_analyst', 'project_manager', 'business_analyst', 'architect', 'civil_engineer', 'mechanical_engineer', 'electrical_engineer'];
 
   let career = null;
   let stepIndex = 0;
@@ -56,6 +56,15 @@ const Wizard = (function () {
 
   async function init() {
     career = CareerStorage.load() || CareerNormalize.createEmpty();
+    const quickStart = sessionStorage.getItem('cv_studio_quick_start');
+    if (quickStart === 'senior') {
+      career.careerProfile = career.careerProfile || {};
+      career.careerProfile.level = 'senior';
+      career.careerProfile.years = '5+';
+      career.meta = career.meta || {};
+      career.meta.quickStartSenior = true;
+      stepIndex = STEPS.indexOf('field');
+    }
     await I18n.init(career.meta?.locale);
     career.meta.locale = career.meta.locale || I18n.getLocale();
     await loadProfessionFields();
@@ -63,7 +72,7 @@ const Wizard = (function () {
     
     el('wz-next-btn').onclick = handleNext;
     
-    stepIndex = 0;
+    if (!career.meta?.quickStartSenior) stepIndex = 0;
     renderStep();
     updatePreview();
   }
@@ -91,7 +100,7 @@ const Wizard = (function () {
     const leftSec = document.querySelector('.wizard-left');
     if (!target) return;
 
-    const earlySteps = ['welcome', 'locale', 'name', 'nice_to_meet', 'field', 'experience_years', 'contact'];
+    const earlySteps = ['welcome', 'locale', 'field', 'experience_years', 'profile'];
     const currentStep = STEPS[stepIndex];
     if (earlySteps.includes(currentStep)) {
       if (rightSec) rightSec.style.display = 'none';
@@ -194,28 +203,23 @@ const Wizard = (function () {
 
     // Validation & Data Extraction before moving next
     switch (step) {
-      case 'name':
+      case 'profile': {
         if (!career.personalInfo) career.personalInfo = {};
         const nameVal = el('wz-input-name')?.value?.trim() || '';
+        const titleVal = el('wz-input-title')?.value?.trim() || '';
+        const emailVal = el('wz-input-email')?.value?.trim() || '';
         if (!nameVal) { valid = false; showError(t('wz.errRequired')); break; }
+        if (emailVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) { valid = false; showError(t('wz.errEmail')); break; }
         career.personalInfo.name = nameVal;
-        break;
-      case 'experience_years':
-        const lvl = document.querySelector('input[name="wz-level"]:checked');
-        if (!lvl) { valid = false; showError(t('wz.errRequired')); }
-        else { career.careerProfile.level = lvl.value; }
-        break;
-      case 'contact':
-        if (!career.personalInfo) career.personalInfo = {};
-        const em = el('wz-input-email')?.value?.trim() || '';
-        if (em && !em.includes('@')) { valid = false; showError(t('wz.errEmail')); break; }
-        career.personalInfo.email = em;
+        career.personalInfo.title = titleVal;
+        career.personalInfo.email = emailVal;
         career.personalInfo.phone = el('wz-input-phone')?.value?.trim() || '';
         career.personalInfo.location = el('wz-input-loc')?.value?.trim() || '';
-        if (!career.personalInfo.links) career.personalInfo.links = {};
-        if (el('wz-input-linkedin')) career.personalInfo.links.linkedin = el('wz-input-linkedin')?.value?.trim() || '';
+        career.personalInfo.links = career.personalInfo.links || {};
+        career.personalInfo.links.linkedin = el('wz-input-linkedin')?.value?.trim() || '';
         if (el('wz-input-github')) career.personalInfo.links.github = el('wz-input-github')?.value?.trim() || '';
         break;
+      }
       case 'education':
         const edu = el('wz-input-edu')?.value?.trim() || '';
         if (edu) {
@@ -250,6 +254,9 @@ const Wizard = (function () {
       while (shouldSkipStep(STEPS[stepIndex])) stepIndex++;
       renderStep();
     } else if (step === 'done') {
+      sessionStorage.removeItem('cv_studio_quick_start');
+      if (career.meta) delete career.meta.quickStartSenior;
+      CareerStorage.save(career);
       window.location.href = 'editor.html';
     }
   }
@@ -264,7 +271,7 @@ const Wizard = (function () {
     
     do {
       stepIndex--;
-    } while (stepIndex > 0 && (shouldSkipStep(STEPS[stepIndex]) || STEPS[stepIndex] === 'nice_to_meet'));
+    } while (stepIndex > 0 && shouldSkipStep(STEPS[stepIndex]));
     
     if (stepIndex < 0) {
       window.location.href = 'landing.html';
@@ -350,100 +357,77 @@ const Wizard = (function () {
         btn.style.display = 'none'; 
         break;
 
-      case 'name':
+      case 'field': {
+        const isAr = career.meta?.locale === 'ar';
         html = `
-          <div class="wz-encouragement">${t('wz.msgGreat')}</div>
-          <h1 class="wz-title">${t('wz.stepName')}</h1>
-          <input type="text" id="wz-input-name" class="wz-input-huge" placeholder="${t('wz.stepNamePh')}" value="${a(career.personalInfo?.name || '')}" autofocus>
-        `;
-        setTimeout(() => bindLiveInput('wz-input-name', 'personalInfo', 'name', true), 0);
-        break;
-
-      case 'nice_to_meet':
-        html = `
-          <h1 class="wz-title-heart">${h(t('wz.stepNice').replace('{name}', career.personalInfo?.name || ''))}</h1>
-        `;
-        activeTimer = setTimeout(handleNext, 1800); 
-        btn.style.display = 'none';
-        break;
-
-      case 'field':
-        html = `
-          <h1 class="wz-title">${t('wz.stepJob')}</h1>
-          <div class="wz-grid-options">
-            ${FIELDS.map(f => `
-              <label class="wz-grid-card" onclick="Wizard.setField('${f.id}')">
-                <input type="radio" name="wz-field" value="${f.id}" ${career.careerProfile?.field === f.id ? 'checked' : ''} style="pointer-events: none;">
-                <span class="wz-card-icon">${h(f.icon)}</span>
-                <span class="wz-card-label">${h(f.label || t(f.key))}</span>
-              </label>
-            `).join('')}
+          <div class="wz-encouragement">${isAr ? 'الاختيار ده بيخصص الأسئلة والنصائح حسب شغلك' : 'This choice personalizes the questions and advice for your career'}</div>
+          <h1 class="wz-title">${isAr ? 'ما مجالك المهني؟' : 'What is your profession?'}</h1>
+          <p class="wz-subtitle">${isAr ? 'اختار أقرب مجال. تقدر تغيّره لاحقاً من المحرر.' : 'Choose the closest field. You can change it later in the editor.'}</p>
+          <div class="wz-grid-options" dir="${isAr ? 'rtl' : 'ltr'}">
+            ${FIELDS.map(item => {
+              const label = item.label || t(item.key, item.id);
+              return `<button type="button" class="wz-grid-card" onclick="Wizard.setField('${a(item.id)}')" aria-label="${a(label)}">
+                <span class="wz-card-icon" aria-hidden="true">${h(item.icon || '💼')}</span>
+                <span class="wz-card-label">${h(label)}</span>
+              </button>`;
+            }).join('')}
           </div>
         `;
         btn.style.display = 'none';
         break;
+      }
 
-      case 'experience_years':
+      case 'experience_years': {
+        const isAr = career.meta?.locale === 'ar';
         html = `
-          <h1 class="wz-title">${t('wz.stepExpYears')}</h1>
-          <div class="wz-list-options">
-            ${LEVELS.map(l => `
-              <label class="wz-list-card" onclick="Wizard.setLevel('${l.id}')">
-                <input type="radio" name="wz-level" value="${l.id}" ${career.careerProfile?.level === l.id ? 'checked' : ''} style="pointer-events: none;">
-                <span class="wz-card-icon">${l.icon}</span>
-                <span class="wz-card-label">${t(l.key)}</span>
-              </label>
-            `).join('')}
+          <div class="wz-encouragement">${isAr ? 'هنغيّر نوع النصائح حسب مرحلتك الحقيقية' : 'We will adapt the advice to your actual career stage'}</div>
+          <h1 class="wz-title">${isAr ? 'ما مستوى خبرتك؟' : 'What is your experience level?'}</h1>
+          <p class="wz-subtitle">${isAr ? 'اختار الأقرب لخبرتك الحالية، مش للمسمى اللي بتتمنى توصله.' : 'Choose what best reflects your current experience, not only your desired title.'}</p>
+          <div class="wz-list-options" dir="${isAr ? 'rtl' : 'ltr'}">
+            ${LEVELS.map(item => `<button type="button" class="wz-list-card" onclick="Wizard.setLevel('${a(item.id)}')" aria-label="${a(t(item.key, item.id))}">
+              <span class="wz-card-icon" aria-hidden="true">${h(item.icon)}</span>
+              <span class="wz-card-label">${h(t(item.key, item.id))}</span>
+            </button>`).join('')}
           </div>
         `;
         btn.style.display = 'none';
         break;
+      }
 
-      case 'contact':
-        const curField = career.careerProfile?.field || '';
+      case 'profile': {
+        const curField = career.careerProfile?.field || 'other';
         const showLinks = LINK_PROOF_FIELDS.includes(curField);
         html = `
-          <h1 class="wz-title">${career.meta?.locale === 'ar' ? 'بيانات التواصل الأساسية' : 'Contact Information'}</h1>
-          <div dir="${career.meta?.locale === 'ar' ? 'rtl' : 'ltr'}" style="display:flex;flex-direction:column;gap:16px;margin-top:16px;text-align:${career.meta?.locale === 'ar' ? 'right' : 'left'};">
-            <div>
-              <label style="font-size:13px;font-weight:700;color:var(--text,#1e293b);display:block;margin-bottom:6px;">${t('wz.stepEmail', career.meta?.locale === 'ar' ? 'البريد الإلكتروني' : 'Email Address')}</label>
-              <input type="email" id="wz-input-email" class="wz-input-huge" style="margin:0;width:100%;" placeholder="${t('wz.stepEmailPh')}" value="${a(career.personalInfo?.email || '')}" autofocus>
-            </div>
-            <div>
-              <label style="font-size:13px;font-weight:700;color:var(--text,#1e293b);display:block;margin-bottom:6px;">${t('wz.stepPhone', career.meta?.locale === 'ar' ? 'رقم الهاتف' : 'Phone Number')}</label>
-              <input type="tel" id="wz-input-phone" class="wz-input-huge" style="margin:0;width:100%;" placeholder="${t('wz.stepPhonePh')}" value="${a(career.personalInfo?.phone || '')}">
-            </div>
-            <div>
-              <label style="font-size:13px;font-weight:700;color:var(--text,#1e293b);display:block;margin-bottom:6px;">${t('wz.stepLocation', career.meta?.locale === 'ar' ? 'المدينة والبلد' : 'Location / City')}</label>
-              <input type="text" id="wz-input-loc" class="wz-input-huge" style="margin:0;width:100%;" placeholder="${t('wz.stepLocationPh')}" value="${a(career.personalInfo?.location || '')}">
-            </div>
-            ${showLinks ? `
-            <div style="border-top:1px dashed #cbd5e1;padding-top:16px;margin-top:4px;">
-              <div style="font-size:12px;font-weight:700;color:#64748b;margin-bottom:10px;">🔗 ${career.meta?.locale === 'ar' ? 'روابط مهنية (اختياري لكن يُنصح به لمجالك)' : 'Professional Links (Recommended for your field)'}</div>
-              <div style="margin-bottom:12px;">
-                <input type="url" id="wz-input-linkedin" class="wz-input-huge" style="margin:0;width:100%;font-size:15px;padding:12px;" placeholder="${t('wz.stepLinkedinPh', 'LinkedIn URL')}" value="${a(career.personalInfo?.links?.linkedin || '')}">
-              </div>
-              <div>
-                <input type="url" id="wz-input-github" class="wz-input-huge" style="margin:0;width:100%;font-size:15px;padding:12px;" placeholder="${GITHUB_FIELDS.includes(curField) ? t('wz.stepGithubPh', 'GitHub URL') : 'Portfolio URL (Behance / Personal Site)'}" value="${a(career.personalInfo?.links?.github || '')}">
-              </div>
-            </div>
-            ` : ''}
+          <div class="wz-encouragement">${career.meta?.locale === 'ar' ? 'خطوة واحدة ونجهز هويتك المهنية' : 'One step to set up your professional identity'}</div>
+          <h1 class="wz-title">${career.meta?.locale === 'ar' ? 'الملف الأساسي' : 'Basic Profile'}</h1>
+          <p class="wz-subtitle">${career.meta?.locale === 'ar' ? 'اكتب بياناتك مرة واحدة. ستقدر تعدلها لاحقاً من المحرر.' : 'Enter these details once. You can edit them later in the editor.'}</p>
+          <div class="wz-profile-grid" dir="${career.meta?.locale === 'ar' ? 'rtl' : 'ltr'}">
+            <div class="wz-profile-field wz-profile-full"><label>${career.meta?.locale === 'ar' ? 'الاسم الكامل *' : 'Full name *'}</label><input type="text" id="wz-input-name" class="wz-input-huge" placeholder="${t('wz.stepNamePh')}" value="${a(career.personalInfo?.name || '')}"></div>
+            <div class="wz-profile-field wz-profile-full"><label>${career.meta?.locale === 'ar' ? 'المسمى الوظيفي المستهدف' : 'Target job title'}</label><input type="text" id="wz-input-title" class="wz-input-huge" placeholder="${a(phObj.title || (career.meta?.locale === 'ar' ? 'مثال: محاسب مالي' : 'e.g. Financial Accountant'))}" value="${a(career.personalInfo?.title || '')}"></div>
+            <div class="wz-profile-field"><label>${career.meta?.locale === 'ar' ? 'البريد الإلكتروني' : 'Email'}</label><input type="email" id="wz-input-email" class="wz-input-huge" placeholder="you@example.com" value="${a(career.personalInfo?.email || '')}"></div>
+            <div class="wz-profile-field"><label>${career.meta?.locale === 'ar' ? 'رقم الهاتف' : 'Phone'}</label><input type="tel" id="wz-input-phone" class="wz-input-huge" placeholder="+20 100 000 0000" value="${a(career.personalInfo?.phone || '')}"></div>
+            <div class="wz-profile-field wz-profile-full"><label>${career.meta?.locale === 'ar' ? 'المدينة والدولة' : 'City and country'}</label><input type="text" id="wz-input-loc" class="wz-input-huge" placeholder="${career.meta?.locale === 'ar' ? 'القاهرة، مصر' : 'Cairo, Egypt'}" value="${a(career.personalInfo?.location || '')}"></div>
+            <div class="wz-profile-field wz-profile-full"><label>LinkedIn <span>${career.meta?.locale === 'ar' ? '(اختياري)' : '(optional)'}</span></label><input type="url" id="wz-input-linkedin" class="wz-input-huge" placeholder="https://linkedin.com/in/..." value="${a(career.personalInfo?.links?.linkedin || '')}"></div>
+            ${showLinks ? `<div class="wz-profile-field wz-profile-full"><label>${GITHUB_FIELDS.includes(curField) ? 'GitHub' : (career.meta?.locale === 'ar' ? 'Portfolio / رابط الأعمال' : 'Portfolio')} <span>${career.meta?.locale === 'ar' ? '(اختياري)' : '(optional)'}</span></label><input type="url" id="wz-input-github" class="wz-input-huge" placeholder="https://..." value="${a(career.personalInfo?.links?.github || '')}"></div>` : ''}
           </div>
         `;
         setTimeout(() => {
+          bindLiveInput('wz-input-name', 'personalInfo', 'name', true);
+          bindLiveInput('wz-input-title', 'personalInfo', 'title', true);
           bindLiveInput('wz-input-email', 'personalInfo', 'email', true);
           bindLiveInput('wz-input-phone', 'personalInfo', 'phone', true);
           bindLiveInput('wz-input-loc', 'personalInfo', 'location', true);
-          if (el('wz-input-linkedin')) bindLiveInput('wz-input-linkedin', 'links', 'linkedin', true);
+          bindLiveInput('wz-input-linkedin', 'links', 'linkedin', true);
           if (el('wz-input-github')) bindLiveInput('wz-input-github', 'links', 'github', true);
         }, 0);
         break;
+      }
 
       case 'education':
         html = `
           <h1 class="wz-title">${t('wz.stepEdu')}</h1>
           <input type="text" id="wz-input-edu" class="wz-input-huge" placeholder="${phObj.degree || t('wz.stepEduPh')}" value="${a(career.education?.[0]?.degree || '')}" autofocus>
-          ${getStepHintBox('education', curField, career.meta?.locale === 'ar', career.careerProfile?.level)}
+          ${getStepHintBox('education', field, career.meta?.locale === 'ar', career.careerProfile?.level)}
         `;
         setTimeout(() => bindLiveInput('wz-input-edu', 'education', '', false), 0);
         break;
@@ -459,7 +443,7 @@ const Wizard = (function () {
               </button>
             </div>
           ` : ''}
-          ${getStepHintBox('experience', curField, career.meta?.locale === 'ar', career.careerProfile?.level)}
+          ${getStepHintBox('experience', field, career.meta?.locale === 'ar', career.careerProfile?.level)}
         `;
         setTimeout(() => bindLiveInput('wz-input-exp', 'experience', '', false), 0);
         btn.innerText = t('wz.skip');
@@ -470,7 +454,7 @@ const Wizard = (function () {
           <div class="wz-encouragement">${t('wz.msgFewMore')}</div>
           <h1 class="wz-title">${t('wz.stepProj')}</h1>
           <input type="text" id="wz-input-proj" class="wz-input-huge" placeholder="${phObj.projName || t('wz.stepProjPh')}" value="${a(career.projects?.[0]?.name || '')}" autofocus>
-          ${getStepHintBox('projects', curField, career.meta?.locale === 'ar', career.careerProfile?.level)}
+          ${getStepHintBox('projects', field, career.meta?.locale === 'ar', career.careerProfile?.level)}
         `;
         setTimeout(() => bindLiveInput('wz-input-proj', 'projects', '', false), 0);
         btn.innerText = t('wz.skip');
@@ -514,7 +498,7 @@ const Wizard = (function () {
         break;
     }
 
-    if (!['locale', 'nice_to_meet'].includes(step)) html += renderWizardCoach(step);
+    if (step !== 'locale') html += renderWizardCoach(step);
     area.innerHTML = html;
     
     // Auto focus and handle enter
@@ -549,19 +533,16 @@ const Wizard = (function () {
   function setField(fieldId) {
     if (!career.careerProfile) career.careerProfile = {};
     career.careerProfile.field = fieldId;
-    const picked = FIELDS.find(item => item.id === fieldId);
-    if (!career.personalInfo) career.personalInfo = {};
-    const label = picked ? (picked.label || t(picked.key)) : fieldId;
-    if (label) {
-      career.personalInfo.title = label;
-      career.careerProfile.title = label;
-    }
+    // The broad profession must not silently become the user's exact target title.
+    // The next profile step asks for the precise title once, in the right context.
     handleNext();
   }
 
   function setLevel(levelId) {
     if (!career.careerProfile) career.careerProfile = {};
     career.careerProfile.level = levelId;
+    const yearsByLevel = { fresh: '0', junior: '1-2', mid: '3-5', senior: '5+' };
+    career.careerProfile.years = yearsByLevel[levelId] || '';
     handleNext();
   }
 
@@ -689,13 +670,17 @@ const Wizard = (function () {
     handleNext();
   }
 
-  function shouldSkipStep(step) {
-    const field = career.careerProfile?.field || '';
-    const level = career.careerProfile?.level || '';
-    if (step === 'experience' && level === 'fresh') {
-      return true;
+  function shouldAskForProjects() {
+    if (typeof AICoach !== 'undefined' && typeof AICoach.roleCoachProfile === 'function') {
+      const profile = AICoach.roleCoachProfile(career);
+      return (profile?.projectMode || 'hidden') !== 'hidden';
     }
-    if (step === 'projects') return !PROJECT_FIELDS.includes(field);
+    return PROJECT_FIELDS.includes(career.careerProfile?.field || '');
+  }
+
+  function shouldSkipStep(step) {
+    if (step === 'experience_years' && career.meta?.quickStartSenior) return true;
+    if (step === 'projects') return !shouldAskForProjects();
     return false;
   }
 

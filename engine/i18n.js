@@ -88,7 +88,9 @@ const I18n = (function () {
       projects: t('cv.projects'),
       skills: t('cv.skills'),
       education: t('cv.education'),
-      languages: t('cv.languages')
+      languages: t('cv.languages'),
+      certificates: t('cv.certificates'),
+      awards: t('cv.awards')
     };
   }
 

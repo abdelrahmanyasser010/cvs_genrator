@@ -84,8 +84,13 @@ function checkRequiredEntrypoints() {
     'app/index.html',
     'app/editor.html',
     'app/assets/safety.js',
+    'app/assets/telemetry.js',
+    'app/privacy.html',
     'api/ai/generate.js',
     'api/ai/gemini-service.js',
+    'api/ai/task-prompts.js',
+    'api/ai/request-guard.js',
+    'api/telemetry/client-error.js',
     'local-server.js',
     'engine/renderers/cv.js',
     'knowledge-base/registry.json'
@@ -94,10 +99,52 @@ function checkRequiredEntrypoints() {
   });
 }
 
+
+function checkProductionSafety() {
+  const clientFiles = [
+    'app/assets/ai-client.js',
+    'app/assets/ai-settings.js',
+    'app/assets/editor.js',
+    'vercel.json',
+    '_headers'
+  ];
+  const forbidden = [
+    /cv_studio_ai_key/i,
+    /api\.openai\.com/i,
+    /api\.anthropic\.com/i,
+    /openrouter\.ai/i,
+    /generativelanguage\.googleapis\.com/i
+  ];
+  for (const file of clientFiles) {
+    const full = path.join(root, file);
+    if (!fs.existsSync(full)) continue;
+    const content = fs.readFileSync(full, 'utf8');
+    for (const pattern of forbidden) {
+      if (pattern.test(content)) errors.push(`${file}: forbidden browser-side AI key/provider reference (${pattern})`);
+    }
+  }
+
+  const aiClient = fs.readFileSync(path.join(root, 'app/assets/ai-client.js'), 'utf8');
+  if (!aiClient.includes("task: 'summary'") || !aiClient.includes("X-CV-Session")) {
+    errors.push('app/assets/ai-client.js: task-based same-origin AI client guard is missing');
+  }
+
+  const storage = fs.readFileSync(path.join(root, 'engine/career-storage.js'), 'utf8');
+  if (!storage.includes('downloadBackup') || !storage.includes('RECOVERY_KEY')) {
+    errors.push('engine/career-storage.js: backup/recovery protection is missing');
+  }
+
+  const editor = fs.readFileSync(path.join(root, 'app/assets/editor.js'), 'utf8');
+  if (/application\/msword/.test(editor)) {
+    errors.push('app/assets/editor.js: fake .doc fallback must not ship');
+  }
+}
+
 checkRequiredEntrypoints();
 checkJson();
 checkJsSyntax();
 checkHtmlAssets();
+checkProductionSafety();
 
 if (errors.length) {
   console.error(`Production check failed (${errors.length} issue${errors.length === 1 ? '' : 's'}):`);

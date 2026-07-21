@@ -1,141 +1,124 @@
 /**
- * Browser AI client for owner-managed AI.
- * Calls the internal /api/ai/generate endpoint first, then falls back cleanly.
+ * Production browser AI client.
+ * Sends task-based, privacy-minimized payloads only to the same-origin server.
  */
 const AIClient = (function () {
-  function configured() {
-    return true;
+  const SESSION_KEY = 'cv_studio_ai_session';
+
+  function configured() { return true; }
+
+  function sessionId() {
+    let value = sessionStorage.getItem(SESSION_KEY);
+    if (!value) {
+      const bytes = new Uint8Array(18);
+      crypto.getRandomValues(bytes);
+      value = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+      sessionStorage.setItem(SESSION_KEY, value);
+    }
+    return value;
   }
 
-  function provider() {
-    return AISettings.getProvider();
-  }
-
-  function apiKey() {
-    return AISettings.getApiKey();
-  }
-
-  function context(career) {
+  function profile(career) {
     return {
-      profession: career?.careerProfile?.field || 'other',
+      field: career?.careerProfile?.field || 'other',
+      specialization: career?.careerProfile?.specialization || '',
       level: career?.careerProfile?.level || 'junior',
-      locale: career?.meta?.locale || 'en',
-      skills: Object.values(career?.skills || {}).flat().slice(0, 12),
-      experience: (career?.experience || []).map(item => ({
-        role: item.role || '',
-        company: item.company || '',
-        bullets: item.bullets || []
-      })),
-      projects: (career?.projects || []).map(item => ({
-        name: item.name || '',
-        tech: item.tech || '',
-        desc: item.desc || ''
-      }))
+      years: career?.careerProfile?.years || '',
+      targetTitle: career?.personalInfo?.title || ''
     };
   }
 
-  function guardrails(career) {
-    const lang = career?.meta?.locale === 'ar' ? 'Arabic' : 'English';
-    return [
-      'You are a professional CV writer inside CV Studio.',
-      `Write in ${lang}.`,
-      'Do not invent companies, dates, degrees, certifications, awards, metrics, or seniority.',
-      'Only use facts present in the provided CV data.',
-      'If details are missing, write generally without fabricating specifics.',
-      'Return only the final CV text, with no markdown heading.'
-    ].join('\n');
+  function skillList(career) {
+    return Object.values(career?.skills || {}).flat().map(String).filter(Boolean).slice(0, 24);
   }
 
-  async function maybePreview(prompt) {
-    if (typeof AISettings !== 'undefined' && AISettings.shouldShowPreview()) {
-      return confirm(`Prompt to AI:\n\n${prompt}\n\nSend this prompt?`);
-    }
-    return true;
+  function experience(career) {
+    return (career?.experience || []).slice(0, 8).map(item => ({
+      role: item.role || '',
+      bullets: (item.bullets || []).slice(0, 8)
+    }));
   }
 
-  async function complete(prompt, options = {}) {
-    if (!(await maybePreview(prompt))) return null;
+  function locale(career) {
+    return career?.meta?.locale === 'ar' ? 'ar' : 'en';
+  }
 
-    const serverText = await callOwnerManagedAI(prompt, options).catch(error => {
-      console.warn('Owner-managed AI unavailable:', error);
-      return null;
+  function previewPayload(payload) {
+    if (typeof AISettings === 'undefined' || !AISettings.shouldShowPreview()) return Promise.resolve(true);
+    const isAr = payload.locale === 'ar';
+    const safe = JSON.stringify(payload, null, 2);
+    return Promise.resolve(confirm(`${isAr ? 'البيانات التي سترسل للمساعد:' : 'Data that will be sent to AI:'}\n\n${safe}\n\n${isAr ? 'هل تريد المتابعة؟' : 'Continue?'}`));
+  }
+
+  async function request(payload) {
+    if (typeof AISettings !== 'undefined' && !(await AISettings.ensureConsent())) return null;
+    if (!(await previewPayload(payload))) return null;
+
+    const response = await fetch('/api/ai/generate', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CV-Client': 'web-v1',
+        'X-CV-Session': sessionId()
+      },
+      body: JSON.stringify(payload)
     });
-    if (serverText) return serverText;
-
-    if (typeof AISettings !== 'undefined' && AISettings.getProvider() && AISettings.getApiKey()) {
-      const name = provider();
-      const key = apiKey();
-      if (name === 'gemini') return callGemini(key, prompt, options);
-      if (name === 'openrouter') return callOpenRouter(key, prompt, options);
-      if (name === 'openai') return callOpenAI(key, prompt, options);
-      if (name === 'anthropic') return callAnthropic(key, prompt, options);
+    const data = await response.json().catch(() => ({}));
+    if (data?.fallback) return null;
+    if (!response.ok || data?.error) {
+      const error = new Error(String(data?.error || `AI request failed (${response.status})`));
+      error.status = response.status;
+      throw error;
     }
-    return null;
+    return data?.text?.trim() || null;
   }
 
   async function generateSummary(career) {
-    const data = context(career);
-    const prompt = `${guardrails(career)}
-
-Task: Write a strong professional summary in 2-3 concise sentences.
-
-CV data:
-${JSON.stringify(data, null, 2)}`;
-    return complete(prompt, { temperature: 0.45 });
+    return request({
+      task: 'summary',
+      locale: locale(career),
+      profile: profile(career),
+      existingSkills: skillList(career)
+    });
   }
 
   async function improveText(career, text, instruction) {
-    const prompt = `${guardrails(career)}
-
-Task: ${instruction || 'Improve this CV text to be clearer, more specific, and more professional.'}
-
-Current text:
-${text || ''}
-
-CV context:
-${JSON.stringify(context(career), null, 2)}`;
-    return complete(prompt, { temperature: 0.35 });
+    const looksLikeTranslation = /^translate\b/i.test(String(instruction || '').trim());
+    return request({
+      task: looksLikeTranslation ? 'translate' : 'improve_text',
+      locale: looksLikeTranslation ? (locale(career) === 'ar' ? 'en' : 'ar') : locale(career),
+      profile: profile(career),
+      existingSkills: skillList(career),
+      currentText: String(text || '').slice(0, 5000),
+      instruction: looksLikeTranslation ? '' : String(instruction || '').slice(0, 500)
+    });
   }
 
   async function improveBullets(career) {
-    const prompt = `${guardrails(career)}
-
-Task: Rewrite the provided experience bullets to be action-oriented and ATS-friendly.
-Rules:
-- Keep the same number of roles.
-- Do not add fake metrics.
-- Use concise bullet lines.
-- Return JSON only in this shape: [{"role":"...","bullets":["..."]}]
-
-Experience:
-${JSON.stringify(context(career).experience, null, 2)}`;
-    const raw = await complete(prompt, { temperature: 0.25 });
+    const raw = await request({
+      task: 'improve_bullets',
+      locale: locale(career),
+      profile: profile(career),
+      existingSkills: skillList(career),
+      experience: experience(career)
+    });
     if (!raw) return null;
     const json = extractJson(raw);
     return Array.isArray(json) ? json : null;
   }
 
   async function suggestSkills(career) {
-    const data = context(career);
-    const prompt = `${guardrails(career)}
-
-Task: Suggest 8-10 relevant CV skills for this profession and level.
-Rules:
-- Match the selected profession, not software unless the profession is software.
-- Do not repeat existing skills.
-- Return JSON only in this shape: ["Skill 1","Skill 2"]
-
-CV data:
-${JSON.stringify(data, null, 2)}`;
-    const raw = await complete(prompt, { temperature: 0.3 });
+    const raw = await request({
+      task: 'suggest_skills',
+      locale: locale(career),
+      profile: profile(career),
+      existingSkills: skillList(career)
+    });
     if (!raw) return null;
     const json = extractJson(raw);
-    if (Array.isArray(json)) return json.map(String).filter(Boolean);
-    return String(raw)
-      .split(/\r?\n|,/)
-      .map(item => item.replace(/^[-*\d.\s]+/, '').trim())
-      .filter(Boolean)
-      .slice(0, 10);
+    if (Array.isArray(json)) return json.map(String).filter(Boolean).slice(0, 10);
+    return String(raw).split(/\r?\n|,/).map(item => item.replace(/^[-*\d.\s]+/, '').trim()).filter(Boolean).slice(0, 10);
   }
 
   function extractJson(text) {
@@ -145,90 +128,5 @@ ${JSON.stringify(data, null, 2)}`;
     try { return JSON.parse(match[0]); } catch { return null; }
   }
 
-  async function callOwnerManagedAI(prompt, options) {
-    const res = await fetch('/api/ai/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, options })
-    });
-    if (res.status === 404 || res.status === 501) return null;
-    const data = await readResponse(res);
-    if (data?.fallback || data?.error) return null;
-    return data?.text?.trim() || null;
-  }
-
-  async function callGemini(key, prompt, options) {
-    const model = localStorage.getItem('cv_studio_ai_model') || 'gemini-2.5-flash';
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: options.temperature ?? 0.4 }
-      })
-    });
-    const data = await readResponse(res);
-    return data?.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim() || null;
-  }
-
-  async function callOpenAI(key, prompt, options) {
-    const model = localStorage.getItem('cv_studio_ai_model') || 'gpt-4o-mini';
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-      body: JSON.stringify({
-        model,
-        messages: [{ role: 'user', content: prompt }],
-        temperature: options.temperature ?? 0.4
-      })
-    });
-    const data = await readResponse(res);
-    return data?.choices?.[0]?.message?.content?.trim() || null;
-  }
-
-  async function callOpenRouter(key, prompt, options) {
-    const model = localStorage.getItem('cv_studio_ai_model') || 'openai/gpt-4o-mini';
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-      body: JSON.stringify({
-        model,
-        messages: [{ role: 'user', content: prompt }],
-        temperature: options.temperature ?? 0.4
-      })
-    });
-    const data = await readResponse(res);
-    return data?.choices?.[0]?.message?.content?.trim() || null;
-  }
-
-  async function callAnthropic(key, prompt, options) {
-    const model = localStorage.getItem('cv_studio_ai_model') || 'claude-3-haiku-20240307';
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model,
-        max_tokens: options.maxTokens || 700,
-        temperature: options.temperature ?? 0.4,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-    const data = await readResponse(res);
-    return data?.content?.map(part => part.text || '').join('').trim() || null;
-  }
-
-  async function readResponse(res) {
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      const msg = data?.error?.message || data?.error || `AI request failed (${res.status})`;
-      throw new Error(String(msg));
-    }
-    return data;
-  }
-
-  return { configured, complete, generateSummary, improveText, improveBullets, suggestSkills };
+  return { configured, generateSummary, improveText, improveBullets, suggestSkills };
 })();

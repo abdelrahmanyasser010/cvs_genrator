@@ -1,238 +1,103 @@
 # CV Studio
 
-Version 2.0 — AI-assisted Resume Builder
+Production-hardened local-first resume builder release candidate.
 
-**Build professional, ATS-friendly CVs in 10 minutes.**
+CV Studio helps users build bilingual, profession-aware resumes with live preview, transparent ATS-readiness guidance, and optional AI-assisted wording.
 
----
+## Product principles
 
-## What is CV Studio?
+- Facts first: never invent employers, degrees, dates, skills, certifications, or metrics.
+- User control: AI changes are previewed before being applied.
+- Transparent ATS guidance: scores are indicators, not hiring guarantees.
+- Local-first privacy: resumes remain in the current browser unless the user exports a backup.
+- AI data minimization: contact details and links are excluded from AI requests.
 
-CV Studio is an AI-assisted Resume Builder focused on producing professional, ATS-friendly, bilingual CVs through a simple conversational experience.
-
-**Key Features:**
-- 🗣️ Conversational Wizard (one question at a time)
-- 🤖 AI Assistant (optional, works offline too)
-- 👁️ Live Preview (instant updates)
-- 📄 PDF Export (print-ready)
-- 🎨 11 Professional Templates
-- 🌍 Bilingual (Arabic & English)
-- 📚 Knowledge Base (profession-aware)
-- ✅ ATS Scoring
-
-**Philosophy:** People First, AI Second, CV First.
-
----
-
-## Quick Start
-
-
-> Important: Do not open `app/editor.html` or `app/index.html` directly with `file://`.
-> The app must run through a local/static server because it loads shared JS, CSS, and JSON files.
-> On Windows, double-click `start-cv-studio.bat` to start the local server and open the app.
-
+## Run locally
 
 ```bash
-# Start local server
+cp .env.example .env
+# Add the server-only GEMINI_API_KEY when AI is needed.
 node local-server.js
+```
 
-# Open browser
+Open:
+
+```text
 http://localhost:5500/app/onboarding.html
 ```
 
-### Owner-managed AI setup
+Do not open application pages through `file://`; the app loads shared assets and JSON rules through HTTP.
 
-CV Studio uses one owner-managed Gemini key. End users do not enter API keys.
+## AI architecture
 
-Local setup:
+The production browser does not accept or store API keys and does not call model providers directly.
+
+Browser requests use the allowlisted task endpoint:
+
+```text
+POST /api/ai/generate
+```
+
+Supported tasks:
+
+- `summary`
+- `improve_text`
+- `improve_bullets`
+- `suggest_skills`
+- `translate`
+
+The server constructs prompts, validates/minimizes input, enforces output limits and timeouts, and logs token usage. A basic per-IP/session limiter is included; scaled production requires a durable shared rate-limit store.
+
+## Data storage
+
+Resume data is local-first and stored in the browser. The editor provides:
+
+- Per-version storage.
+- Recovery snapshot.
+- One-file backup containing all resume versions.
+- Backup import.
+- Clear local-only status and failure messages.
+
+A paid multi-device service still needs authentication, cloud storage, encryption, backups, and account deletion.
+
+## Export
+
+- PDF uses the browser print engine after waiting for fonts/images.
+- DOCX uses the real `html-docx-js` converter when loaded.
+- The app does not create a fake `.doc` file when DOCX conversion is unavailable.
+- JSON backup is the recovery/export format for application data.
+
+## Checks
 
 ```bash
-copy .env.example .env
-# Edit .env and set GEMINI_API_KEY
-node local-server.js
+npm run check
 ```
 
-Production setup:
+This runs syntax/assets, role-aware coach/storage, and AI security checks.
 
-- Set `GEMINI_API_KEY` in your hosting environment variables.
-- Optional: set `GEMINI_MODEL` or `GEMINI_FALLBACK_MODELS` if you want to override the default model chain.
-- Do not commit `.env` or any real API key to the repository.
-
-1. Choose language (English / العربية)
-2. Choose profession
-3. Follow conversational wizard
-4. Edit in editor with AI assistance (optional)
-5. Choose template
-6. Export PDF
-
----
-
-## Demo
-
-Load demo profile in wizard or import `data/samples/abdelrahman.json` in editor.
-
----
-
-## Project Structure
-
-```
-cvs_genrator/
-├── app/                    # Frontend application
-│   ├── assets/            # JavaScript, CSS, i18n
-│   ├── editor.html        # Editor page
-│   ├── index.html         # Wizard page
-│   └── onboarding.html    # Welcome page
-├── engine/                # Core business logic
-│   ├── ai/               # AI Layer
-│   ├── renderers/        # CV rendering
-│   └── *.js              # Core modules
-├── coach/                 # Content improvement
-├── templates/             # CV templates
-│   ├── layouts/          # Layout definitions
-│   ├── themes/           # Theme definitions
-│   └── shared/           # Shared CSS
-├── knowledge-base/        # Profession data
-│   ├── en/               # English content
-│   └── ar/               # Arabic content
-├── docs/                  # Documentation
-│   ├── 01_PRODUCT_BIBLE.md
-│   ├── 02_ARCHITECTURE.md
-│   ├── 03_UI_UX_GUIDELINES.md
-│   ├── 04_AI_SYSTEM.md
-│   ├── 05_KNOWLEDGE_BASE.md
-│   ├── 06_ROADMAP.md
-│   ├── 07_CONTRIBUTING.md
-│   └── adr/              # Architecture Decision Records
-└── data/                  # Samples and registry
-```
-
----
-
-## Tech Stack
-
-- **Frontend:** Vanilla JavaScript (no frameworks)
-- **Styling:** CSS3 with CSS Variables
-- **Storage:** LocalStorage
-- **AI:** Owner-managed Gemini API route, with optional local fallback providers for testing
-- **Export:** HTML to PDF via browser print
-
----
-
-## Documentation
-
-- [01_PRODUCT_BIBLE.md](docs/01_PRODUCT_BIBLE.md) — Product vision and philosophy
-- [02_ARCHITECTURE.md](docs/02_ARCHITECTURE.md) — System architecture
-- [03_UI_UX_GUIDELINES.md](docs/03_UI_UX_GUIDELINES.md) — Design decisions
-- [04_AI_SYSTEM.md](docs/04_AI_SYSTEM.md) — AI behavior and safety
-- [05_KNOWLEDGE_BASE.md](docs/05_KNOWLEDGE_BASE.md) — Knowledge base structure
-- [06_ROADMAP.md](docs/06_ROADMAP.md) — Product roadmap
-- [07_CONTRIBUTING.md](docs/07_CONTRIBUTING.md) — Contribution guidelines
-- [docs/adr/](docs/adr/) — Architecture Decision Records
-
----
-
-## Supported Professions
-
-Current (v2.0):
-- Software Developer
-- Teacher
-- Accountant
-
-Planned:
-- Doctor, Dentist, Pharmacist, Lawyer, Architect, Engineer, HR, Marketing, Designer, and more.
-
----
-
-## AI Features (Optional)
-
-
-### AI Coach Experience
-
-The editor and wizard include an offline-first AI Coach:
-
-- Step-by-step wizard guidance while the user answers questions.
-- Contextual section advice inside the editor.
-- Pre-export review with blockers, warnings, and quick fixes.
-- Owner-managed Gemini writing through the internal `/api/ai/generate` route.
-- Optional local fallback providers remain available for testing only.
-- Offline fallback remains available when no key is configured or a provider request fails.
-
-
-CV Studio works fully without AI. When configured, AI can:
-
-- ✨ Improve wording
-- ✂️ Shorten text
-- 🌐 Translate (AR ↔ EN)
-- • Generate bullets
-- 💡 Suggest skills
-- 🎯 Improve ATS wording
-
-**Setup:** Configure `GEMINI_API_KEY` on the server or hosting provider. Users do not need API keys.
-
----
-
-## MVP Scope
-
-**Included:**
-- ✅ CV Builder
-- ✅ AI Assistant
-- ✅ Live Preview
-- ✅ PDF Export
-- ✅ Multiple Templates
-- ✅ Arabic & English
-
-**Out of Scope:**
-- ❌ Portfolio
-- ❌ Cover Letter
-- ❌ Interview Coach
-- ❌ Job Tracker
-
----
-
-## Roadmap
-
-- **v1.0** — Feature Complete MVP (Current)
-- **v1.1** — User feedback improvements
-- **v1.2** — 20 professions, 20 templates
-- **v2.0** — Multiple CVs, Cloud Sync
-- **v3.0** — Job Matching, Interview Prep
-
-See [06_ROADMAP.md](docs/06_ROADMAP.md) for details.
-
-
----
-
-## Production Readiness
-
-Run the local production check before deploying:
+Responsive E2E smoke test:
 
 ```bash
-node tools/production-check.js
+pip install -r tests/requirements.txt
+playwright install chromium
+npm run test:e2e
 ```
 
-The app is a static site. Deploy the repository root to any static host such as Vercel, Netlify, Cloudflare Pages, or GitHub Pages. Production security headers are included in `vercel.json` and `_headers`.
+Viewport coverage: 320, 390, 768, 1024, and 1366 px.
 
-Recommended smoke test after deployment:
+## Deployment
 
-1. Open `/app/onboarding.html` and create a resume.
-2. Confirm the wizard preview renders while typing.
-3. Open the editor, edit each core section, switch templates, and export PDF/HTML/JSON.
-4. Import the exported JSON and confirm the resume reloads correctly.
+The project requires a host that supports the `/api` server functions, such as Vercel. It is no longer a static-only GitHub Pages deployment when AI and telemetry endpoints are enabled.
 
----
+Configure server environment variables from `.env.example`. Never expose `GEMINI_API_KEY` in frontend code.
 
-## Contributing
+## Readiness
 
-See [07_CONTRIBUTING.md](docs/07_CONTRIBUTING.md) for guidelines.
+See:
 
----
+- `PRODUCTION_READINESS.md`
+- `CHANGELOG_PRODUCTION_RC.md`
+- `SENIOR_DELIVERY_NOTES.md`
+- `USER_TESTING_PLAN.md`
 
-## License
-
-Proprietary — All rights reserved.
-
----
-
-## Contact
-
-Owner: Abdelrahman Yasser
+This build is suitable for a local-first beta. Complete the external authentication, cloud persistence, distributed rate limiting, legal, and operations requirements before calling it a paid account-based SaaS.

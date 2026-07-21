@@ -20,6 +20,13 @@ const AICoach = (function () {
     data_analyst: { en: 'data', ar: 'تحليل البيانات' },
     project_manager: { en: 'project delivery', ar: 'إدارة المشاريع' },
     business_analyst: { en: 'business analysis', ar: 'تحليل الأعمال' },
+    customer_service: { en: 'customer support', ar: 'خدمة العملاء' },
+    architect: { en: 'architecture', ar: 'الهندسة المعمارية' },
+    civil_engineer: { en: 'civil engineering', ar: 'الهندسة المدنية' },
+    mechanical_engineer: { en: 'mechanical engineering', ar: 'الهندسة الميكانيكية' },
+    electrical_engineer: { en: 'electrical engineering', ar: 'الهندسة الكهربائية' },
+    dentist: { en: 'dentistry', ar: 'طب الأسنان' },
+    speech_therapist: { en: 'speech therapy', ar: 'التخاطب والتأهيل' },
     other: { en: 'your field', ar: 'مجالك' }
   };
 
@@ -38,6 +45,13 @@ const AICoach = (function () {
     hr: ['Recruitment', 'Onboarding', 'Employee Relations', 'HR Policies', 'Performance Management'],
     data_analyst: ['SQL', 'Excel', 'Power BI', 'Data Cleaning', 'Dashboarding'],
     project_manager: ['Agile', 'Scrum', 'Stakeholder Management', 'Risk Management', 'Jira'],
+    customer_service: ['Customer Support', 'CRM', 'Ticket Management', 'Conflict Resolution', 'Service Quality'],
+    architect: ['AutoCAD', 'Revit', 'BIM', 'Construction Documents', 'Building Codes'],
+    civil_engineer: ['Site Supervision', 'AutoCAD', 'Quantity Surveying', 'Primavera P6', 'Quality Control'],
+    mechanical_engineer: ['Mechanical Design', 'HVAC', 'SolidWorks', 'Preventive Maintenance', 'Technical Drawings'],
+    electrical_engineer: ['Electrical Design', 'Power Systems', 'PLC', 'ETAP', 'Control Panels'],
+    dentist: ['Patient Assessment', 'Treatment Planning', 'Infection Control', 'Clinical Documentation', 'Patient Education'],
+    speech_therapist: ['Speech Assessment', 'Therapy Planning', 'Progress Documentation', 'Family Counseling', 'Pediatric Rehabilitation'],
     other: ['Communication', 'Problem Solving', 'Teamwork', 'Planning', 'Attention to Detail']
   };
 
@@ -56,10 +70,129 @@ const AICoach = (function () {
     hr: ['التوظيف', 'تهيئة الموظفين', 'علاقات الموظفين', 'سياسات الموارد البشرية', 'إدارة الأداء'],
     data_analyst: ['SQL', 'Excel', 'Power BI', 'تنظيف البيانات', 'لوحات المعلومات'],
     project_manager: ['Agile', 'Scrum', 'إدارة أصحاب المصلحة', 'إدارة المخاطر', 'Jira'],
+    customer_service: ['خدمة العملاء', 'CRM', 'إدارة التذاكر', 'حل النزاعات', 'جودة الخدمة'],
+    architect: ['AutoCAD', 'Revit', 'BIM', 'المخططات التنفيذية', 'أكواد البناء'],
+    civil_engineer: ['الإشراف على الموقع', 'AutoCAD', 'حصر الكميات', 'Primavera P6', 'ضبط الجودة'],
+    mechanical_engineer: ['التصميم الميكانيكي', 'HVAC', 'SolidWorks', 'الصيانة الوقائية', 'الرسومات الفنية'],
+    electrical_engineer: ['التصميم الكهربائي', 'أنظمة القوى', 'PLC', 'ETAP', 'لوحات التحكم'],
+    dentist: ['تقييم المرضى', 'خطط العلاج', 'مكافحة العدوى', 'التوثيق السريري', 'تثقيف المرضى'],
+    speech_therapist: ['تقييم النطق', 'خطط العلاج', 'توثيق التقدم', 'إرشاد الأسرة', 'التأهيل للأطفال'],
     other: ['التواصل', 'حل المشكلات', 'العمل الجماعي', 'التخطيط', 'الاهتمام بالتفاصيل']
   };
 
   const ACTION_VERBS = ['Built', 'Improved', 'Managed', 'Delivered', 'Designed', 'Implemented', 'Optimized', 'Led'];
+
+  const ROLE_COACH_PROFILES = {
+    accountant: {
+      ar: { fresh: ['التدريب المحاسبي أو الأعمال التطبيقية الحقيقية', 'Excel والتسويات والتقارير التي استخدمتها فعلاً', 'المؤهل والدورات المهنية التي أنهيتها'], senior: ['حجم الإغلاق المالي أو الميزانيات التي أدرتها', 'قيادة الفريق والرقابة والتدقيق', 'أنظمة ERP وتحسين دورة العمل'] },
+      en: { fresh: ['real accounting training or practical work', 'Excel, reconciliation, and reporting tools you actually used', 'completed education and professional courses'], senior: ['scope of close, budgets, or reporting ownership', 'team leadership, controls, and audit impact', 'ERP ownership and process improvement'] },
+      projectMode: 'hidden'
+    },
+    developer: {
+      ar: { fresh: ['مشروع عملي كامل يمكن فتحه أو مراجعته', 'GitHub وأدوات التقنية المستخدمة فعلاً', 'شرح مساهمتك والنتيجة بدون مبالغة'], senior: ['نطاق الأنظمة والقرارات المعمارية', 'القيادة الفنية وتأثيرك على الفريق', 'الأداء والاعتمادية والنتائج المقاسة'] },
+      en: { fresh: ['one complete verifiable project', 'GitHub and tools you actually used', 'your contribution and outcome without exaggeration'], senior: ['system scope and architecture decisions', 'technical leadership and team impact', 'performance, reliability, and measured outcomes'] },
+      projectMode: 'required'
+    },
+    data_analyst: {
+      ar: { fresh: ['مشروع تحليل بيانات موثق', 'SQL وExcel أو Power BI حسب استخدامك الفعلي', 'سؤال العمل والنتيجة التي توصلت لها'], senior: ['قرارات الأعمال التي دعمتها', 'جودة البيانات والحوكمة', 'حجم البيانات وأثر لوحات المعلومات'] },
+      en: { fresh: ['a documented analysis project', 'SQL, Excel, or Power BI you genuinely used', 'the business question and result'], senior: ['business decisions you enabled', 'data quality and governance', 'data scale and dashboard impact'] },
+      projectMode: 'required'
+    },
+    designer: {
+      ar: { fresh: ['Portfolio واضح بأفضل 2–3 أعمال', 'دورك في كل مشروع وعملية التصميم', 'نتيجة أو دليل استخدام حقيقي'], senior: ['قيادة نظام التصميم أو المنتج', 'أثر البحث والاختبارات على القرارات', 'إدارة أصحاب المصلحة والفريق'] },
+      en: { fresh: ['a focused portfolio with 2–3 strong pieces', 'your role and design process', 'a real outcome or usage signal'], senior: ['design-system or product leadership', 'research and testing impact', 'stakeholder and team leadership'] },
+      projectMode: 'required'
+    },
+    ui_ux_designer: { alias: 'designer' }, graphic_designer: { alias: 'designer' },
+    teacher: {
+      ar: { fresh: ['التدريب الميداني والمادة أو المرحلة', 'تخطيط الدروس وإدارة الفصل', 'نتائج أو ملاحظات تقييم حقيقية'], senior: ['نتائج الطلاب وتطوير المناهج', 'الإشراف أو تدريب المعلمين', 'التقنيات التعليمية والمبادرات'] },
+      en: { fresh: ['teaching practicum and grade/subject', 'lesson planning and classroom management', 'real assessment or feedback evidence'], senior: ['student outcomes and curriculum development', 'teacher mentoring or supervision', 'education technology and initiatives'] },
+      projectMode: 'hidden'
+    },
+    doctor: {
+      ar: { fresh: ['الامتياز والأقسام السريرية', 'الترخيص والدورات المكتملة', 'المهارات السريرية التي مارستها تحت إشراف'], senior: ['التخصص وحجم الحالات', 'القيادة السريرية وتحسين الجودة', 'الأبحاث أو البروتوكولات إن وجدت'] },
+      en: { fresh: ['internship rotations and clinical departments', 'licenses and completed courses', 'supervised clinical competencies'], senior: ['specialty and case volume', 'clinical leadership and quality improvement', 'research or protocols when applicable'] },
+      projectMode: 'hidden'
+    },
+    nurse: {
+      ar: { fresh: ['التدريب السريري والأقسام التي مررت بها', 'متابعة المرضى والعلامات الحيوية وإدارة الأدوية تحت إشراف', 'التسجيل المهني والدورات المكتملة'], senior: ['حجم الوحدة أو الوردية والفريق', 'سلامة المرضى وجودة الرعاية', 'الإشراف والتدريب وتحسين الإجراءات'] },
+      en: { fresh: ['clinical placements and departments', 'supervised patient monitoring, vital signs, and medication work', 'registration and completed training'], senior: ['unit, shift, and team scope', 'patient safety and quality of care', 'supervision, training, and process improvement'] },
+      projectMode: 'hidden'
+    },
+    pharmacist: {
+      ar: { fresh: ['التدريب الصيدلي ونوع البيئة العملية', 'مراجعة الوصفات وإرشاد المرضى أو إدارة المخزون التي مارستها فعلاً', 'الترخيص والدورات المكتملة'], senior: ['حجم التشغيل والمخزون أو قائمة الأدوية', 'السلامة الدوائية والالتزام والجودة', 'قيادة الفريق وتحسين الخدمة'] },
+      en: { fresh: ['pharmacy training and practice setting', 'prescription review, counseling, or inventory work you actually performed', 'license and completed courses'], senior: ['operational, inventory, or formulary scope', 'medication safety, compliance, and quality', 'team leadership and service improvement'] },
+      projectMode: 'hidden'
+    },
+    dentist: {
+      ar: { fresh: ['الامتياز والحالات والإجراءات التي نفذتها تحت إشراف', 'مكافحة العدوى والتوثيق وخطط العلاج', 'الترخيص والدورات السريرية المكتملة'], senior: ['تنوع الحالات وحجم العيادة', 'نتائج العلاج وتجربة المريض', 'إدارة الفريق أو العيادة وضبط الجودة'] },
+      en: { fresh: ['internship cases and supervised procedures', 'infection control, documentation, and treatment planning', 'license and completed clinical courses'], senior: ['case mix and clinic scope', 'treatment outcomes and patient experience', 'team or clinic management and quality control'] },
+      projectMode: 'hidden'
+    },
+    hr: {
+      ar: { fresh: ['تدريب التوظيف أو شؤون العاملين', 'أنظمة HR والمهام التي نفذتها', 'التواصل والتنظيم بأمثلة حقيقية'], senior: ['حجم التوظيف أو القوى العاملة', 'السياسات والاحتفاظ وإدارة الأداء', 'قيادة فريق الموارد البشرية والتغيير'] },
+      en: { fresh: ['recruitment or personnel training', 'HR systems and tasks you performed', 'real communication and coordination examples'], senior: ['hiring or workforce scale', 'policy, retention, and performance impact', 'HR team and change leadership'] },
+      projectMode: 'hidden'
+    },
+    sales: {
+      ar: { fresh: ['التعامل مع العملاء وCRM إن استخدمته', 'نوع المنتج أو السوق', 'نتائج حقيقية بدون أرقام مخترعة'], senior: ['الإيرادات والحصة والمحفظة', 'قيادة الفريق والتوقعات', 'التفاوض والحسابات الاستراتيجية'] },
+      en: { fresh: ['customer work and CRM you used', 'product or market context', 'real outcomes without invented metrics'], senior: ['revenue, quota, and portfolio scope', 'team leadership and forecasting', 'negotiation and strategic accounts'] },
+      projectMode: 'hidden'
+    },
+    marketing: {
+      ar: { fresh: ['حملات أو محتوى نفذته فعلاً', 'الأدوات والقنوات المستخدمة', 'مؤشر أداء حقيقي إن توفر'], senior: ['الميزانيات والقنوات والاستراتيجية', 'نمو الطلب أو الإيراد المنسوب للحملات', 'قيادة الفريق والوكالات'] },
+      en: { fresh: ['campaigns or content you actually delivered', 'tools and channels used', 'a real performance indicator when available'], senior: ['budgets, channels, and strategy', 'demand or revenue contribution', 'team and agency leadership'] },
+      projectMode: 'recommended'
+    },
+    lawyer: {
+      ar: { fresh: ['التدريب القانوني والبحث والصياغة', 'نوع القضايا أو العقود دون كشف أسرار', 'الترخيص والعضوية'], senior: ['حجم وتعقيد الملفات', 'التفاوض وإدارة المخاطر', 'قيادة الفريق أو المستشارين'] },
+      en: { fresh: ['legal training, research, and drafting', 'matter or contract types without confidential details', 'license and bar membership'], senior: ['matter scale and complexity', 'negotiation and risk management', 'team or counsel leadership'] },
+      projectMode: 'hidden'
+    },
+    project_manager: {
+      ar: { fresh: ['تنسيق مشروع حقيقي أو نشاط منظم', 'الأداة والمنهجية المستخدمة', 'التسليم والمخاطر التي تعاملت معها'], senior: ['حجم المحفظة والميزانية', 'أصحاب المصلحة والمخاطر', 'نسب التسليم والتحسين الحقيقية'] },
+      en: { fresh: ['a real coordinated project or initiative', 'tools and methodology used', 'delivery and risks handled'], senior: ['portfolio and budget scope', 'stakeholders and risk ownership', 'real delivery and improvement outcomes'] },
+      projectMode: 'recommended'
+    },
+    business_analyst: {
+      ar: { fresh: ['جمع المتطلبات ورسم العمليات في حالة حقيقية', 'التواصل مع أصحاب المصلحة وتوثيق القرارات', 'أدوات التحليل التي استخدمتها فعلاً'], senior: ['أثر التحول أو تحسين العمليات', 'تعقيد أصحاب المصلحة والأنظمة', 'حوكمة المتطلبات وقيادة الاكتشاف'] },
+      en: { fresh: ['requirements gathering and process mapping in a real case', 'stakeholder communication and decision documentation', 'analysis tools you genuinely used'], senior: ['transformation or process-improvement outcomes', 'stakeholder and system complexity', 'requirements governance and discovery leadership'] },
+      projectMode: 'recommended'
+    },
+    customer_service: {
+      ar: { fresh: ['نوع العملاء والقنوات التي تعاملت معها', 'نظام CRM أو التذاكر الذي استخدمته فعلاً', 'مثال حقيقي على حل مشكلة أو تحسين الخدمة'], senior: ['حجم الفريق أو مركز الاتصال', 'مؤشرات الجودة والرضا وزمن الاستجابة', 'تصميم الإجراءات والتصعيد والتدريب'] },
+      en: { fresh: ['customer types and support channels', 'CRM or ticketing tools you actually used', 'a real service-resolution example'], senior: ['team or contact-center scope', 'quality, satisfaction, and response metrics', 'process, escalation, and training ownership'] },
+      projectMode: 'hidden'
+    },
+    engineer: {
+      ar: { fresh: ['التدريب الميداني ونوع الموقع أو النظام', 'الأدوات والبرامج التي استخدمتها فعلاً', 'مسؤوليتك الفنية ومخرجاتها'], senior: ['حجم المشروع والميزانية والنطاق', 'القيادة الفنية والسلامة والجودة', 'خفض التكلفة أو المخاطر بنتائج حقيقية'] },
+      en: { fresh: ['field training and system or site context', 'tools and software genuinely used', 'your technical responsibility and output'], senior: ['project scope, budget, and scale', 'technical leadership, safety, and quality', 'real cost or risk reduction'] },
+      projectMode: 'recommended'
+    },
+    architect: {
+      ar: { fresh: ['Portfolio يوضح أفضل المشروعات ودورك فيها', 'AutoCAD أو Revit أو BIM حسب استخدامك الفعلي', 'مراحل التصميم والمخرجات التي أنجزتها'], senior: ['حجم وتعقيد المشروعات', 'التنسيق مع الاستشاريين والجهات وأكواد البناء', 'قيادة التصميم والميزانية والتسليم'] },
+      en: { fresh: ['a portfolio showing strong projects and your role', 'AutoCAD, Revit, or BIM you genuinely used', 'design stages and deliverables you completed'], senior: ['project scale and complexity', 'consultant, authority, and code coordination', 'design leadership, budget, and delivery'] },
+      projectMode: 'required'
+    },
+    civil_engineer: { alias: 'engineer' }, mechanical_engineer: { alias: 'engineer' }, electrical_engineer: { alias: 'engineer' },
+    speech_therapist: {
+      ar: { fresh: ['التدريب السريري والفئات العمرية', 'أدوات التقييم وخطط العلاج التي طبقتها تحت إشراف', 'التراخيص والدورات المكتملة'], senior: ['حجم الحالات والتخصص الدقيق', 'نتائج المتابعة وخطط التأهيل', 'الإشراف السريري وتدريب الفريق'] },
+      en: { fresh: ['clinical training and age groups', 'assessment tools and supervised therapy plans', 'licenses and completed training'], senior: ['case volume and specialization', 'follow-up outcomes and rehabilitation plans', 'clinical supervision and team development'] },
+      projectMode: 'hidden'
+    },
+    other: {
+      ar: { fresh: ['تدريب أو نشاط عملي مرتبط بالوظيفة', 'مهارات مؤكدة بأمثلة', 'تعليم ودورات مكتملة'], senior: ['نطاق المسؤولية', 'القيادة والقرارات', 'نتائج قابلة للتحقق'] },
+      en: { fresh: ['role-related training or practical activity', 'verified skills with examples', 'completed education and courses'], senior: ['scope of responsibility', 'leadership and decisions', 'verifiable outcomes'] },
+      projectMode: 'hidden'
+    }
+  };
+
+  function roleCoachProfile(career) {
+    const key = field(career);
+    let profile = ROLE_COACH_PROFILES[key] || ROLE_COACH_PROFILES.other;
+    if (profile.alias) profile = ROLE_COACH_PROFILES[profile.alias] || ROLE_COACH_PROFILES.other;
+    return profile;
+  }
 
   function field(career) {
     return career?.careerProfile?.field || 'other';
@@ -119,9 +252,9 @@ const AICoach = (function () {
       },
       experience_years: {
         title: tr(career, 'This changes the CV strategy.', 'ده بيغير استراتيجية الـ CV.'),
-        body: tr(career, 'Fresh CVs should emphasize education/projects. Senior CVs should emphasize impact and leadership.', 'لو حديث تخرج نركز على التعليم والمشاريع. لو senior نركز على التأثير والقيادة.')
+        body: tr(career, 'Fresh CVs should emphasize education and real practical evidence. Senior CVs should emphasize scope, impact, and leadership.', 'لو حديث تخرج نركز على التعليم والدليل العملي المناسب للمهنة. ولو Senior نركز على النطاق والتأثير والقيادة.')
       },
-      contact: {
+      profile: {
         title: tr(career, 'Complete contact info prevents missed calls.', 'بيانات التواصل الكاملة بتضمن إن الفرص متضيعش منك.'),
         body: tr(career, 'Include a professional email, phone number with country code, and city/country.', 'اكتب بريد إلكتروني احترافي، ورقم هاتف مع كود الدولة، والمدينة أو البلد.')
       },
@@ -159,7 +292,7 @@ const AICoach = (function () {
   function analyzeWizardInput(career, step, value) {
     const text = String(value || '').trim();
     if (!text) return null;
-    if (step === 'email' && !/^[^s@]+@[^s@]+.[^s@]+$/.test(text)) {
+    if (step === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) {
       return { tone: 'warn', message: tr(career, 'This email may fail recruiter systems.', 'الإيميل ده ممكن مايتقبلش في أنظمة التوظيف.') };
     }
     if ((step === 'experience' || step === 'projects') && wordCount(text) < 4) {
@@ -182,11 +315,6 @@ const AICoach = (function () {
       title: tr(career, 'This section is in decent shape.', 'القسم ده حالته كويسة.'),
       detail: tr(career, 'Keep it specific, concise, and aligned with the job you want.', 'خليه محدد ومختصر ومناسب للوظيفة اللي مستهدفها.')
     }];
-  }
-
-    function issue(career, id, severity, section, title, detail, actionLabel, impactPoints = 0) {
-    const loc = localizedIssue(career, id, title, detail, actionLabel);
-    return { id, severity, section, title: loc.title, detail: loc.detail, actionLabel: loc.actionLabel, impactPoints, why: loc.why, fixAction: loc.fixAction };
   }
 
   function getPreExportReview(career) {
@@ -212,6 +340,12 @@ const AICoach = (function () {
     if (!p.name?.trim()) items.push(issue(career, 'missing-name', 'high', 'personalInfo', 'Add your full name.', 'Recruiters need a clear name at the top of the CV.', 'Add name'));
     if (!validEmail) items.push(issue(career, 'bad-email', 'high', 'personalInfo', 'Add a valid email.', 'ATS and recruiters may reject or miss invalid contact details.', 'Fix contact'));
     if (!p.phone?.trim()) items.push(issue(career, 'missing-phone', 'medium', 'personalInfo', 'Add a phone number.', 'A CV should give recruiters more than one contact method.', 'Fix contact'));
+    if (!p.title?.trim()) items.push(issue(career, 'missing-title', 'high', 'personalInfo', 'Add your target job title.', 'The target title tells recruiters and the coach what role this CV is built for.', 'Add title'));
+    if (!career.careerProfile?.field || career.careerProfile.field === 'other') items.push(issue(career, 'missing-career-profile', 'medium', 'personalInfo', 'Confirm your profession.', 'Role-aware guidance needs your actual profession and level.', 'Set profession'));
+
+    const searchable = [p.name, p.title, summary, ...exp.flatMap(e => [e.company, e.role, e.rawDescription, ...(e.bullets || [])]), ...(career.education || []).flatMap(e => [e.degree, e.school, e.institution]), ...skills].filter(Boolean).join(' ').toLowerCase();
+    const hasPlaceholderData = /leading organization|accredited university|professional development program|senior specialist \/ leader|example company|شركة رائدة|جامعة معتمدة|بيانات تجريبية/.test(searchable);
+    if (hasPlaceholderData) items.push(issue(career, 'placeholder-data', 'high', 'personalInfo', 'Replace sample information.', 'The CV contains text that looks like demo data and must not be exported as real experience.', 'Review data'));
 
     // Summary
     const hasSummary = summary.trim().length > 0;
@@ -242,7 +376,12 @@ const AICoach = (function () {
     } else if (rules.required_sections.includes('experience') && level(career) !== 'fresh') {
       items.push(issue(career, 'missing-experience', 'high', 'experience', 'Add work experience.', 'A CV without experience feels incomplete.', 'Add role', wExp));
     } else if (level(career) === 'fresh') {
-      score += wExp; // Freshers get a pass
+      const roleProfile = roleCoachProfile(career);
+      const hasAlternativeProof = projects.length > 0;
+      score += hasAlternativeProof && roleProfile.projectMode === 'required' ? wExp * 0.65 : wExp * 0.2;
+      if (!hasAlternativeProof || roleProfile.projectMode !== 'required') {
+        items.push(issue(career, 'fresh-practical-evidence', 'medium', 'experience', 'Add practical evidence.', 'Add an internship, clinical rotation, teaching practicum, freelance work, volunteering, or another real activity relevant to your profession.', 'Add practical experience', Math.round(wExp * 0.5)));
+      }
     }
 
     // Projects
@@ -276,16 +415,20 @@ const AICoach = (function () {
       items.push(issue(career, 'fresh-education', 'medium', 'education', 'Add education.', 'It strengthens your profile.', 'Add education', wEdu));
     }
 
-    // Certifications (Optional tip that does not penalize score or show as warning)
+    // Certifications and licenses
     const wCert = rules.section_weights.certifications || 0;
     if ((career.certificates || []).length > 0) {
       score += wCert;
-    } else if (rules.required_sections.includes('certifications') || rules.recommended_sections.includes('certifications')) {
-      items.push(issue(career, 'missing-certs', 'info', 'certificates', 'Professional Certifications (Optional)', 'Certifications are an optional bonus if you have them, but skipping this section will not hurt your core CV score.', '+ Add Cert (Optional)', 0));
+    } else if (rules.required_sections.includes('certifications')) {
+      items.push(issue(career, 'missing-certs', 'high', 'certificates', 'Add required licenses or certifications.', 'For this profession, verified licenses or certifications are a core qualification. Add only credentials you actually hold.', 'Add credential', wCert));
+    } else if (rules.recommended_sections.includes('certifications')) {
+      items.push(issue(career, 'missing-certs', 'info', 'certificates', 'Add certifications if you hold them.', 'Credentials are optional here and should only be listed when verified.', '+ Add credential', 0));
     }
 
-    // Penalize if core personal info is missing
-    if (!p.name?.trim() || !validEmail) score = Math.min(score, 68);
+    // Penalize if core identity or trust data is missing.
+    if (!p.name?.trim() || !validEmail || !p.title?.trim()) score = Math.min(score, 68);
+    if (hasPlaceholderData) score = Math.min(score, 45);
+    score = Math.max(0, Math.min(100, score));
 
     const blockers = items.filter(item => item.severity === 'high').length;
     const warnings = items.filter(item => item.severity === 'medium').length;
@@ -297,24 +440,40 @@ const AICoach = (function () {
     const isAr = isArabic(career);
     const whyMap = {
       'missing-name': {
-        ar: 'بدون الاسم الكامل في أعلى السيرة لن يتمكن مسؤول التوظيف أو نظام الفرز الآلي من حفظ ملفك والتعرف عليه.',
-        en: 'Without your full name at the top, recruiters and ATS scanners cannot archive or identify your application.'
+        ar: 'الاسم الكامل والواضح يساعد مسؤول التوظيف على التعرف على ملفك وربطه بطلب التقديم.',
+        en: 'A clear full name helps recruiters identify your resume and connect it to your application.'
       },
       'bad-email': {
-        ar: 'أنظمة الفرز الآلي (ATS) ترفض الإيميلات غير الصحيحة، ومسؤول التوظيف لن يستطيع مراسلتك لتحديد موعد المقابلة.',
-        en: 'ATS scanners reject invalid emails, and recruiters cannot reach out to schedule an interview with you.'
+        ar: 'البريد غير الصحيح يمنع مسؤول التوظيف من التواصل معك، حتى لو كان محتوى السيرة قويًا.',
+        en: 'An invalid email prevents recruiters from contacting you even when the resume content is strong.'
       },
       'missing-phone': {
         ar: 'رقم الهاتف هو وسيلة الاتصال الأسرع والأولى لدعوتك للمقابلات الوظيفية العاجلة.',
         en: 'A phone number is the primary and fastest contact method recruiters use for immediate interview invitations.'
+      },
+      'missing-title': {
+        ar: 'المسمى المستهدف يحدد اتجاه السيرة ويمنع ظهور نصائح عامة لا تناسب الوظيفة.',
+        en: 'A target title gives the resume direction and prevents generic role guidance.'
+      },
+      'missing-career-profile': {
+        ar: 'تحديد المجال والمستوى ضروري حتى تكون النصائح والأقسام المقترحة مناسبة لك.',
+        en: 'Profession and level are required for role-aware sections and coaching.'
+      },
+      'placeholder-data': {
+        ar: 'تصدير بيانات تجريبية كشركة أو جامعة غير حقيقية يضر بمصداقيتك المهنية.',
+        en: 'Exporting sample employers or schools as real facts harms professional credibility.'
+      },
+      'fresh-practical-evidence': {
+        ar: 'حديث التخرج يحتاج دليلاً عملياً مناسباً للمهنة مثل تدريب أو امتياز أو تطبيق حقيقي، وليس مشروعاً عاماً بالضرورة.',
+        en: 'Early-career resumes need role-appropriate practical evidence such as an internship, practicum, rotation, or real work.'
       },
       'missing-github': {
         ar: 'في مجالك (برمجة أو تصميم)، رابط الأعمال أو الـ GitHub هو أول دليل عملي يبحث عنه المقيم الفني قبل قراءة النص.',
         en: 'In your field (development/design), a portfolio or GitHub link is the first proof of competence technical reviewers check.'
       },
       'missing-summary': {
-        ar: 'النبذة المهنية هي أول ما يقرأه المدير في أول 6 ثوانٍ، وبدونها قد يتم تجاوز ملفك قبل قراءة تفاصيل الخبرات.',
-        en: 'The professional summary is what recruiters read in the first 6 seconds; without it, your profile lacks immediate focus and direction.'
+        ar: 'النبذة المهنية توضح اتجاه السيرة بسرعة وتساعد القارئ على فهم تخصصك وقيمتك قبل التفاصيل.',
+        en: 'A professional summary quickly clarifies your direction, specialty, and value before the reader reaches the details.'
       },
       'short-summary': {
         ar: 'النبذة الحالية قصيرة جداً ولا تبرز تخصصك الدقيق، سنوات خبرتك، أو القيمة المضافة التي ستقدمها للشركة.',
@@ -337,12 +496,12 @@ const AICoach = (function () {
         en: 'Real projects are concrete proof of your technical and practical skills, essential for standing out in competitive roles.'
       },
       'few-skills': {
-        ar: 'أنظمة الفرز الآلي (ATS) تبحث عن كلمات مفتاحية ومهارات محددة مرتبطة بالوظيفة؛ نقص المهارات يؤدي لاستبعاد السيرة آلياً.',
-        en: 'ATS scanners check for specific domain keywords; too few skills can lead to automatic filtering and low match scores.'
+        ar: 'قسم المهارات المركّز يساعد على إظهار مدى ارتباط خبرتك بالوظيفة، بشرط إضافة المهارات التي تمتلكها فعلاً.',
+        en: 'A focused skills section makes role alignment clearer, provided it lists only skills you genuinely have.'
       },
       'missing-skills': {
-        ar: 'قسم المهارات هو المحرك الأساسي لتخطي فلتر الـ ATS وإعطاء انطباع سريع بمدى ملاءمتك للمتطلبات.',
-        en: 'The skills section is crucial for passing ATS filters and giving recruiters a quick snapshot of your technical fit.'
+        ar: 'قسم المهارات يعطي ملخصًا سريعًا لما تستخدمه فعلاً، ويسهّل مقارنة السيرة بمتطلبات الوظيفة.',
+        en: 'The skills section gives recruiters a quick view of what you genuinely use and supports comparison with job requirements.'
       },
       'many-skills': {
         ar: 'القائمة الطويلة والعامة من المهارات تقلل المصداقية؛ التركيز على أهم 10-12 مهارة متخصصة يجعل السيرة أقوى وأصدق.',
@@ -368,8 +527,12 @@ const AICoach = (function () {
       'missing-name': 'edit-personal',
       'bad-email': 'edit-personal',
       'missing-phone': 'edit-personal',
+      'missing-title': 'edit-personal',
+      'missing-career-profile': 'edit-personal',
+      'placeholder-data': 'edit-personal',
       'missing-github': 'edit-personal',
       'missing-experience': 'edit-experience',
+      'fresh-practical-evidence': 'edit-experience',
       'missing-project': 'edit-projects',
       'fresh-education': 'edit-education',
       'missing-certs': 'edit-certificates'
@@ -395,6 +558,10 @@ const AICoach = (function () {
       'missing-name': ['أضف اسمك الكامل.', 'لازم يكون الاسم واضح في أعلى السيرة الذاتية.', 'أضف الاسم'],
       'bad-email': ['أضف بريد إلكتروني صحيح.', 'الإيميل الخاطئ ممكن يمنع وصول مسؤول التوظيف لك.', 'صحح التواصل'],
       'missing-phone': ['أضف رقم الهاتف.', 'السيرة الذاتية الأفضل توفر أكثر من طريقة للتواصل.', 'صحح التواصل'],
+      'missing-title': ['أضف المسمى الوظيفي المستهدف.', 'المسمى يحدد اتجاه السيرة ونوعية النصائح.', 'حدد المسمى'],
+      'missing-career-profile': ['حدد مجالك ومستواك.', 'المساعد يحتاج المجال والمستوى حتى يقدم نصائح مناسبة.', 'حدد المجال'],
+      'placeholder-data': ['استبدل البيانات التجريبية.', 'وجدنا معلومات تبدو كنموذج وليست بيانات حقيقية.', 'راجع البيانات'],
+      'fresh-practical-evidence': ['أضف دليلاً عملياً مناسباً.', 'يمكن أن يكون تدريباً أو امتيازاً أو تطوعاً أو عملاً حراً حسب مهنتك.', 'أضف نشاطاً حقيقياً'],
       'missing-github': ['أضف GitHub أو Portfolio.', 'ده مهم أكثر لو المجال برمجة أو تصميم.', 'افتح بيانات التواصل'],
       'missing-summary': ['أنشئ نبذة مهنية.', 'النبذة القصيرة بتدي اتجاه للسيرة وتحسن مطابقة الكلمات المفتاحية.', 'إنشاء ذكي'],
       'short-summary': ['قوّي النبذة المهنية.', 'النبذة الحالية قصيرة ومش بتشرح قيمتك بوضوح.', 'تحسين ذكي'],
@@ -402,11 +569,11 @@ const AICoach = (function () {
       'missing-experience': ['أضف الخبرات العملية.', 'السيرة بدون خبرة عملية واضحة هتظهر ناقصة.', 'أضف خبرة'],
       'weak-experience': ['قوّي الخبرات العملية.', 'أضف إنجازات أوضح بدل وصف عام للمسؤوليات.', 'تحسين ذكي'],
       'missing-project': ['أضف مشروع قوي.', 'المشاريع بتثبت المهارات العملية خصوصًا في المجالات التطبيقية.', 'أضف مشروع'],
-      'few-skills': ['أضف مهارات مناسبة أكثر.', 'أنظمة ATS تحتاج كلمات مفتاحية كفاية مرتبطة بالمجال.', 'اقترح مهارات'],
-      'missing-skills': ['أضف المهارات.', 'قسم المهارات مهم جدًا لأنظمة ATS ومسؤولي التوظيف.', 'أضف مهارات'],
+      'few-skills': ['راجع المهارات المرتبطة بالوظيفة.', 'أضف فقط المهارات المرتبطة بالمجال التي تستخدمها فعلاً.', 'راجع المهارات'],
+      'missing-skills': ['أضف مهاراتك الفعلية.', 'قسم المهارات يلخص الأدوات والقدرات التي تستخدمها ويسهّل مقارنة السيرة بالوظيفة.', 'أضف مهارات'],
       'many-skills': ['اختصر قائمة المهارات.', 'القائمة المركزة أصدق من قائمة طويلة وعامة.', 'افتح المهارات'],
       'fresh-education': ['أضف التعليم والمؤهل.', 'التعليم دليل أساسي في هذا المجال.', 'أضف التعليم'],
-      'missing-certs': ['الشهادات المهنية (اختياري).', 'إضافة اختيارية لتقوية الملف إذا توفرت، ولا تؤثر على التقييم الأساسي.', '+ أضف شهادة (اختياري)']
+      'missing-certs': ['أضف الترخيص أو الشهادة المطلوبة.', 'أضف فقط اعتماداً مهنياً حقيقياً وساريًا تملكه.', 'أضف اعتماداً']
     };
         if (staticCopy[id]) {
       const [arTitle, arDetail, arAction] = staticCopy[id];
@@ -439,12 +606,8 @@ const AICoach = (function () {
       return { section: 'summary', message: tr(career, 'Summary shortened.', 'تم اختصار الملخص.') };
     }
 
-    if (issueId === 'few-skills') {
-      const suggestions = suggestSkills(career);
-      const existing = flatSkills(career);
-      const category = isArabic(career) ? 'المهارات الأساسية' : 'Core Skills';
-      career.skills = { [category]: [...new Set([...existing, ...suggestions])].slice(0, 12) };
-      return { section: 'skills', message: tr(career, 'Relevant skills added.', 'تمت إضافة مهارات مناسبة.') };
+    if (issueId === 'few-skills' || issueId === 'missing-skills') {
+      return { section: 'skills', message: tr(career, 'Review suggested skills and confirm only the ones you genuinely have.', 'راجع المهارات المقترحة وأكد فقط ما تمتلكه فعلاً.') };
     }
 
     if (issueId.startsWith('thin-bullet') || issueId.startsWith('metric-bullet')) {
@@ -467,14 +630,25 @@ const AICoach = (function () {
   }
 
   function improveExperienceBullets(career) {
+    const ar = isArabic(career);
+    const weakAr = /^(مسؤول عن|كنت مسؤولاً عن|قمت ب|ساعدت في)\s*/i;
+    const weakEn = /^(responsible for|helped with|worked on|tasked with)\s*/i;
     (career.experience || []).forEach(entry => {
       const source = entry.bullets?.length ? entry.bullets : [entry.rawDescription || entry.role].filter(Boolean);
       entry.bullets = source.map((bullet, index) => {
         const text = String(bullet || '').trim();
         if (!text) return '';
-        const startsStrong = ACTION_VERBS.some(verb => text.toLowerCase().startsWith(verb.toLowerCase()));
-        const verb = ACTION_VERBS[index % ACTION_VERBS.length];
-        return startsStrong ? text : `${verb} ${text.charAt(0).toLowerCase()}${text.slice(1)}`;
+        if (ar) {
+          // Improve weak phrasing without adding metrics, tools, or outcomes that the user did not provide.
+          if (weakAr.test(text)) return text.replace(weakAr, index % 2 ? 'نفذت ' : 'أدرت ');
+          return text;
+        }
+        if (weakEn.test(text)) {
+          const verbs = ['Managed', 'Delivered', 'Implemented', 'Coordinated'];
+          const rest = text.replace(weakEn, '').replace(/^./, char => char.toLowerCase());
+          return `${verbs[index % verbs.length]} ${rest}`.trim();
+        }
+        return text;
       }).filter(Boolean);
       entry.rawDescription = entry.bullets.join('\n');
     });
@@ -487,54 +661,79 @@ const AICoach = (function () {
   
   
   function getRoleAwareMentorAdvice(career) {
+    const isAr = isArabic(career);
     const f = field(career);
     const l = level(career);
-    const isAr = isArabic(career);
-    const p = career.personalInfo || {};
+    const profile = roleCoachProfile(career);
+    const stage = ['mid', 'senior'].includes(l) ? 'senior' : 'fresh';
+    const priorities = (profile[isAr ? 'ar' : 'en']?.[stage] || ROLE_COACH_PROFILES.other[isAr ? 'ar' : 'en'][stage]).slice(0, 3);
+    const title = career.personalInfo?.title?.trim() || industry(career);
+    const specialization = career.careerProfile?.specialization?.trim();
+    const years = career.careerProfile?.years?.toString().trim();
     const hasExp = (career.experience || []).length > 0;
     const hasSummary = (career.professionalSummary || '').trim().length > 20;
+    const hasVerifiedSkills = flatSkills(career).length >= 4;
 
-    const jobTitle = career.careerProfile?.jobTitle || industry(career);
-    const levelStr = typeof I18n !== 'undefined' ? (l === 'fresh' ? I18n.t('coach.mentor.roles.fresh_graduate', 'Fresh Graduate') : I18n.t('coach.mentor.roles.experienced', 'Experienced')) : (l === 'fresh' ? 'Fresh Graduate' : 'Experienced');
-    const headline = typeof I18n !== 'undefined' ? I18n.t('coach.mentor.greetings.you_are', 'You are a {levelStr} {jobTitle}.').replace('{levelStr}', levelStr).replace('{jobTitle}', jobTitle) : `You are a ${levelStr} ${jobTitle}.`;
+    const roleTitle = specialization || title;
+    const headline = isAr
+      ? (l === 'fresh'
+        ? `أنت تستهدف وظيفة ${roleTitle} كحديث تخرج.`
+        : l === 'senior'
+          ? `أنت تستهدف وظيفة ${roleTitle} بخبرة Senior.`
+          : l === 'mid'
+            ? `أنت تستهدف وظيفة ${roleTitle} بخبرة متوسطة.`
+            : `أنت تستهدف وظيفة ${roleTitle} في بداية مسارك المهني.`)
+      : (l === 'fresh'
+        ? `You are targeting ${roleTitle} as a fresh graduate.`
+        : l === 'senior'
+          ? `You are targeting ${roleTitle} as a senior professional.`
+          : l === 'mid'
+            ? `You are targeting ${roleTitle} at mid level.`
+            : `You are targeting ${roleTitle} at an early-career level.`);
 
-    let bestStep = '';
-    let why = '';
-    const nextSteps = [];
+    const bestStep = isAr
+      ? `أفضل خطوة الآن: ${!hasSummary ? 'اكتب نبذة مهنية مبنية على بياناتك الحقيقية.' : !hasExp && l !== 'fresh' ? 'أضف خبرتك الفعلية ونطاق مسؤوليتك.' : !hasVerifiedSkills ? 'أكد المهارات التي تستخدمها فعلاً.' : priorities[0] + '.'}`
+      : `Best next step: ${!hasSummary ? 'write a summary grounded in your real facts.' : !hasExp && l !== 'fresh' ? 'add your actual experience and scope.' : !hasVerifiedSkills ? 'confirm skills you genuinely use.' : priorities[0] + '.'}`;
 
-    if (f === 'accountant') {
-      bestStep = isAr ? 'أفضل خطوة الآن: أضف تدريباً عملياً أو إجادة Excel و ERP بالمستوى المتقدم.' : 'Best step right now: Add practical training or advanced Excel/ERP proficiency.';
-      why = isAr ? 'في المحاسبة، أصحاب العمل يبحثون أولاً عن المهارات التطبيقية والدقة والتعامل مع الأنظمة المحاسبية قبل المشاريع العامة.' : 'In accounting, employers look primarily for practical systems proficiency, accuracy, and ERP experience above general projects.';
-      if (!hasExp) nextSteps.push(isAr ? 'أضف تدريب عملي (Internship) أو تطبيق محاسبي واقعي في قسم الخبرات.' : 'Add an internship or real-world accounting practice in your experience section.');
-      if (!flatSkills(career).some(s => /excel|erp|sap|oracle/i.test(s))) nextSteps.push(isAr ? 'أضف مهارات Excel أو ERP أو SAP بوضوح في قائمة المهارات.' : 'Clearly list Excel, ERP, or SAP in your skills.');
-      nextSteps.push(isAr ? 'حول مهامك المحاسبية إلى أرقام وإنجازات (مثال: تقليل وقت إغلاق الحسابات بنسبة 15%).' : 'Turn responsibilities into numeric achievements (e.g., reduced month-end closing time by 15%).');
-    } else if (f === 'developer' || f === 'designer' || f === 'ui_ux_designer' || f === 'graphic_designer') {
-      bestStep = isAr ? 'أفضل خطوة الآن: أضف رابط الأعمال (Portfolio أو GitHub) ومشروعاً تطبيقياً كاملاً.' : 'Best step right now: Add a portfolio/GitHub link and at least one end-to-end practical project.';
-      why = isAr ? 'في المجالات التقنية والتصميمية، معرض الأعمال والمشاريع الحقيقية هي المعيار الأول الذي يقيم به المدير الفني مستواك قبل قراءة أي نص.' : 'In tech and design, your live portfolio and real projects are the #1 criteria technical hiring managers review before reading any text.';
-      if ((career.projects || []).length === 0) nextSteps.push(isAr ? 'أضف مشروعاً واحداً على الأقل مع شرح الأدوات المستخدمة والنتيجة.' : 'Add at least one complete project highlighting tools used and outcome.');
-      if (!p.links?.github && !p.links?.portfolio && !p.links?.behance) nextSteps.push(isAr ? 'أضف رابط GitHub أو Behance أو الموقع الشخصي في بيانات التواصل.' : 'Add your GitHub, Behance, or live portfolio link in contact info.');
-    } else {
-      bestStep = isAr ? 'أفضل خطوة الآن: إبراز إنجازات رقمية واضحة وإضافة المهارات الأكثر طلباً في مجالك.' : 'Best step right now: Highlight measurable achievements and add top in-demand skills for your domain.';
-      why = isAr ? 'في مستواك الحالي، الوضوح والتركيز على المهارات المتخصصة هو ما يميز سيرتك الذاتية عن المئات من المتقدمين لنفس الوظيفة.' : 'At your current level, clarity and specialized skills are what distinguish your resume from hundreds of applicants.';
-      if (!hasExp && l === 'fresh') nextSteps.push(isAr ? 'ركز على إبراز الأنشطة الطلابية، التدريب الصيفي، أو مشاريع التخرج بشكل احترافي.' : 'Focus on professionally showcasing student leadership, internships, or academic projects.');
-      if (hasExp) nextSteps.push(isAr ? 'استخدم أفعال قيادة قوية (مثل: قمت بإدارة، طورت، حققت) في بداية كل نقطة خبرة.' : 'Start every bullet point with strong action verbs (e.g., Managed, Developed, Achieved).');
-      nextSteps.push(isAr ? 'تأكد من شمول المهارات التقنية المتخصصة المطلوبة في إعلانات التوظيف.' : 'Ensure you include domain-specific technical skills found in target job posts.');
-    }
+    const experienceContext = isAr
+      ? (l === 'fresh' ? 'بما أنك في بداية المسار، ركّز على التدريب والممارسة الحقيقية.' : years ? `مستوى الخبرة المسجل هو ${years}؛ لذلك يجب أن يعكس المحتوى نفس نطاق المسؤولية.` : '')
+      : (l === 'fresh' ? 'Because you are early in your career, focus on genuine training and practical evidence.' : years ? `Your recorded experience level is ${years}; the content should reflect that scope.` : '');
+    const why = isAr
+      ? `لأن التوظيف في ${specialization || industry(career)} يعتمد على أدلة مرتبطة بالدور والمستوى، وليس على قائمة عامة من الكلمات. ${experienceContext}`
+      : `Hiring in ${specialization || industry(career)} depends on role- and level-specific evidence, not a generic keyword list. ${experienceContext}`;
 
+    const nextSteps = priorities.map(item => isAr ? `ركّز على ${item}.` : `Focus on ${item}.`);
     const quickActions = [
-      { id: 'edit-summary', label: isAr ? '⭐ كتابة النبذة المهنية' : '⭐ Write Summary', condition: !hasSummary },
-      { id: 'improve-experience', label: isAr ? '🔥 تقوية نقاط الخبرة (أفعال وأرقام)' : '🔥 Improve Experience Bullets', condition: hasExp },
-      { id: 'suggest-skills', label: isAr ? '💡 اقتراح مهارات شائعة في مجالك' : '💡 Suggest Domain Skills', condition: true },
-      { id: 'tailor-job', label: isAr ? '🎯 تخصيص السيرة لوظيفة محددة (JD)' : '🎯 Tailor to Job Description', condition: true }
-    ].filter(a => a.condition).slice(0, 4);
+      { id: 'edit-summary', label: isAr ? '⭐ كتابة النبذة من بياناتي' : '⭐ Build summary from my facts', condition: !hasSummary },
+      { id: 'improve-experience', label: isAr ? '🔥 تحسين صياغة الخبرة مع المعاينة' : '🔥 Improve experience with preview', condition: hasExp },
+      { id: 'suggest-skills', label: isAr ? '💡 مراجعة مهارات مناسبة' : '💡 Review relevant skills', condition: true },
+      { id: 'tailor-job', label: isAr ? '🎯 مقارنة بوظيفة محددة' : '🎯 Compare with a target job', condition: true }
+    ].filter(item => item.condition).slice(0, 4);
 
-    return {
-      headline,
-      bestStep,
-      why,
-      nextSteps,
-      quickActions
-    };
+    return { headline, bestStep, why, nextSteps, quickActions, projectMode: profile.projectMode || 'hidden', role: f, level: l };
+  }
+
+  function getATSReadiness(career) {
+    const ar = isArabic(career);
+    const p = career.personalInfo || {};
+    const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email || '');
+    const selectedTemplate = career.meta?.templateId || 'ai-recommended';
+    const resolvedTemplate = typeof career.meta?._resolvedTemplate === 'string' ? career.meta._resolvedTemplate : career.meta?._resolvedTemplate?.id;
+    const templateId = selectedTemplate === 'ai-recommended' ? (resolvedTemplate || 'classic') : selectedTemplate;
+    const atsFriendlyTemplates = new Set(['ai-recommended', 'ats', 'classic', 'compact', 'minimal', 'corporate', 'executive']);
+    const templateOk = atsFriendlyTemplates.has(templateId);
+    const hasCoreSections = !!((career.experience || []).length || (career.education || []).length) && flatSkills(career).length > 0;
+    const hasDirection = !!p.title?.trim() && wordCount(career.professionalSummary || '') >= 12;
+    const text = [p.name, p.title, career.professionalSummary, ...(career.experience || []).flatMap(e => [e.company, e.role, e.rawDescription]), ...(career.education || []).flatMap(e => [e.degree, e.school, e.institution])].filter(Boolean).join(' ').toLowerCase();
+    const cleanData = !/leading organization|accredited university|professional development program|senior specialist \/ leader|example company|شركة رائدة|جامعة معتمدة|بيانات تجريبية/.test(text);
+    const checks = [
+      { key: 'contact', points: 25, ok: !!(p.name?.trim() && validEmail && p.phone?.trim()), label: ar ? 'الاسم والإيميل والهاتف مكتملة' : 'Name, valid email, and phone are complete' },
+      { key: 'direction', points: 20, ok: hasDirection, label: ar ? 'المسمى والنبذة يوضحان اتجاه السيرة' : 'Target title and summary provide clear direction' },
+      { key: 'sections', points: 20, ok: hasCoreSections, label: ar ? 'الأقسام الأساسية موجودة بعناوين واضحة' : 'Core sections are present with standard headings' },
+      { key: 'template', points: 25, ok: templateOk, label: ar ? 'القالب الحالي بسيط ومناسب للقراءة الآلية' : 'Current template is simple and machine-readable' },
+      { key: 'truth', points: 10, ok: cleanData, label: ar ? 'لا توجد بيانات نموذجية أو تجريبية ظاهرة' : 'No visible sample or placeholder data' }
+    ];
+    return { score: checks.reduce((sum, item) => sum + (item.ok ? item.points : 0), 0), checks, templateOk };
   }
 
   function buildCoachInsights(career) {
@@ -555,8 +754,10 @@ const AICoach = (function () {
         detail: i.detail,
         actionLabel: i.actionLabel,
         sectionKey: i.section,
-        points: i.impactPoints > 0 ? `+${i.impactPoints}%` : '',
-        why: i.why || (isAr ? 'هذه الخطوة ضرورية لرفع تقييم السيرة الذاتية وتخطي أنظمة الفرز الآلي (ATS).' : 'Essential for boosting resume score and passing automated ATS screening.'),
+        impactLabel: i.severity === 'high'
+          ? (isAr ? 'تأثير مرتفع' : 'High impact')
+          : (isAr ? 'تأثير متوسط' : 'Medium impact'),
+        why: i.why || (isAr ? 'هذه الخطوة تحسن وضوح السيرة واتساقها مع هدفك المهني.' : 'This improves resume clarity and alignment with your career target.'),
         fixAction: i.fixAction || 'edit-personal'
       }));
 
@@ -600,18 +801,17 @@ const AICoach = (function () {
 
     const mentor = getRoleAwareMentorAdvice(career);
 
-    const hasJD = !!(career.meta && career.meta.targetJD && career.meta.targetJD.trim().length > 15);
+    const hasJD = !!(career.meta && career.meta.targetJD && career.meta.targetJD.trim().length > 80);
+    const readiness = getATSReadiness(career);
     const ats = {
       mode: hasJD ? 'job_match' : 'readiness',
-      score: hasJD ? (career.meta.jdMatchScore || 0) : score,
-      readinessChecklist: [
-        { label: isAr ? 'القالب متوافق مع قراءة أنظمة ATS (بدون جداول أو أعمدة معقدة)' : 'Template is readable by ATS scanners (no complex tables)', ok: true },
-        { label: isAr ? 'العناوين واضحة وقياسية (الخبرة، المهارات، التعليم)' : 'Headings are clear and standard (Experience, Skills, Education)', ok: true },
-        { label: isAr ? 'بيانات الاتصال كاملة وتحتوي على هاتف وإيميل صحيح' : 'Contact info complete with phone and valid email', ok: !!(p.phone?.trim() && p.email?.trim()) }
-      ],
+      score: hasJD ? Number(career.meta.jdMatchScore || 0) : readiness.score,
+      readinessScore: readiness.score,
+      readinessChecklist: readiness.checks,
       commonSkills: suggestSkills(career).slice(0, 6),
       missingKeywords: hasJD ? (career.meta.jdMissingKeywords || []) : [],
-      foundKeywords: hasJD ? (career.meta.jdFoundKeywords || []) : []
+      foundKeywords: hasJD ? (career.meta.jdFoundKeywords || []) : [],
+      disclaimer: isAr ? 'نسبة المطابقة مؤشر مساعد مبني على الكلمات وليست ضماناً للقبول.' : 'The match score is a keyword-based aid, not a hiring guarantee.'
     };
 
     return {
@@ -636,7 +836,9 @@ const AICoach = (function () {
     improveExperienceBullets,
     buildFallbackSummary,
     buildCoachInsights,
-    getRoleAwareMentorAdvice
+    getRoleAwareMentorAdvice,
+    getATSReadiness,
+    roleCoachProfile
   };
 })();
 

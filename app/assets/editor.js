@@ -11,9 +11,10 @@ const Editor = (function () {
   let currentEditSection = null;
   let autosaveTimer = null;
   let isAILoading = false;
-  const LINK_PROOF_FIELDS = ['developer', 'designer', 'graphic_designer', 'ui_ux_designer', 'marketing', 'data_analyst'];
+  const LINK_PROOF_FIELDS = ['developer', 'designer', 'graphic_designer', 'ui_ux_designer', 'marketing', 'data_analyst', 'architect'];
   const GITHUB_FIELDS = ['developer', 'data_analyst'];
-  const PROJECT_FIELDS = ['developer', 'designer', 'graphic_designer', 'ui_ux_designer', 'marketing', 'data_analyst'];
+  const DATA_BANNER_KEY = 'cv_studio_data_banner_dismissed';
+  const PROJECT_FIELDS = ['developer', 'designer', 'graphic_designer', 'ui_ux_designer', 'marketing', 'data_analyst', 'project_manager', 'business_analyst', 'architect', 'civil_engineer', 'mechanical_engineer', 'electrical_engineer'];
 
   const el = id => document.getElementById(id);
   const t = (key, fb) => (typeof I18n !== 'undefined' ? I18n.t(key, fb) : fb || key);
@@ -21,6 +22,36 @@ const Editor = (function () {
   const a = value => (typeof Safety !== 'undefined' ? Safety.escapeAttr(value) : String(value || '').replace(/"/g, '&quot;'));
   const isAr = () => (career?.meta?.locale || I18n?.getLocale?.()) === 'ar';
   const coachName = () => isAr() ? 'المساعد الذكي (AI Advisor)' : 'AI Advisor & Optimizer';
+  const keywordCardId = keyword => 'kw-card-' + encodeURIComponent(String(keyword || '')).replace(/%/g, '_');
+
+  function buildCvSearchText(careerObj = career) {
+    const c = careerObj || {};
+    const p = c.personalInfo || {};
+    return [
+      p.title || '',
+      c.professionalSummary || '',
+      ...(c.experience || []).flatMap(item => [item.role, item.company, item.rawDescription, ...(item.bullets || [])]),
+      ...(c.education || []).flatMap(item => [item.degree, item.school, item.field, item.details]),
+      ...Object.values(c.skills || {}).flat(),
+      ...(c.projects || []).flatMap(item => [item.name, item.desc, item.tech, ...(item.bullets || [])]),
+      ...(c.certificates || []).flatMap(item => [item.name, item.issuer]),
+      ...(c.languages || []).flatMap(item => [item.lang, item.level])
+    ].filter(Boolean).join(' ').toLowerCase();
+  }
+
+  function extractJDKeywords(text) {
+    const stopWords = new Set(['with','and','for','from','that','this','have','will','your','when','where','what','which','who','into','using','required','preferred','responsibilities','requirements','years','year','إلى','على','في','من','عن','مع','هذا','هذه','تلك','التي','الذي','كل','خبرة','سنوات','مطلوب','المتطلبات','المسؤوليات']);
+    const clean = String(text || '').toLowerCase().replace(/[^a-z0-9أ-ي+#.\s-]/g, ' ');
+    const words = clean.split(/\s+/).filter(word => word.length > 2 && !stopWords.has(word));
+    const counts = new Map();
+    words.forEach(word => counts.set(word, (counts.get(word) || 0) + 1));
+    return Array.from(counts.entries()).sort((a,b) => b[1] - a[1]).map(([word]) => word).slice(0, 40);
+  }
+
+  function containsDemoData(careerObj = career) {
+    const text = buildCvSearchText(careerObj);
+    return /leading organization|accredited university|professional development program|senior specialist \/ leader|example company|شركة رائدة|جامعة معتمدة|بيانات تجريبية/.test(text);
+  }
 
   function debounce(func, wait) {
     return function (...args) {
@@ -73,12 +104,16 @@ const Editor = (function () {
     
     renderAll();
     updateTopbarName();
+    updateDataSafetyBanner();
+    if (window.innerWidth > 1024 && window.innerWidth < 1280) document.body.classList.add('coach-collapsed');
 
     // Mobile & Tablet init & resize handler
     const handleResize = () => {
       const isMobile = window.matchMedia('(max-width: 1024px)').matches;
       if (!isMobile) {
         document.body.classList.remove('mobile-edit-mode', 'mobile-preview-mode', 'mobile-coach-mode');
+        if (window.innerWidth < 1280 && !document.body.dataset.coachPreference) document.body.classList.add('coach-collapsed');
+        if (window.innerWidth >= 1280 && !document.body.dataset.coachPreference) document.body.classList.remove('coach-collapsed');
         const paper = el('a4-wrapper');
         if (paper) {
           paper.style.transform = 'none';
@@ -126,6 +161,60 @@ const Editor = (function () {
       if(career.meta.zoomLevel) handleZoomSelect(career.meta.zoomLevel);
     };
     document.getElementById('theme-css').href = TemplateSelector.getThemeCssPath(themeId);
+  }
+
+  function updateDataSafetyBanner(force = false) {
+    if (typeof CareerStorage === 'undefined' || !CareerStorage.getSafetyStatus) return;
+    const status = CareerStorage.getSafetyStatus();
+    const banner = el('local-data-banner');
+    const topStatus = el('topbar-data-status');
+    const dismissed = localStorage.getItem(DATA_BANNER_KEY) === 'true';
+    if (topStatus) {
+      topStatus.textContent = status.needsBackup
+        ? (isAr() ? 'هذا الجهاز فقط · نزّل نسخة' : 'This device only · Back up')
+        : (isAr() ? 'هذا الجهاز فقط · تم النسخ' : 'This device only · Backed up');
+      topStatus.classList.toggle('needs-backup', status.needsBackup);
+    }
+    if (!banner) return;
+    banner.hidden = !(force || (status.needsBackup && !dismissed));
+    const copy = el('local-data-copy');
+    if (copy && status.lastBackupAt) {
+      const date = new Date(status.lastBackupAt).toLocaleDateString(isAr() ? 'ar-EG' : 'en-US');
+      copy.textContent = isAr() ? `آخر نسخة احتياطية: ${date}` : `Last backup: ${date}`;
+    }
+  }
+
+  function dismissDataBanner() {
+    localStorage.setItem(DATA_BANNER_KEY, 'true');
+    const banner = el('local-data-banner');
+    if (banner) banner.hidden = true;
+  }
+
+  function exportBackup() {
+    try {
+      const done = CareerStorage.downloadBackup();
+      if (done) {
+        localStorage.removeItem(DATA_BANNER_KEY);
+        updateDataSafetyBanner();
+        showNoticeModal({
+          title: isAr() ? 'تم تنزيل النسخة الاحتياطية' : 'Backup downloaded',
+          body: isAr() ? 'احتفظ بالملف في مكان آمن. يحتوي على كل السير والنسخ المحفوظة في هذا المتصفح.' : 'Keep the file somewhere safe. It includes all resumes and versions saved in this browser.'
+        });
+      }
+    } catch (error) {
+      showNoticeModal({ title: isAr() ? 'تعذر إنشاء النسخة الاحتياطية' : 'Backup failed', body: error?.message || '' });
+    }
+  }
+
+  function toggleCoachPanel() {
+    if (window.matchMedia('(max-width: 1024px)').matches) {
+      setMobileView('coach');
+      return;
+    }
+    document.body.classList.toggle('coach-collapsed');
+    document.body.dataset.coachPreference = document.body.classList.contains('coach-collapsed') ? 'closed' : 'open';
+    const button = el('coach-toggle-btn');
+    if (button) button.classList.toggle('active', !document.body.classList.contains('coach-collapsed'));
   }
 
   // ─────────────────────────────────────────────────
@@ -240,8 +329,8 @@ const Editor = (function () {
   }
 
   function ensureJobTitle() {
+    // Keep the target title user-authored. Generic profession names are placeholders only.
     career.personalInfo = career.personalInfo || {};
-    if (!career.personalInfo.title) career.personalInfo.title = fallbackJobTitle();
   }
 
   function currentField() {
@@ -263,8 +352,15 @@ const Editor = (function () {
   }
 
   function shouldShowSection(key) {
-    if (key === 'projects') return PROJECT_FIELDS.includes(currentField()) || (career.projects || []).length > 0;
-    return true;
+    if (key !== 'projects') return true;
+    if ((career.projects || []).length > 0) return true;
+    const rules = career.meta?.rules || {};
+    if ((rules.required_sections || []).includes('projects') || (rules.recommended_sections || []).includes('projects')) return true;
+    if (typeof AICoach !== 'undefined' && typeof AICoach.roleCoachProfile === 'function') {
+      const profile = AICoach.roleCoachProfile(career);
+      return (profile?.projectMode || 'hidden') !== 'hidden';
+    }
+    return PROJECT_FIELDS.includes(currentField());
   }
 
   function showDecisionModal({ title, body, confirmText, cancelText, tone = 'ai', hideCancel = false }) {
@@ -336,8 +432,8 @@ const Editor = (function () {
 
   function showAIError(error) {
     return showNoticeModal({
-      title: isAr() ? 'صلّي على النبي، حصلت لخبطة بسيطة' : 'Small AI hiccup',
-      body: error?.message || (isAr() ? 'جرب تاني بعد لحظة.' : 'Please try again in a moment.'),
+      title: error?.status === 429 ? (isAr() ? 'وصلت لحد الاستخدام المؤقت' : 'Temporary AI limit reached') : (isAr() ? 'تعذر تشغيل المساعد الآن' : 'AI is unavailable right now'),
+      body: error?.message || (isAr() ? 'جرب مرة أخرى بعد لحظة، أو أكمل باستخدام الاقتراحات المحلية.' : 'Try again shortly, or continue with offline suggestions.'),
       confirmText: isAr() ? 'تمام، هجرب تاني' : 'Try again'
     });
   }
@@ -369,6 +465,9 @@ const Editor = (function () {
       case 'projects': return (career.projects || []).length > 0 ? 'done' : 'warn';
       case 'skills': return Object.keys(career.skills || {}).length > 0 ? 'done' : 'warn';
       case 'education': return (career.education || []).length > 0 ? 'done' : 'warn';
+      case 'languages': return (career.languages || []).length > 0 ? 'done' : 'empty';
+      case 'certificates': return (career.certificates || []).length > 0 ? 'done' : 'empty';
+      case 'awards': return (career.awards || []).length > 0 ? 'done' : 'empty';
       default: return 'empty';
     }
   }
@@ -391,7 +490,10 @@ const Editor = (function () {
       case 'experience': return (career.experience || []).length > 0 ? `${career.experience[0]?.role || ''} at ${career.experience[0]?.company || ''}` : '';
       case 'projects': return (career.projects || []).length > 0 ? career.projects[0]?.name || '' : '';
       case 'skills': return Object.values(career.skills || {}).flat().slice(0, 4).join(', ');
-      case 'education': return (career.education || []).length > 0 ? (career.education[0]?.degree || '') : '';
+      case 'education': return (career.education || []).length > 0 ? `${career.education.length} ${isAr() ? 'مؤهل' : 'entries'}` : '';
+      case 'languages': return (career.languages || []).length > 0 ? `${career.languages.length} ${isAr() ? 'لغات' : 'languages'}` : '';
+      case 'certificates': return (career.certificates || []).length > 0 ? `${career.certificates.length} ${isAr() ? 'شهادات موثقة' : 'credentials'}` : '';
+      case 'awards': return (career.awards || []).length > 0 ? `${career.awards.length} ${isAr() ? 'جوائز' : 'awards'}` : '';
       default: return '';
     }
   }
@@ -410,16 +512,17 @@ const Editor = (function () {
 
     const isAr = career.meta?.locale === 'ar' || document.documentElement.lang === 'ar';
     const starterHtml = `
-      <div style="margin-bottom:12px;padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;">
-        <div style="font-size:11px;font-weight:800;color:#1d4ed8;margin-bottom:4px;">💡 ${isAr ? 'مش عارف تكتب إيه خالص؟' : 'Not sure what to write?'}</div>
-        <div style="font-size:12px;color:#1e293b;margin-bottom:8px;">${isAr ? 'املأ سيرة ذاتية نموذجية متكاملة لمجالك ومستواك بضغطة واحدة، وعدّل عليها بسهولة!' : 'Generate a complete model resume for your field in 1 click!'}</div>
-        <button type="button" style="width:100%;padding:8px 12px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer;" onclick="Editor.autoFillStarterCV()">
-          🪄 ${isAr ? 'ملء نموذج سيرة ذاتية كامل (1-Click Auto-Fill)' : 'Auto-Fill Complete Sample Resume'}
+      <div class="editor-start-card">
+        <div class="editor-start-copy">
+          <strong>${isAr ? 'كمّل السيرة خطوة بخطوة' : 'Complete your resume step by step'}</strong>
+          <span>${isAr ? 'لن نضيف شركة أو مهارة أو إنجازاً لم تؤكده بنفسك.' : 'We will never add an employer, skill, or achievement you did not confirm.'}</span>
+        </div>
+        <button type="button" class="editor-guided-btn" onclick="Editor.autoFillStarterCV()">
+          ${isAr ? 'ابدأ بأول قسم ناقص' : 'Open the first incomplete section'}
         </button>
       </div>
-      <button type="button" onclick="document.getElementById('style-drawer-modal').style.display='flex'" style="width:100%;margin-bottom:12px;padding:10px 14px;background:#fff;border:1.5px solid #3b82f6;border-radius:10px;color:#1d4ed8;font-weight:800;font-size:12.5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,0.05);transition:all 0.2s;">
-        <span>🎨 ${isAr ? 'تخصيص المظهر (الخط، الألوان، الترتيب)' : 'Style & Layout Drawer'}</span>
-        <span>←</span>
+      <button type="button" class="editor-style-btn" onclick="document.getElementById('style-drawer-modal').style.display='flex'">
+        <span>🎨 ${isAr ? 'التصميم والخطوط' : 'Design & typography'}</span><span>›</span>
       </button>
     `;
 
@@ -623,8 +726,8 @@ const Editor = (function () {
 
   function initSortable(sectionKey) {
     if (typeof Sortable === 'undefined') return;
-    const listIds = { experience: 'exp-list', projects: 'proj-list', education: 'edu-list', skills: 'skill-list', languages: 'lang-list' };
-    const propMap = { experience: 'experience', projects: 'projects', education: 'education', skills: 'skills', languages: 'languages' };
+    const listIds = { experience: 'exp-list', projects: 'proj-list', education: 'edu-list', skills: 'skill-list', languages: 'lang-list', certificates: 'cert-list', awards: 'award-list' };
+    const propMap = { experience: 'experience', projects: 'projects', education: 'education', skills: 'skills', languages: 'languages', certificates: 'certificates', awards: 'awards' };
     const listId = listIds[sectionKey];
     const prop = propMap[sectionKey];
     if (!listId || !el(listId) || !prop || !career[prop] || !Array.isArray(career[prop])) return;
@@ -675,6 +778,8 @@ const Editor = (function () {
       case 'skills': return buildSkillsForm();
       case 'education': return buildEducationForm();
       case 'languages': return buildLanguagesForm();
+      case 'certificates': return buildCertificatesForm();
+      case 'awards': return buildAwardsForm();
       default: return `<p class="edit-empty">${t('ed.empty_edit', 'Click a field to edit this section.')}</p>`;
     }
   }
@@ -688,6 +793,8 @@ const Editor = (function () {
       case 'skills': collectSkills(); break;
       case 'education': collectEducation(); break;
       case 'languages': collectLanguages(); break;
+      case 'certificates': collectCertificates(); break;
+      case 'awards': collectAwards(); break;
     }
   }
 
@@ -704,7 +811,60 @@ const Editor = (function () {
       ? 'GitHub'
       : (career.meta?.locale === 'ar' ? 'رابط الأعمال / صفحة مهنية' : 'Portfolio / Professional Page');
     const proofPlaceholder = isGithubField() ? 'https://github.com/...' : 'https://...';
+    const cp = career.careerProfile || {};
+    const fields = [
+      ['developer', isAr() ? 'تطوير البرمجيات' : 'Software Development'],
+      ['data_analyst', isAr() ? 'تحليل البيانات' : 'Data Analysis'],
+      ['designer', isAr() ? 'التصميم' : 'Design'],
+      ['marketing', isAr() ? 'التسويق' : 'Marketing'],
+      ['accountant', isAr() ? 'المحاسبة والمالية' : 'Accounting & Finance'],
+      ['hr', isAr() ? 'الموارد البشرية' : 'Human Resources'],
+      ['sales', isAr() ? 'المبيعات' : 'Sales'],
+      ['teacher', isAr() ? 'التعليم' : 'Education'],
+      ['doctor', isAr() ? 'الطب' : 'Medicine'],
+      ['nurse', isAr() ? 'التمريض' : 'Nursing'],
+      ['pharmacist', isAr() ? 'الصيدلة' : 'Pharmacy'],
+      ['lawyer', isAr() ? 'القانون' : 'Legal'],
+      ['project_manager', isAr() ? 'إدارة المشاريع' : 'Project Management'],
+      ['business_analyst', isAr() ? 'تحليل الأعمال' : 'Business Analysis'],
+      ['customer_service', isAr() ? 'خدمة العملاء' : 'Customer Service'],
+      ['graphic_designer', isAr() ? 'التصميم الجرافيكي' : 'Graphic Design'],
+      ['ui_ux_designer', isAr() ? 'تصميم UI/UX' : 'UI/UX Design'],
+      ['architect', isAr() ? 'الهندسة المعمارية' : 'Architecture'],
+      ['civil_engineer', isAr() ? 'الهندسة المدنية' : 'Civil Engineering'],
+      ['mechanical_engineer', isAr() ? 'الهندسة الميكانيكية' : 'Mechanical Engineering'],
+      ['electrical_engineer', isAr() ? 'الهندسة الكهربائية' : 'Electrical Engineering'],
+      ['dentist', isAr() ? 'طب الأسنان' : 'Dentistry'],
+      ['speech_therapist', isAr() ? 'التخاطب والتأهيل' : 'Speech Therapy'],
+      ['other', isAr() ? 'مجال آخر' : 'Other']
+    ];
     return `
+      <div class="career-profile-card">
+        <div class="career-profile-head">${isAr() ? 'هويتك المهنية — تتحكم في النصائح والـ ATS' : 'Career profile — controls coaching and ATS guidance'}</div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label class="form-label">${isAr() ? 'المجال المهني' : 'Profession'}</label>
+            <select class="form-input" id="f-career-field">${fields.map(([id,label]) => `<option value="${id}" ${cp.field === id ? 'selected' : ''}>${h(label)}</option>`).join('')}</select>
+          </div>
+          <div class="form-field">
+            <label class="form-label">${isAr() ? 'المستوى' : 'Career level'}</label>
+            <select class="form-input" id="f-career-level">
+              <option value="fresh" ${cp.level === 'fresh' ? 'selected' : ''}>${isAr() ? 'حديث تخرج' : 'Fresh graduate'}</option>
+              <option value="junior" ${cp.level === 'junior' ? 'selected' : ''}>Junior</option>
+              <option value="mid" ${cp.level === 'mid' ? 'selected' : ''}>Mid-level</option>
+              <option value="senior" ${cp.level === 'senior' ? 'selected' : ''}>Senior</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-label">${isAr() ? 'التخصص الدقيق' : 'Specialization'}</label>
+            <input class="form-input" id="f-career-specialization" type="text" placeholder="${isAr() ? 'مثال: محاسبة تكاليف، عناية مركزة...' : 'e.g. Cost Accounting, ICU Nursing...'}" value="${a(cp.specialization || '')}">
+          </div>
+          <div class="form-field">
+            <label class="form-label">${isAr() ? 'سنوات الخبرة' : 'Years of experience'}</label>
+            <input class="form-input" id="f-career-years" type="text" placeholder="${isAr() ? 'مثال: 7' : 'e.g. 7'}" value="${a(cp.years || '')}">
+          </div>
+        </div>
+      </div>
       <div class="form-grid">
         <div class="form-field">
           <label class="form-label">${t('ed.form.fullName', 'Full Name')}</label>
@@ -734,12 +894,38 @@ const Editor = (function () {
           <label class="form-label">${h(proofLabel)}</label>
           <input class="form-input" id="f-github" type="url" placeholder="${h(proofPlaceholder)}" value="${a(pi.links?.github || '')}">
         </div>` : ''}
+        <div class="form-field form-field-full">
+          <label class="form-label">${isAr() ? 'رابط صورة شخصية حقيقية (اختياري)' : 'Real profile photo URL (optional)'}</label>
+          <input class="form-input" id="f-photo" type="url" placeholder="https://..." value="${a(pi.photo || '')}">
+          <div class="form-hint">${isAr() ? 'لن نضع صورة تجريبية تلقائياً. استخدم صورتك فقط.' : 'We never insert a sample photo automatically. Use only your own photo.'}</div>
+        </div>
       </div>
     `;
   }
+  async function refreshCareerRules(newField) {
+    if (!newField || career.meta?.rules?.role === newField) return;
+    try {
+      const lang = career.meta?.locale || 'en';
+      let response = await fetch(`/knowledge-base/${lang}/${newField}/rules.json`);
+      if (!response.ok) response = await fetch(`/knowledge-base/en/${newField}/rules.json`);
+      career.meta = career.meta || {};
+      career.meta.rules = response.ok ? await response.json() : undefined;
+      renderAll();
+    } catch (error) {
+      console.warn('Unable to refresh profession rules', error);
+      if (career.meta) delete career.meta.rules;
+    }
+  }
+
   function collectPersonalInfo() {
     if (!career.personalInfo) career.personalInfo = {};
     if (!career.personalInfo.links) career.personalInfo.links = {};
+    career.careerProfile = career.careerProfile || {};
+    const previousField = career.careerProfile.field || 'other';
+    career.careerProfile.field = el('f-career-field')?.value || previousField;
+    career.careerProfile.level = el('f-career-level')?.value || career.careerProfile.level || 'junior';
+    career.careerProfile.specialization = el('f-career-specialization')?.value?.trim() || '';
+    career.careerProfile.years = el('f-career-years')?.value?.trim() || '';
     career.personalInfo.name = el('f-name')?.value ?? career.personalInfo.name;
     career.personalInfo.title = el('f-title')?.value ?? career.personalInfo.title;
     career.personalInfo.email = el('f-email')?.value ?? career.personalInfo.email;
@@ -747,6 +933,12 @@ const Editor = (function () {
     career.personalInfo.location = el('f-location')?.value ?? career.personalInfo.location;
     career.personalInfo.links.linkedin = el('f-linkedin')?.value ?? career.personalInfo.links.linkedin;
     if (el('f-github')) career.personalInfo.links.github = el('f-github').value;
+    career.personalInfo.photo = el('f-photo')?.value?.trim() || '';
+    if (career.careerProfile.field !== previousField) {
+      if (career.meta) delete career.meta._resolvedTemplate;
+      refreshCareerRules(career.careerProfile.field);
+      resolveStyles();
+    }
     updateTopbarName();
   }
 
@@ -1573,15 +1765,19 @@ const Editor = (function () {
     menu.id = 'mob-dropdown-menu';
     menu.className = 'mob-dropdown-menu';
     menu.innerHTML = `
-      <button onclick="Editor.undoAction(); el('mob-dropdown-menu')?.remove();"><span class="icon">↩️</span> <span data-i18n="ed.topbar.undo">تراجع عن آخر تعديل</span></button>
-      <button onclick="document.getElementById('style-drawer-modal').style.display='flex'; el('mob-dropdown-menu')?.remove();"><span class="icon">🎨</span> <span>القائمة الجانبية للمظهر (الخط والألوان)</span></button>
-      <button onclick="Editor.setMobileView('coach'); el('mob-dropdown-menu')?.remove();"><span class="icon">💡</span> <span>المساعدة الذكية وفحص ATS</span></button>
-      <button onclick="Editor.showExportModal(); el('mob-dropdown-menu')?.remove();"><span class="icon">⬇️</span> <span data-i18n="ed.topbar.download">تصدير / تحميل الملف</span></button>
+      <button onclick="Editor.undoAction(); document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">↩️</span> <span data-i18n="ed.topbar.undo">تراجع عن آخر تعديل</span></button>
+      <button onclick="Editor.redoAction(); document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">↪️</span> <span>إعادة آخر تعديل</span></button>
+      <button onclick="Editor.showVersionManagerModal(); document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">📂</span> <span>السير المحفوظة والنسخ</span></button>
+      <button onclick="document.getElementById('style-drawer-modal').style.display='flex'; document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">🎨</span> <span>الخط والألوان والتصميم</span></button>
+      <button onclick="Editor.setMobileView('coach'); document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">💡</span> <span>المساعد الذكي وفحص ATS</span></button>
+      <button onclick="Editor.showExportModal(); document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">⬇️</span> <span data-i18n="ed.topbar.download">تصدير / تحميل الملف</span></button>
+      <button onclick="Editor.exportBackup(); document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">🛡</span> <span>تنزيل نسخة احتياطية لكل السير</span></button>
+      <button onclick="AISettings.openModal(); document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">🔒</span> <span>الخصوصية وإعدادات المساعد</span></button>
       <a href="landing.html" class="menu-link"><span class="icon">🚪</span> <span data-i18n="ed.topbar.exit">خروج إلى الرئيسية</span></a>
     `;
     document.body.appendChild(menu);
     const closeMenu = (e) => {
-      if (!menu.contains(e.target) && e.target?.className !== 'mob-topbar-menu') {
+      if (!menu.contains(e.target) && !e.target?.closest?.('.mob-topbar-menu')) {
         menu.remove();
         document.removeEventListener('click', closeMenu);
       }
@@ -1637,18 +1833,105 @@ const Editor = (function () {
     const isMobile = window.matchMedia('(max-width: 1024px)').matches;
     if (!isMobile) return;
     try {
-      const result = ATSScorer.score(career);
-      const pct = result.percent || 0;
-      const label = result.label || (pct >= 75 ? 'ممتازة' : pct >= 50 ? 'جيدة' : 'تحتاج تحسين');
+      const result = typeof AICoach !== 'undefined' ? AICoach.buildCoachInsights(career) : null;
+      const pct = Number(result?.score || 0);
+      const label = pct >= 80 ? (isAr() ? 'قوية' : 'Strong') : pct >= 60 ? (isAr() ? 'جيدة' : 'Good') : (isAr() ? 'تحتاج تحسين' : 'Needs work');
       const fill = el('mob-score-fill');
       const lbl = el('mob-score-label');
       if (fill) {
         fill.style.width = `${pct}%`;
         fill.style.background = pct >= 75 ? '#16a34a' : pct >= 50 ? '#d97706' : '#dc2626';
       }
-      if (lbl) lbl.textContent = `تقييم السيرة: ${pct}% (${label})`;
+      if (lbl) lbl.textContent = `${isAr() ? 'جودة السيرة' : 'Resume quality'}: ${pct}% (${label})`;
     } catch(e) {}
   }
+
+
+  // ─── VERIFIED CERTIFICATES / LICENSES ───
+  function buildCertificatesForm() {
+    const certs = career.certificates || [];
+    const items = certs.map((c, i) => `
+      <div class="list-item">
+        <div class="list-item-header">
+          <span class="list-item-title">${h(c.name || (isAr() ? 'شهادة أو ترخيص' : 'Credential'))}</span>
+          <div>
+            <button class="list-item-btn" onclick="Editor.duplicateCertificateItem(${i})" title="Duplicate">📋</button>
+            <button class="list-item-del" onclick="Editor.deleteCertificateItem(${i})" title="Delete">✕</button>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field form-field-full">
+            <label class="form-label">${isAr() ? 'اسم الشهادة أو الترخيص' : 'Certificate / License name'}</label>
+            <input class="form-input" id="f-cert-name-${i}" type="text" placeholder="${isAr() ? 'مثال: CMA — الجزء الأول' : 'e.g. CMA — Part 1'}" value="${a(c.name || '')}">
+          </div>
+          <div class="form-field">
+            <label class="form-label">${isAr() ? 'الجهة المانحة' : 'Issuer'}</label>
+            <input class="form-input" id="f-cert-issuer-${i}" type="text" placeholder="${isAr() ? 'الجهة الرسمية فقط' : 'Official issuer'}" value="${a(c.issuer || '')}">
+          </div>
+          <div class="form-field">
+            <label class="form-label">${isAr() ? 'السنة / الحالة' : 'Year / status'}</label>
+            <input class="form-input" id="f-cert-year-${i}" type="text" placeholder="${isAr() ? '2025 أو قيد الدراسة' : '2025 or In progress'}" value="${a(c.year || '')}">
+          </div>
+          <div class="form-field form-field-full">
+            <label class="form-label">${isAr() ? 'رابط التحقق (اختياري)' : 'Verification URL (optional)'}</label>
+            <input class="form-input" id="f-cert-url-${i}" type="url" placeholder="https://..." value="${a(c.url || '')}">
+          </div>
+        </div>
+      </div>`).join('');
+    return `
+      <div class="coach-inline-note">${isAr() ? 'أضف فقط الشهادات والتراخيص التي حصلت عليها أو اذكر بوضوح أنها قيد الدراسة. لن يضيف المساعد شهادة من تلقاء نفسه.' : 'Only list credentials you actually hold, or clearly mark them as in progress. The coach will never claim a credential for you.'}</div>
+      <div id="cert-list">${items || `${emptyStateSVG()}<p class="edit-empty" style="text-align:center">${isAr() ? 'لا توجد شهادات موثقة بعد.' : 'No verified credentials yet.'}</p>`}</div>
+      <button class="btn-add-item" onclick="Editor.addCertificateItem()">${isAr() ? '+ إضافة شهادة أو ترخيص' : '+ Add certificate or license'}</button>`;
+  }
+
+  function collectCertificates() {
+    const certs = career.certificates || [];
+    certs.forEach((c, i) => {
+      c.name = el(`f-cert-name-${i}`)?.value ?? c.name;
+      c.issuer = el(`f-cert-issuer-${i}`)?.value ?? c.issuer;
+      c.year = el(`f-cert-year-${i}`)?.value ?? c.year;
+      c.url = el(`f-cert-url-${i}`)?.value ?? c.url;
+    });
+    career.certificates = certs;
+  }
+  function addCertificateItem() { pushUndo(); career.certificates = career.certificates || []; career.certificates.push({ name:'', issuer:'', year:'', url:'' }); openEditPanel('certificates'); }
+  function duplicateCertificateItem(idx) { pushUndo(); career.certificates.splice(idx + 1, 0, JSON.parse(JSON.stringify(career.certificates[idx]))); saveAndRender(); openEditPanel('certificates'); }
+  function deleteCertificateItem(idx) { pushUndo(); career.certificates.splice(idx, 1); saveAndRender(); openEditPanel('certificates'); }
+
+  // ─── AWARDS ───
+  function buildAwardsForm() {
+    const awards = career.awards || [];
+    const items = awards.map((award, i) => `
+      <div class="list-item">
+        <div class="list-item-header">
+          <span class="list-item-title">${h(award.name || (isAr() ? 'جائزة أو تقدير' : 'Award'))}</span>
+          <div>
+            <button class="list-item-btn" onclick="Editor.duplicateAwardItem(${i})" title="Duplicate">📋</button>
+            <button class="list-item-del" onclick="Editor.deleteAwardItem(${i})" title="Delete">✕</button>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-field form-field-full"><label class="form-label">${isAr() ? 'اسم الجائزة' : 'Award name'}</label><input class="form-input" id="f-award-name-${i}" value="${a(award.name || '')}"></div>
+          <div class="form-field"><label class="form-label">${isAr() ? 'الجهة' : 'Issuer'}</label><input class="form-input" id="f-award-issuer-${i}" value="${a(award.issuer || '')}"></div>
+          <div class="form-field"><label class="form-label">${isAr() ? 'السنة' : 'Year'}</label><input class="form-input" id="f-award-year-${i}" value="${a(award.year || '')}"></div>
+          <div class="form-field form-field-full"><label class="form-label">${isAr() ? 'وصف مختصر' : 'Short description'}</label><textarea class="form-textarea" id="f-award-desc-${i}" rows="3">${h(award.description || '')}</textarea></div>
+        </div>
+      </div>`).join('');
+    return `<div id="award-list">${items || `${emptyStateSVG()}<p class="edit-empty" style="text-align:center">${isAr() ? 'لا توجد جوائز بعد.' : 'No awards yet.'}</p>`}</div><button class="btn-add-item" onclick="Editor.addAwardItem()">${isAr() ? '+ إضافة جائزة' : '+ Add award'}</button>`;
+  }
+  function collectAwards() {
+    const awards = career.awards || [];
+    awards.forEach((award, i) => {
+      award.name = el(`f-award-name-${i}`)?.value ?? award.name;
+      award.issuer = el(`f-award-issuer-${i}`)?.value ?? award.issuer;
+      award.year = el(`f-award-year-${i}`)?.value ?? award.year;
+      award.description = el(`f-award-desc-${i}`)?.value ?? award.description;
+    });
+    career.awards = awards;
+  }
+  function addAwardItem() { pushUndo(); career.awards = career.awards || []; career.awards.push({ name:'', issuer:'', year:'', description:'' }); openEditPanel('awards'); }
+  function duplicateAwardItem(idx) { pushUndo(); career.awards.splice(idx + 1, 0, JSON.parse(JSON.stringify(career.awards[idx]))); saveAndRender(); openEditPanel('awards'); }
+  function deleteAwardItem(idx) { pushUndo(); career.awards.splice(idx, 1); saveAndRender(); openEditPanel('awards'); }
 
   // ─────────────────────────────────────────────────
   // GALLERY
@@ -1766,20 +2049,34 @@ const Editor = (function () {
   // ─────────────────────────────────────────────────
   function saveAndRender() {
     showSaveIndicator(t('ed.saving', 'Saving...'));
-    CareerStorage.save(career);
+    try {
+      career = CareerStorage.save(career);
+    } catch (error) {
+      const ind = el('save-indicator');
+      if (ind) {
+        ind.textContent = isAr() ? 'لم يتم الحفظ' : 'Not saved';
+        ind.className = 'save-indicator save-error';
+      }
+      showNoticeModal({
+        title: isAr() ? 'تعذر حفظ السيرة' : 'Resume could not be saved',
+        body: error?.message || (isAr() ? 'نزّل نسخة احتياطية وحاول تفريغ مساحة المتصفح.' : 'Download a backup and free browser storage space.')
+      });
+      return false;
+    }
     renderAll();
     updateMobScoreBar();
     updateTopbarName();
-    
-    // Update edit panel save button if open
+    updateDataSafetyBanner();
+
     const saveBtn = el('edit-save-btn');
     if (saveBtn && el('edit-overlay').style.display !== 'none') {
-      saveBtn.textContent = 'تم الحفظ ✓';
-      saveBtn.style.background = '#16a34a'; // green-600
+      saveBtn.textContent = isAr() ? 'تم الحفظ على هذا الجهاز ✓' : 'Saved on this device ✓';
+      saveBtn.style.background = '#16a34a';
     }
 
     clearTimeout(autosaveTimer);
     autosaveTimer = setTimeout(() => showSaveIndicator(t('ed.saved', 'Saved ✓'), true), 400);
+    return true;
   }
 
   function showSaveIndicator(msg, fade = false) {
@@ -1792,7 +2089,7 @@ const Editor = (function () {
       ind.style.background = '#f0fdf4';
       ind.style.borderColor = '#bbf7d0';
       setTimeout(() => {
-        ind.textContent = _ct('ed.saved_auto', '✓ تم الحفظ تلقائياً');
+        ind.textContent = isAr() ? '✓ تم الحفظ على هذا الجهاز' : '✓ Saved on this device';
         ind.className = 'save-indicator saved';
       }, 2500);
     } else {
@@ -1848,28 +2145,34 @@ const Editor = (function () {
     if (section === 'experience') {
       try {
         setAILoading(true);
-        pushUndo();
+        const draft = JSON.parse(JSON.stringify(career));
         let applied = false;
         if (typeof AIClient !== 'undefined' && AIClient.configured()) {
-          const improved = await AIClient.improveBullets(career);
+          const improved = await AIClient.improveBullets(draft);
           if (Array.isArray(improved)) {
             improved.forEach((item, index) => {
-              if (career.experience?.[index] && Array.isArray(item.bullets)) {
-                career.experience[index].bullets = item.bullets;
-                career.experience[index].rawDescription = item.bullets.join('\n');
+              if (draft.experience?.[index] && Array.isArray(item.bullets)) {
+                draft.experience[index].bullets = item.bullets;
+                draft.experience[index].rawDescription = item.bullets.join('\n');
                 applied = true;
               }
             });
           }
         }
         if (!applied && typeof AICoach !== 'undefined') {
-          AICoach.improveExperienceBullets(career);
-          applied = true;
+          AICoach.improveExperienceBullets(draft);
+          applied = JSON.stringify(draft.experience) !== JSON.stringify(career.experience);
         }
-        if (applied) { saveAndRender(); openEditPanel('experience'); }
-        else undoStack.pop();
+        if (applied) {
+          showSmartFixPreviewModal(
+            draft,
+            extractSectionTextForCompare(career, 'weak-experience'),
+            extractSectionTextForCompare(draft, 'weak-experience'),
+            isAr() ? 'راجع تحسين الخبرة قبل اعتماده' : 'Review experience improvements',
+            isAr() ? '✓ تم اعتماد تحسين الخبرة' : '✓ Experience improvements applied'
+          );
+        }
       } catch (e) {
-        undoStack.pop();
         showAIError(e);
       } finally {
         setAILoading(false);
@@ -1953,6 +2256,33 @@ const Editor = (function () {
       setAILoading(false);
     }
   }
+  function showSkillSelectionModal(skills) {
+    return new Promise(resolve => {
+      const old = el('skill-selection-modal');
+      if (old) old.remove();
+      const modal = document.createElement('div');
+      modal.id = 'skill-selection-modal';
+      modal.className = 'modal-overlay';
+      modal.style.display = 'flex';
+      modal.innerHTML = `
+        <div class="modal-card skill-selection-card" dir="${isAr() ? 'rtl' : 'ltr'}">
+          <div class="modal-header"><div><h3>${isAr() ? 'اختر فقط المهارات التي تمتلكها فعلاً' : 'Select only skills you genuinely have'}</h3><p>${isAr() ? 'هذه اقتراحات شائعة في المجال وليست معلومات مؤكدة عنك.' : 'These are common role suggestions, not verified facts about you.'}</p></div></div>
+          <div class="skill-selection-list">
+            ${skills.map((skill, index) => `<label class="skill-selection-item"><input type="checkbox" value="${a(skill)}"><span>${h(skill)}</span></label>`).join('')}
+          </div>
+          <div class="modal-actions">
+            <button class="btn-secondary" id="skill-selection-cancel">${isAr() ? 'إلغاء' : 'Cancel'}</button>
+            <button class="btn-primary" id="skill-selection-apply">${isAr() ? 'أضف المحدد فقط' : 'Add selected only'}</button>
+          </div>
+        </div>`;
+      document.body.appendChild(modal);
+      const finish = value => { modal.remove(); resolve(value); };
+      el('skill-selection-cancel').onclick = () => finish([]);
+      el('skill-selection-apply').onclick = () => finish(Array.from(modal.querySelectorAll('input:checked')).map(input => input.value));
+      modal.onclick = event => { if (event.target === modal) finish([]); };
+    });
+  }
+
   async function aiSuggestSkills() {
     if (isAILoading) return;
     try {
@@ -1968,22 +2298,15 @@ const Editor = (function () {
           ? AICoach.suggestSkills(career, currentSkills)
           : OfflineHelpers.suggestSkills(field, '', currentSkills));
       }
-      suggested = suggested.slice(0, 6);
-      if (suggested.length && await showDecisionModal({
-        title: isAr() ? 'دي مهارات ترفع الشغل' : 'Relevant skills for this role',
-        body: suggested.join(', '),
-        confirmText: isAr() ? 'ضيفهم للسيرة' : 'Add skills',
-        cancelText: isAr() ? 'مش دلوقتي' : 'Not now'
-      })) {
+      suggested = suggested.slice(0, 8);
+      const selected = suggested.length ? await showSkillSelectionModal(suggested) : [];
+      if (selected.length) {
         pushUndo();
-        const existing = Object.values(career.skills || {}).flat();
-        const category = career.meta?.locale === 'ar' ? 'المهارات الأساسية' : 'Core Skills';
-        career.skills = { [category]: [...new Set([...existing, ...suggested])] };
+        const category = career.meta?.locale === 'ar' ? 'المهارات المؤكدة' : 'Verified Skills';
+        career.skills = career.skills || {};
+        career.skills[category] = [...new Set([...(career.skills[category] || []), ...selected])];
         saveAndRender();
-        // Force immediate update if panel is open
-        if(currentEditSection === 'skills') {
-          openEditPanel('skills');
-        }
+        if (currentEditSection === 'skills') openEditPanel('skills');
       }
     } catch(e) {
       showAIError(e);
@@ -2027,29 +2350,11 @@ const Editor = (function () {
       case 'edit-experience': openEditPanel('experience'); break;
       case 'edit-education': openEditPanel('education'); break;
       case 'edit-projects': openEditPanel('projects'); break;
-      case 'edit-certificates': openEditPanel('certifications'); break;
+      case 'edit-certificates': openEditPanel('certificates'); break;
       case 'improve-bullets':
       case 'improve-experience':
       case 'auto-bullets':
-        setAILoading(true);
-        (async () => {
-          pushUndo();
-          let applied = false;
-          if (typeof AIClient !== 'undefined' && AIClient.configured()) {
-            const improved = await AIClient.improveBullets(career);
-            if (Array.isArray(improved)) {
-              improved.forEach((item, index) => {
-                if (career.experience?.[index] && Array.isArray(item.bullets)) {
-                  career.experience[index].bullets = item.bullets;
-                  career.experience[index].rawDescription = item.bullets.join('\n');
-                  applied = true;
-                }
-              });
-            }
-          }
-          if (!applied && typeof AICoach !== 'undefined') AICoach.improveExperienceBullets(career);
-          saveAndRender();
-        })().catch(e => showAIError(e)).finally(() => setAILoading(false));
+        aiImprove('experience');
         break;
       case 'ats-check':
         showExportModal();
@@ -2103,28 +2408,46 @@ const Editor = (function () {
 </html>`;
   }
 
+  function waitForPrintAssets(doc) {
+    const fontWait = doc.fonts?.ready || Promise.resolve();
+    const images = Array.from(doc.images || []).map(image => image.complete
+      ? Promise.resolve()
+      : new Promise(resolve => { image.onload = image.onerror = resolve; }));
+    return Promise.race([
+      Promise.all([fontWait, ...images]),
+      new Promise(resolve => setTimeout(resolve, 3500))
+    ]);
+  }
+
   function printCvOnly() {
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
+    iframe.style.width = '1px';
+    iframe.style.height = '1px';
     iframe.style.border = '0';
     iframe.style.inset = '0';
+    iframe.style.opacity = '0';
     iframe.setAttribute('aria-hidden', 'true');
-    iframe.onload = () => {
+    iframe.onload = async () => {
       const win = iframe.contentWindow;
       if (!win) return;
-      setTimeout(() => {
-        win.focus();
-        win.print();
-        setTimeout(() => iframe.remove(), 1200);
-      }, 500);
+      await waitForPrintAssets(win.document);
+      win.focus();
+      win.print();
+      setTimeout(() => iframe.remove(), 1800);
     };
     iframe.srcdoc = buildStandaloneCvHtml({ print: true });
     document.body.appendChild(iframe);
   }
 
   async function exportPdf() {
+    if (containsDemoData(career)) {
+      showNoticeModal({
+        title: isAr() ? 'راجع البيانات التجريبية قبل التصدير' : 'Replace sample data before exporting',
+        body: isAr() ? 'وجدنا عبارات تبدو تجريبية أو عامة مثل شركة/جامعة غير حقيقية. استبدلها ببياناتك الفعلية أولاً لحماية مصداقيتك.' : 'We found text that looks like placeholder or sample data. Replace it with your real information before exporting.'
+      });
+      return;
+    }
     if (typeof AICoach !== 'undefined') {
       const review = AICoach.getPreExportReview(career);
       if (review.blockers && !await showDecisionModal({
@@ -2140,7 +2463,7 @@ const Editor = (function () {
     closeExportModal();
     printCvOnly();
   }
-  function exportJson() { CareerStorage.download(career); }
+  function exportJson() { CareerStorage.download(career, exportFilename('.json')); updateDataSafetyBanner(); }
   function exportHtml() {
     const full = buildStandaloneCvHtml();
     const blob = new Blob([full], { type: 'text/html' });
@@ -2172,14 +2495,10 @@ const Editor = (function () {
 
   function exportDocx() {
     if (typeof htmlDocx === 'undefined') {
-      const full = buildStandaloneCvHtml();
-      const blob = new Blob(['\ufeff', full], { type: 'application/msword' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = exportFilename('.doc');
-      a.click();
-      URL.revokeObjectURL(url);
+      showNoticeModal({
+        title: isAr() ? 'تصدير Word غير متاح الآن' : 'Word export is unavailable',
+        body: isAr() ? 'لن ننشئ ملف .doc مزيفًا. استخدم PDF الآن أو أعد المحاولة بعد تحميل مكتبة DOCX.' : 'We will not create a fake .doc file. Use PDF or retry after the DOCX library loads.'
+      });
       return;
     }
     try {
@@ -2198,62 +2517,31 @@ const Editor = (function () {
   }
 
   async function tailorJob() {
-    const ar = isAr();
     const jdText = await showInputModal({
-      title: ar ? '🎯 تخصيص السيرة الذاتية لوظيفة (Tailor to Job)' : '🎯 Tailor Resume to Job Description',
-      body: ar ? 'انسخ وألصق وصف الوظيفة (Job Description) هنا، وسيقوم النظام بتحليل الكلمات المفتاحية المطلوبة ومقارنتها بمهاراتك:' : 'Paste the target Job Description (JD) below. We will analyze missing ATS keywords and suggest skills to add:',
-      placeholder: ar ? 'ألصق متطلبات الوظيفة هنا...' : 'Paste job requirements here...'
+      title: isAr() ? '🎯 تخصيص السيرة لوظيفة محددة' : '🎯 Tailor resume to a job',
+      body: isAr()
+        ? 'الصق إعلان الوظيفة الكامل. سنقارن الكلمات بالمحتوى الحقيقي في سيرتك، ولن نضيف أي مهارة قبل تأكيدك.'
+        : 'Paste the full job description. We will compare it only with your actual resume content and will not add skills without confirmation.',
+      placeholder: isAr() ? 'الصق إعلان الوظيفة هنا...' : 'Paste the job description here...'
     });
-    if (!jdText || !jdText.trim()) return;
-
-    setAILoading(true);
-    try {
-      const field = currentField();
-      let missingSkills = [];
-      if (typeof ContentPicker !== 'undefined' && ContentPicker.getKnowledge) {
-        const kb = await ContentPicker.getKnowledge(career, field);
-        if (kb && kb.keywords) {
-          const jdLower = jdText.toLowerCase();
-          const currentSkillsLower = Object.values(career.skills || {}).flat().map(s => String(s).toLowerCase());
-          missingSkills = kb.keywords.filter(kw => {
-            const kwStr = typeof kw === 'string' ? kw : (ar ? kw.ar : kw.en);
-            return kwStr && jdLower.includes(kwStr.toLowerCase()) && !currentSkillsLower.some(cs => cs.includes(kwStr.toLowerCase()));
-          }).map(kw => typeof kw === 'string' ? kw : (ar ? kw.ar : kw.en));
-        }
-      }
-      if (missingSkills.length === 0) {
-        if (typeof ContentPicker !== 'undefined' && ContentPicker.getKnowledge) {
-          const kb = await ContentPicker.getKnowledge(career, field);
-          if (kb && kb.keywords) {
-            missingSkills = kb.keywords.slice(0, 5).map(kw => typeof kw === 'string' ? kw : (ar ? kw.ar : kw.en));
-          }
-        }
-      }
-
-      if (missingSkills.length > 0) {
-        if (await showDecisionModal({
-          title: ar ? '🚀 كلمات مفتاحية مفقودة من وصف الوظيفة!' : '🚀 ATS Keywords Found in JD',
-          body: (ar ? 'وجدنا الكلمات المفتاحية التالية مطلوبة في الوظيفة وغير موجودة في سيرتك الذاتية:\n\n• ' : 'We identified these requested ATS keywords missing from your skills:\n\n• ') + missingSkills.join('\n• ') + (ar ? '\n\nهل تريد إضافتها فوراً لمهاراتك؟' : '\n\nAdd them to your skills immediately?'),
-          confirmText: ar ? 'أضف المهارات فوراً' : 'Add to Skills',
-          cancelText: ar ? 'إلغاء' : 'Cancel'
-        })) {
-          pushUndo();
-          career.skills = career.skills || {};
-          career.skills['Target JD Skills'] = [...(career.skills['Target JD Skills'] || []), ...missingSkills];
-          saveAndRender();
-          openEditPanel('skills');
-        }
-      } else {
-        showNoticeModal({
-          title: ar ? 'تطابق ممتاز!' : 'Great Match!',
-          body: ar ? 'سيرتك الذاتية تحتوي بالفعل على أهم الكلمات المفتاحية المطلوبة في وصف هذه الوظيفة.' : 'Your resume already includes the core keywords found in this Job Description!',
-          confirmText: ar ? 'رائع' : 'Awesome'
-        });
-      }
-    } catch (e) {
-      console.error('Tailor error:', e);
-    } finally {
-      setAILoading(false);
+    if (!jdText || jdText.trim().length < 80) return;
+    switchCoachTab('ats');
+    const input = el('coach-jd-input');
+    if (input) {
+      input.value = jdText.trim();
+      applyJDMatch();
+    } else {
+      const keywords = extractJDKeywords(jdText);
+      const cvText = buildCvSearchText(career);
+      const found = keywords.filter(keyword => cvText.includes(keyword));
+      const missing = keywords.filter(keyword => !cvText.includes(keyword));
+      career.meta = career.meta || {};
+      career.meta.targetJD = jdText.trim();
+      career.meta.jdMatchScore = keywords.length ? Math.round((found.length / keywords.length) * 100) : 0;
+      career.meta.jdFoundKeywords = found.slice(0, 14);
+      career.meta.jdMissingKeywords = missing.slice(0, 14);
+      saveAndRender();
+      switchCoachTab('ats');
     }
   }
 
@@ -2266,93 +2554,20 @@ const Editor = (function () {
   }
 
   async function autoFillStarterCV() {
-    pushUndo();
-    const isAr = career.meta?.locale === 'ar' || document.documentElement.lang === 'ar';
-    const level = career.careerProfile?.level || 'fresh';
-
-    // 1. Summary
-    if (!career.professionalSummary || career.professionalSummary.length < 20) {
-      const sumObj = (typeof ContentPicker !== 'undefined' && await ContentPicker.getSummary(career));
-      career.professionalSummary = sumObj?.text || (isAr ?
-        'مهني طموح وحديث التخرج، أمتلك أساساً أكاديمياً متيناً ومهارات تقنية عالية في استخدام الأدوات الحديثة وتحليل البيانات. أتطلع لتوظيف قدراتي في بيئة عمل احترافية تدعم التطور وتساهم في تحقيق أهداف المؤسسة.' :
-        'Motivated professional possessing strong foundational knowledge, technical proficiency, and analytical problem-solving skills. Dedicated to adding measurable value within a growth-oriented organization.');
-    }
-
-    // 2. Skills
-    if (!career.skills || Object.keys(career.skills).length === 0) {
-      career.skills = isAr ? {
-        'المهارات الأساسية': ['Excel المتقدم', 'إعداد التقارير', 'تحليل البيانات', 'تنظيم العمل'],
-        'المهارات الشخصية': ['التواصل الفعال', 'حل المشكلات', 'العمل الجماعي', 'إدارة الوقت']
-      } : {
-        'Core Skills': ['Advanced Excel', 'Data Analysis', 'Reporting', 'Process Organization'],
-        'Soft Skills': ['Effective Communication', 'Problem Solving', 'Teamwork', 'Time Management']
-      };
-    }
-
-    // 3. Experience / Internship
-    if (!career.experience || career.experience.length === 0) {
-      if (level === 'fresh') {
-        career.experience = [{
-          role: isAr ? 'تدريب عملي / مشروع تطبيقي' : 'Practical Training / Capstone Project',
-          company: isAr ? 'برنامج التدريب المهني' : 'Professional Development Program',
-          period: isAr ? '2024' : '2024',
-          bullets: isAr ? [
-            'تطبيق المفاهيم المهنية والتحليلية المتقدمة لإنجاز المهام المطلوبة بدقة وكفاءة.',
-            'استخدام برامج وتطبيقات الحاسب الآلي لتحليل البيانات وإعداد التقارير الدورية.',
-            'التعاون مع الفريق لإنجاز المهام وتحسين جودة المخرجات بنسبة ملحوظة.'
-          ] : [
-            'Applied professional concepts and analytical methodologies to complete core project tasks efficiently.',
-            'Utilized digital software tools to process data and generate accurate reports.',
-            'Collaborated with peers to deliver timely results and improve overall output quality.'
-          ]
-        }];
-      } else {
-        career.experience = [{
-          role: isAr ? 'أخصائي / مسؤول مهني' : 'Professional Specialist',
-          company: isAr ? 'شركة رائدة في المجال' : 'Leading Organization',
-          period: isAr ? '2022 – الحالي' : '2022 – Present',
-          bullets: isAr ? [
-            'إدارة وتنفيذ المهام اليومية بكفاءة عالية وفقاً لأفضل الممارسات المهنية ومعايير الجودة.',
-            'إعداد وتحليل التقارير الدورية لتقديم توصيات تدعم اتخاذ القرارات الإدارية بشكل دقيق.',
-            'تطوير أساليب العمل اليومية مما ساهم في زيادة الإنتاجية وتقليل الوقت المستغرق في إنجاز المهام.'
-          ] : [
-            'Managed day-to-day operations efficiently in alignment with industry best practices and quality standards.',
-            'Prepared comprehensive analytical reports providing actionable recommendations for management.',
-            'Streamlined workflows resulting in measurable increases in operational productivity.'
-          ]
-        }];
-      }
-    }
-
-    // 4. Education
-    if (!career.education || career.education.length === 0) {
-      career.education = [{
-        degree: isAr ? 'بكالوريوس في التخصص المهني' : 'Bachelor Degree in Professional Field',
-        institution: isAr ? 'جامعة معتمدة' : 'Accredited University',
-        period: isAr ? '2024' : '2024'
-      }];
-    }
-
-    // 5. Languages
-    if (!career.languages || career.languages.length === 0) {
-      career.languages = isAr ? [
-        { name: 'العربية', level: 'اللغة الأم' },
-        { name: 'الإنجليزية', level: 'جيد جداً (مهني)' }
-      ] : [
-        { name: 'Arabic', level: 'Native' },
-        { name: 'English', level: 'Professional Working Proficiency' }
-      ];
-    }
-
-    saveAndRender();
-    if (typeof showNoticeModal === 'function') {
-      showNoticeModal({
-        title: isAr ? '✨ تم إنشاء نموذج سيرة ذاتية كامل!' : '✨ Complete Starter Resume Created!',
-        body: isAr ?
-          'تم ملء السيرة الذاتية بنموذج متكامل واحترافي لمجالك. يمكنك الآن التعديل على أي قسم وتغيير بياناتك بسهولة وسرعة!' :
-          'Your resume has been populated with a high-quality starter model. You can now easily edit any field to personalize your information!'
-      });
-    }
+    const review = typeof AICoach !== 'undefined' ? AICoach.getPreExportReview(career) : null;
+    const first = review?.items?.[0];
+    const sectionMap = {
+      personalInfo: 'personalInfo', summary: 'summary', experience: 'experience',
+      education: 'education', skills: 'skills', projects: 'projects', certificates: 'certificates'
+    };
+    const section = sectionMap[first?.section] || 'personalInfo';
+    showNoticeModal({
+      title: isAr() ? 'مساعدة آمنة بدون معلومات مختلقة' : 'Guided help without invented facts',
+      body: isAr()
+        ? 'سنفتح أول قسم يحتاج إكمالاً. اكتب الحقائق التي تعرفها، وبعدها استخدم زر التحسين لصياغتها باحتراف. لن نضيف شركة أو جامعة أو مهارة أو رقماً من عندنا.'
+        : 'We will open the first incomplete section. Enter the facts you know, then use Improve to polish the wording. We will not invent employers, schools, skills, or metrics.'
+    });
+    setTimeout(() => openEditPanel(section), 80);
   }
 
   function setAccentColor(color) {
@@ -2369,11 +2584,16 @@ const Editor = (function () {
 
   function togglePhoto(show) {
     if (!career.meta) career.meta = {};
-    career.meta.showPhoto = show;
-    if (show && (!career.personalInfo || !career.personalInfo.photo)) {
-      if (!career.personalInfo) career.personalInfo = {};
-      career.personalInfo.photo = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80';
+    if (show && !career.personalInfo?.photo) {
+      career.meta.showPhoto = false;
+      showNoticeModal({
+        title: isAr() ? 'أضف صورتك الحقيقية أولاً' : 'Add your real photo first',
+        body: isAr() ? 'لن نستخدم صورة تجريبية. أضف رابط صورتك في البيانات الشخصية، ثم فعّل إظهار الصورة.' : 'We will not use a sample photo. Add your photo URL in Personal Info, then enable the photo.'
+      });
+      openEditPanel('personalInfo');
+      return;
     }
+    career.meta.showPhoto = !!show;
     saveAndRender();
   }
 
@@ -2518,7 +2738,9 @@ const Editor = (function () {
       + '<span style="font-size: 11px; font-weight: 700; opacity: 0.9;">' + _ct('coach.overview.remaining', 'المتبقي') + ': ' + ins.todayGoal.remainingTasksCount + ' ' + _ct('coach.overview.tasks', 'مهام') + '</span>'
       + '</div>'
       + '<div style="font-size: 14px; font-weight: 800; line-height: 1.4; margin-bottom: 10px;">'
-      + _ct('coach.overview.raise_to', 'ارفع السيرة من {current}% ← {target}%').replace('{current}', ins.todayGoal.currentScore).replace('{target}', ins.todayGoal.targetScore)
+      + (ins.todayGoal.remainingTasksCount
+        ? _ct('coach.overview.session_goal', 'ابدأ بأهم {count} تحسينات في هذه الجلسة').replace('{count}', ins.todayGoal.remainingTasksCount)
+        : _ct('coach.overview.session_done', 'الأساسيات مكتملة — راجع التفاصيل قبل التصدير'))
       + '</div>'
       + '<div style="height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden;">'
       + '<div style="height: 100%; width: ' + ins.todayGoal.currentScore + '%; background: #22c55e; border-radius: 3px; transition: width 0.4s;"></div>'
@@ -2536,22 +2758,26 @@ const Editor = (function () {
 
     if (ins.top3Problems && ins.top3Problems.length > 0) {
       html += '<div style="margin-bottom:16px;">'
-        + '<div style="font-size:11px;font-weight:800;color:#dc2626;text-transform:uppercase;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">'
-        + '<span>🔥 ' + _ct('coach.overview.top_problems', 'أهم 3 مشاكل للتحسين') + '</span>'
+        + '<div style="font-size:11px;font-weight:800;color:#475569;text-transform:uppercase;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">'
+        + '<span>↗ ' + _ct('coach.overview.top_problems', 'أهم 3 أولويات للتحسين') + '</span>'
         + '</div>'
         + ins.top3Problems.map(function(p, idx) {
-          return '<div style="background:#fff;border:1px solid #fee2e2;border-radius:10px;padding:12px;margin-bottom:10px;box-shadow:0 2px 6px rgba(220,38,38,0.05);">'
+          const high = p.severity === 'high';
+          const tone = high
+            ? { border: '#fecaca', soft: '#fef2f2', text: '#b91c1c', accent: '#dc2626' }
+            : { border: '#bfdbfe', soft: '#eff6ff', text: '#1e40af', accent: '#2563eb' };
+          return '<div style="background:#fff;border:1px solid ' + tone.border + ';border-radius:10px;padding:12px;margin-bottom:10px;box-shadow:0 2px 8px rgba(15,23,42,0.04);">'
             + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">'
-            + '<div style="font-size:13px;font-weight:800;color:#991b1b;display:flex;align-items:center;gap:6px;">'
-            + '<span style="background:#fef2f2;color:#dc2626;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">' + (idx + 1) + '</span>'
+            + '<div style="font-size:13px;font-weight:800;color:' + tone.text + ';display:flex;align-items:center;gap:6px;">'
+            + '<span style="background:' + tone.soft + ';color:' + tone.accent + ';width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">' + (idx + 1) + '</span>'
             + '<span>' + h(p.title) + '</span>'
             + '</div>'
-            + (p.points ? '<span style="font-size:11px;font-weight:800;color:#16a34a;background:#dcfce7;padding:2px 6px;border-radius:10px;flex-shrink:0;">' + h(p.points) + '</span>' : '')
+            + (p.impactLabel ? '<span style="font-size:10px;font-weight:800;color:#475569;background:#f1f5f9;padding:3px 7px;border-radius:10px;flex-shrink:0;">' + h(p.impactLabel) + '</span>' : '')
             + '</div>'
             + '<div style="font-size:12px;color:#475569;margin-bottom:8px;line-height:1.4;">' + h(p.detail) + '</div>'
-            + (p.why ? '<div style="background:#f8fafc;border-left:' + (isRtl ? 'none' : '3px solid #64748b') + ';border-right:' + (isRtl ? '3px solid #64748b' : 'none') + ';padding:8px 10px;border-radius:6px;font-size:11px;color:#334155;line-height:1.4;margin-bottom:10px;"><strong style="color:#0f172a;">💡 ' + _ct('coach.overview.why', 'لماذا؟') + '</strong> ' + h(p.why) + '</div>' : '')
-            + '<button style="width:100%;background:#dc2626;color:#fff;border:none;border-radius:6px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;transition:background 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;" onmouseover="this.style.background=\'#b91c1c\'" onmouseout="this.style.background=\'#dc2626\'" onclick="Editor.triggerSmartFix(\'' + h(p.fixAction || 'edit-personal') + '\', \'' + h(p.sectionKey) + '\', \'' + h(p.id) + '\')">'
-            + '⚡ ' + (p.actionLabel || _ct('coach.overview.smart_fix', 'إصلاح ذكي'))
+            + (p.why ? '<div style="background:#f8fafc;border-left:' + (isRtl ? 'none' : '3px solid #94a3b8') + ';border-right:' + (isRtl ? '3px solid #94a3b8' : 'none') + ';padding:8px 10px;border-radius:6px;font-size:11px;color:#334155;line-height:1.4;margin-bottom:10px;"><strong style="color:#0f172a;">💡 ' + _ct('coach.overview.why', 'لماذا؟') + '</strong> ' + h(p.why) + '</div>' : '')
+            + '<button style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:7px;padding:9px 12px;font-size:12px;font-weight:800;cursor:pointer;transition:background 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;" onmouseover="this.style.background=\'#1d4ed8\'" onmouseout="this.style.background=\'#2563eb\'" onclick="Editor.triggerSmartFix(\'' + h(p.fixAction || 'edit-personal') + '\', \'' + h(p.sectionKey) + '\', \'' + h(p.id) + '\')">'
+            + '✨ ' + (p.actionLabel || _ct('coach.overview.smart_fix', 'تحسين الآن'))
             + '</button>'
             + '</div>';
         }).join('') + '</div>';
@@ -2640,6 +2866,8 @@ const Editor = (function () {
       html += '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:16px;text-align:center;">'
         + '<div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:4px;">' + _ct('coach.ats.match_score', 'نسبة مطابقة إعلان الوظيفة (JD)') + '</div>'
         + '<div style="font-size:36px;font-weight:900;color:' + matchColor + ';">' + ats.score + '%</div>'
+        + '<div style="font-size:10px;color:#64748b;line-height:1.4;margin-top:5px;">' + h(ats.disclaimer || '') + '</div>'
+        + '<div style="font-size:10px;color:#475569;margin-top:7px;">' + _ct('coach.ats.readiness_also','جاهزية ملفك للقراءة الآلية:') + ' <strong>' + (ats.readinessScore || 0) + '%</strong></div>'
         + '</div>';
 
       if (ats.missingKeywords.length > 0) {
@@ -2647,7 +2875,7 @@ const Editor = (function () {
           + '<div style="font-size:11px;font-weight:700;color:#dc2626;margin-bottom:8px;">❌ ' + _ct('coach.ats.missing_jd_kw', 'كلمات مفتاحية مفقودة من إعلان الوظيفة:') + '</div>'
           + '<div style="display:flex;flex-wrap:wrap;gap:6px;">'
           + ats.missingKeywords.map(function(kw) {
-            return '<span style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:4px 8px;border-radius:14px;font-size:11px;font-weight:600;cursor:pointer;" onclick="Editor.addKeywordWithConfirm(\'' + h(kw) + '\', \'skill\')" title="' + _ct('coach.ats.click_add', 'اضغط للإضافة') + '">+ ' + h(kw) + '</span>';
+            return '<div id="' + keywordCardId(kw) + '" class="ats-keyword-card ats-keyword-missing"><span>' + h(kw) + '</span><button type="button" onclick="Editor.addKeywordWithConfirm(\'' + a(kw) + '\', \'skill\')">' + _ct('coach.ats.verify_add', 'أمتلكها — إضافة') + '</button></div>';
           }).join('') + '</div></div>';
       }
 
@@ -2660,6 +2888,8 @@ const Editor = (function () {
           }).join('') + '</div></div>';
       }
     } else {
+      const readinessColor = ats.score >= 80 ? '#16a34a' : ats.score >= 60 ? '#d97706' : '#dc2626';
+      html += '<div class="ats-readiness-score"><div><span>' + _ct('coach.ats.readiness_score','جاهزية ATS') + '</span><strong style="color:' + readinessColor + ';">' + ats.score + '%</strong></div><div class="ats-readiness-track"><i style="width:' + ats.score + '%;background:' + readinessColor + ';"></i></div></div>';
       html += '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:16px;">';
       (ats.readinessChecklist || []).forEach(function(item) {
         html += '<div style="font-size:12px;color:#334155;margin-bottom:6px;display:flex;align-items:center;gap:6px;">'
@@ -2670,12 +2900,12 @@ const Editor = (function () {
 
       const sugSkills = ats.commonSkills || [];
       if (sugSkills.length > 0) {
-        html += '<div style="font-size:11px;font-weight:700;color:#475569;margin-bottom:10px;">💡 ' + _ct('coach.ats.common_skills','المهارات الشائعة في مجالك (أضف ما تتقنه):') + '</div>'
+        html += '<div style="font-size:11px;font-weight:700;color:#475569;margin-bottom:10px;">💡 ' + _ct('coach.ats.common_skills','مهارات شائعة في مجالك — أكد فقط ما تستخدمه فعلاً:') + '</div>'
           + '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">';
         sugSkills.forEach(function(kw) {
-          html += '<div id="kw-card-' + h(kw) + '" style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid #e2e8f0;padding:8px 12px;border-radius:6px;">'
+          html += '<div id="' + keywordCardId(kw) + '" class="ats-keyword-card">'
             + '<span style="font-size:12px;font-weight:600;color:#0f172a;">' + h(kw) + '</span>'
-            + '<button style="background:none;border:none;color:#2563eb;font-size:11px;font-weight:700;cursor:pointer;padding:4px;" onclick="Editor.addKeywordWithConfirm(\'' + h(kw) + '\', \'skill\')">' + _ct('coach.ats.add','+ Add') + '</button>'
+            + '<button style="background:none;border:none;color:#2563eb;font-size:11px;font-weight:700;cursor:pointer;padding:4px;" onclick="Editor.addKeywordWithConfirm(\'' + h(kw) + '\', \'skill\')">' + _ct('coach.ats.add','أمتلكها — إضافة') + '</button>'
             + '</div>';
         });
         html += '</div>';
@@ -2696,34 +2926,27 @@ const Editor = (function () {
   }
 
   function addKeywordWithConfirm(keyword, type) {
-    const card = el('kw-card-' + keyword);
+    const card = el(keywordCardId(keyword));
     if (!card) return;
-    card.innerHTML = '<div style="font-size:11px;color:#334155;margin-bottom:6px;">' + _ct('coach.ats.do_you_have_exp','Do you have actual experience with {keyword}?').replace('{keyword}', h(keyword)) + '</div>'
-      + '<div style="display:flex;gap:6px;">'
-      + '<button style="flex:1;background:#16a34a;color:#fff;border:none;padding:6px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;" onclick="Editor.confirmAddKeyword(\'' + h(keyword) + '\', \'' + type + '\')">' + _ct('coach.ats.yes_add','Yes, add') + '</button>'
-      + '<button style="flex:1;background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;padding:6px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;" onclick="Editor.cancelAddKeyword(\'' + h(keyword) + '\')">' + _ct('coach.ats.no','No') + '</button>'
-      + '</div>';
+    card.innerHTML = '<div class="ats-keyword-confirm"><strong>' + h(keyword) + '</strong><span>'
+      + _ct('coach.ats.do_you_have_exp','هل تمتلك خبرة فعلية بهذه المهارة؟') + '</span><div class="ats-keyword-actions">'
+      + '<button class="confirm" onclick="Editor.confirmAddKeyword(\'' + a(keyword) + '\', \'skill\')">' + _ct('coach.ats.yes_add','نعم، أضفها') + '</button>'
+      + '<button onclick="Editor.cancelAddKeyword(\'' + a(keyword) + '\')">' + _ct('coach.ats.no','لا') + '</button></div></div>';
   }
 
   function confirmAddKeyword(keyword, type) {
-    const card = el('kw-card-' + keyword);
-    if (card) {
-      card.innerHTML = '<span style="font-size:12px;color:#16a34a;font-weight:600;">✓ ' + _ct('coach.ats.added','Added') + '</span>';
-      setTimeout(function() { if (card.parentNode) card.remove(); }, 2000);
-    }
+    const card = el(keywordCardId(keyword));
     pushUndo();
-    const category = _ct('coach.ats.skills_category','Core Skills');
+    const category = isAr() ? 'المهارات المؤكدة' : 'Verified Skills';
     career.skills = career.skills || {};
     career.skills[category] = Array.from(new Set((career.skills[category] || []).concat([keyword])));
     saveAndRender();
+    if (card) card.innerHTML = '<span class="ats-keyword-added">✓ ' + _ct('coach.ats.added','تمت الإضافة') + '</span>';
   }
 
   function cancelAddKeyword(keyword) {
-    const card = el('kw-card-' + keyword);
-    if (card) {
-      card.innerHTML = '<span style="font-size:12px;font-weight:600;color:#0f172a;opacity:0.4;">' + h(keyword) + '</span>';
-      setTimeout(function() { if (card.parentNode) card.remove(); }, 1500);
-    }
+    const card = el(keywordCardId(keyword));
+    if (card) card.remove();
   }
 
   async function triggerSmartFix(fixAction, sectionKey, issueId) {
@@ -2741,29 +2964,23 @@ const Editor = (function () {
     const input = el('coach-jd-input');
     if (!input) return;
     const jdText = input.value.trim();
-    if (jdText.length < 15) {
-      alert(_ct('coach.ats.jd_too_short', 'الرجاء إدخال نص إعلان وظيفة واضح (على الأقل 15 حرف) لتحليله.'));
+    if (jdText.length < 80) {
+      showNoticeModal({
+        title: isAr() ? 'أضف وصف وظيفة أوضح' : 'Add a clearer job description',
+        body: isAr() ? 'الصق وصف الوظيفة الكامل حتى تكون نسبة المطابقة مفيدة وليست رقمًا مضللاً.' : 'Paste the full job description so the match score is useful rather than misleading.'
+      });
       return;
     }
+    const keywords = extractJDKeywords(jdText);
+    const cvText = buildCvSearchText(career); // deliberately excludes meta.targetJD
+    const found = keywords.filter(keyword => cvText.includes(keyword));
+    const missing = keywords.filter(keyword => !cvText.includes(keyword));
     career.meta = career.meta || {};
     career.meta.targetJD = jdText;
-
-    // Simple keyword extraction for score logic
-    const words = jdText.toLowerCase().replace(/[^a-z0-9أ-ي\s]/g, ' ').split(/\s+/).filter(w => w.length > 3 && !['with','and','for','from','that','this','have','will','your','when','where','what','which','who','whom','whose','إلى','على','في','من','عن','مع','هذا','تلك','التي','الذي','كل'].includes(w));
-    const uniqueJDWords = Array.from(new Set(words));
-    
-    const allCvText = JSON.stringify(career).toLowerCase();
-    const found = [];
-    const missing = [];
-    uniqueJDWords.forEach(w => {
-      if (allCvText.includes(w)) found.push(w);
-      else missing.push(w);
-    });
-
-    career.meta.jdMatchScore = uniqueJDWords.length ? Math.round((found.length / uniqueJDWords.length) * 100) : 75;
-    career.meta.jdFoundKeywords = found.slice(0, 12);
-    career.meta.jdMissingKeywords = missing.slice(0, 12);
-
+    career.meta.jdMatchScore = keywords.length ? Math.round((found.length / keywords.length) * 100) : 0;
+    career.meta.jdFoundKeywords = found.slice(0, 14);
+    career.meta.jdMissingKeywords = missing.slice(0, 14);
+    career.meta.jdAnalyzedAt = new Date().toISOString();
     saveAndRender();
     switchCoachTab('ats');
   }
@@ -2788,6 +3005,8 @@ const Editor = (function () {
     addProjItem, duplicateProjItem, deleteProjItem,
     addSkillCat, deleteSkillCat, appendSkillToInput, addEduItem, duplicateEduItem, deleteEduItem,
     addLangItem, duplicateLangItem, deleteLangItem,
+    addCertificateItem, duplicateCertificateItem, deleteCertificateItem,
+    addAwardItem, duplicateAwardItem, deleteAwardItem,
     showExample,
     aiImprove, aiShorten, aiProfessional, aiTranslate, aiSuggestSkills, handleAIAction, applyCoachFix,
     undoAction, redoAction,
@@ -2796,7 +3015,8 @@ const Editor = (function () {
     exportPdf, exportJson, exportHtml, exportPng, exportDocx,
     switchCoachTab, triggerSmartFix, applyJDMatch, clearJDMatch,
     addKeywordWithConfirm, confirmAddKeyword, cancelAddKeyword,
-    showMobMenu, setMobileView
+    showVersionManagerModal, handleCreateVersion, handleSwitchVersion, handleDeleteVersion,
+    showMobMenu, setMobileView, toggleCoachPanel, exportBackup, dismissDataBanner, updateDataSafetyBanner
   };
 })();
 

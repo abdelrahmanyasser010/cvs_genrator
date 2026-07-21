@@ -67,6 +67,8 @@ const CareerNormalize = (function () {
       skills: {},
       education: [],
       languages: [],
+      certificates: [],
+      awards: [],
       meta: { locale: 'en', templateId: 'ai-recommended', selectedSummaryId: '', createdAt: now, updatedAt: now }
     };
   }
@@ -96,11 +98,28 @@ const CareerNormalize = (function () {
 
     merged.projects = (raw.projects || []).map(normalizeProject);
     merged.skills = normalizeSkills(raw.skills);
-    merged.education = raw.education || [];
+    merged.education = (raw.education || []).map(e => ({
+      degree: e.degree || e.qualification || '',
+      school: e.school || e.institution || '',
+      year: e.year || e.period || '',
+      url: e.url || e.certUrl || e.link || e.verificationUrl || ''
+    }));
     merged.languages = (raw.languages || []).map(normalizeLanguage);
+    merged.certificates = (raw.certificates || raw.certifications || []).map(c => ({
+      name: c.name || c.title || '',
+      issuer: c.issuer || c.organization || '',
+      year: c.year || c.date || '',
+      url: c.url || c.link || c.verificationUrl || ''
+    }));
+    merged.awards = (raw.awards || []).map(a => ({
+      name: a.name || a.title || '',
+      issuer: a.issuer || a.organization || '',
+      year: a.year || a.date || '',
+      description: a.description || a.desc || ''
+    }));
     merged.professionalSummary = raw.professionalSummary || '';
 
-    merged.meta.updatedAt = new Date().toISOString();
+    if (!merged.meta.updatedAt) merged.meta.updatedAt = new Date().toISOString();
     if (!merged.meta.createdAt) merged.meta.createdAt = merged.meta.updatedAt;
 
     return merged;

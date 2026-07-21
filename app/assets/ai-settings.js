@@ -1,145 +1,121 @@
 /**
- * AI Settings Modal
- * 
- * Shows owner-managed AI status.
- * Optional BYOK fields remain for local fallback/testing only.
+ * Production AI privacy settings.
+ * API keys are never collected in the browser.
  */
-
 const AISettings = (function () {
+  const CONSENT_KEY = 'cv_studio_ai_consent_v2';
+  const PREVIEW_KEY = 'cv_studio_ai_preview';
   const el = id => document.getElementById(id);
   const t = (key, fb) => (typeof I18n !== 'undefined' ? I18n.t(key, fb) : fb || key);
-  
+  const isAr = () => (document.documentElement.lang || 'en') === 'ar';
+
+  function consented() {
+    return localStorage.getItem(CONSENT_KEY) === 'accepted';
+  }
+
+  function shouldShowPreview() {
+    return localStorage.getItem(PREVIEW_KEY) === 'true';
+  }
+
+  function setPromptPreview(value) {
+    localStorage.setItem(PREVIEW_KEY, String(!!value));
+  }
+
+  function revokeConsent() {
+    localStorage.removeItem(CONSENT_KEY);
+  }
+
+  function ensureConsent() {
+    if (consented()) return Promise.resolve(true);
+    return new Promise(resolve => {
+      const existing = el('ai-consent-modal');
+      if (existing) existing.remove();
+      const modal = document.createElement('div');
+      modal.id = 'ai-consent-modal';
+      modal.className = 'modal-overlay ai-consent-overlay';
+      modal.style.display = 'flex';
+      modal.innerHTML = `
+        <div class="modal-box ai-consent-box" role="dialog" aria-modal="true" aria-labelledby="ai-consent-title">
+          <div class="modal-header">
+            <h3 id="ai-consent-title">${isAr() ? 'خصوصية المساعد الذكي' : 'AI assistant privacy'}</h3>
+          </div>
+          <div class="ai-consent-copy">
+            <p>${isAr()
+              ? 'عند استخدام التحسين بالذكاء الاصطناعي، نرسل فقط النص المطلوب تحسينه وسياقًا مهنيًا محدودًا مثل المجال والمستوى والمهارات.'
+              : 'When you use AI improvements, we send only the text being improved and limited professional context such as field, level, and skills.'}</p>
+            <ul>
+              <li>${isAr() ? 'لا نرسل الاسم أو البريد أو الهاتف أو العنوان أو الروابط.' : 'We do not send your name, email, phone, address, or links.'}</li>
+              <li>${isAr() ? 'لا نطلب منك مفتاح API ولا نخزنه في المتصفح.' : 'We never ask for or store your API key in the browser.'}</li>
+              <li>${isAr() ? 'راجع أي اقتراح قبل اعتماده؛ الذكاء الاصطناعي قد يخطئ.' : 'Review every suggestion before applying it; AI can make mistakes.'}</li>
+            </ul>
+            <label class="ai-consent-preview"><input type="checkbox" id="ai-consent-preview-check"> ${isAr() ? 'أظهر البيانات المرسلة قبل كل طلب' : 'Show the data sent before every request'}</label>
+            <a href="/app/privacy.html" target="_blank" rel="noopener">${isAr() ? 'اقرأ سياسة الخصوصية المختصرة' : 'Read the short privacy notice'}</a>
+          </div>
+          <div class="wizard-actions ai-consent-actions">
+            <button class="btn btn-ghost" data-action="decline">${isAr() ? 'ليس الآن' : 'Not now'}</button>
+            <button class="btn btn-primary" data-action="accept">${isAr() ? 'موافق واستخدم المساعد' : 'Agree and use AI'}</button>
+          </div>
+        </div>`;
+      document.body.appendChild(modal);
+      const finish = value => { modal.remove(); resolve(value); };
+      modal.addEventListener('click', event => {
+        if (event.target === modal || event.target?.dataset?.action === 'decline') finish(false);
+        if (event.target?.dataset?.action === 'accept') {
+          localStorage.setItem(CONSENT_KEY, 'accepted');
+          setPromptPreview(!!el('ai-consent-preview-check')?.checked);
+          finish(true);
+        }
+      });
+    });
+  }
+
   function openModal() {
     const existing = el('ai-settings-modal');
-    if (existing) {
-      existing.style.display = 'flex';
-      return;
-    }
-    
+    if (existing) existing.remove();
     const modal = document.createElement('div');
     modal.id = 'ai-settings-modal';
     modal.className = 'modal-overlay';
     modal.style.display = 'flex';
     modal.innerHTML = `
-      <div class="modal-box" style="max-width: 520px; padding: 24px">
-        <h2 style="margin:0 0 18px">🤖 ${t('editor.aiSettings', 'AI Settings')}</h2>
-        
-        <div style="margin-bottom: 20px; padding: 14px; background: #ecfdf5; border: 1px solid #bbf7d0; border-radius: 10px">
-          <div style="font-weight: 700; margin-bottom: 4px">${t('ai.managedTitle', 'Managed AI is enabled')}</div>
-          <p style="font-size: 13px; color: #166534; margin: 0">${t('ai.managedCopy', 'Users do not need API keys. CV Studio sends AI requests to the server, and the server uses the owner API key.')}</p>
+      <div class="modal-box ai-settings-production" role="dialog" aria-modal="true">
+        <div class="modal-header">
+          <h3>${isAr() ? 'إعدادات الخصوصية والذكاء الاصطناعي' : 'AI & privacy settings'}</h3>
+          <button class="modal-close" data-action="close">✕</button>
         </div>
-
-        <details style="margin-bottom: 20px">
-          <summary style="cursor:pointer; font-weight:700">${t('ai.advanced', 'Advanced local fallback')}</summary>
-          <div style="margin-top: 14px">
-          <label style="display: block; margin-bottom: 8px; font-weight: 600">${t('ai.provider', 'AI Provider')}</label>
-          <select id="ai-provider-select" class="wizard-input" style="width: 100%">
-            <option value="">None (Offline Only)</option>
-            <option value="gemini">Google Gemini (Free Tier)</option>
-            <option value="openrouter">OpenRouter (Multi-Model)</option>
-            <option value="openai">OpenAI (GPT)</option>
-            <option value="anthropic">Anthropic (Claude)</option>
-          </select>
-          </div>
-        
-          <div style="margin-bottom: 20px">
-          <label style="display: block; margin-bottom: 8px; font-weight: 600">${t('ai.apiKey', 'API Key')}</label>
-          <input id="ai-api-key" type="password" class="wizard-input" placeholder="${t('ai.apiKeyPh', 'Enter your API key')}" style="width: 100%">
-          <p style="font-size: 12px; color: #666; margin-top: 4px">${t('ai.localKey', 'Optional fallback for local testing only. Production uses the server key.')}</p>
-          </div>
-        </details>
-        
-        <div style="margin-bottom: 20px; padding: 12px; background: #f5f5f7; border-radius: 8px">
-          <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px">${t('ai.usageCost', 'Usage Cost')}</div>
-          <div id="ai-usage-cost" style="font-size: 24px; font-weight: 700; color: #111">$0.00</div>
-          <button id="ai-reset-cost" style="font-size: 12px; color: #666; background: none; border: none; cursor: pointer; text-decoration: underline">${t('ai.reset', 'Reset')}</button>
+        <div class="ai-managed-status">
+          <strong>${isAr() ? 'مفتاح الذكاء الاصطناعي محمي على الخادم' : 'AI key is protected on the server'}</strong>
+          <span>${isAr() ? 'لن يطلب منك CV Studio وضع مفتاح API داخل المتصفح.' : 'CV Studio never asks you to place an API key in the browser.'}</span>
         </div>
-        
-        <div style="margin-bottom: 20px">
-          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer">
-            <input type="checkbox" id="ai-prompt-preview">
-            <span>${t('ai.promptPreview', 'Show prompt preview before sending to AI')}</span>
-          </label>
+        <label class="ai-consent-preview"><input type="checkbox" id="ai-prompt-preview" ${shouldShowPreview() ? 'checked' : ''}> ${isAr() ? 'أظهر البيانات المرسلة قبل كل طلب' : 'Show the data sent before each request'}</label>
+        <div class="ai-settings-links">
+          <a href="/app/privacy.html" target="_blank" rel="noopener">${isAr() ? 'سياسة الخصوصية المختصرة' : 'Short privacy notice'}</a>
+          <button type="button" class="btn btn-ghost" data-action="revoke">${isAr() ? 'إلغاء موافقة الذكاء الاصطناعي' : 'Revoke AI consent'}</button>
         </div>
-        
-        <div class="wizard-actions" style="justify-content: flex-end; gap: 8px">
-          <button class="btn btn-ghost" onclick="AISettings.closeModal()">${t('cancel', 'Cancel')}</button>
-          <button class="btn btn-primary" onclick="AISettings.saveSettings()">${t('ed.modal.save_changes', 'Save')}</button>
+        <div class="wizard-actions" style="justify-content:flex-end">
+          <button class="btn btn-primary" data-action="save">${isAr() ? 'حفظ' : 'Save'}</button>
         </div>
-      </div>
-    `;
-    
+      </div>`;
     document.body.appendChild(modal);
-    
-    // Load saved settings
-    const savedProvider = localStorage.getItem('cv_studio_ai_provider') || '';
-    const savedKey = localStorage.getItem('cv_studio_ai_key') || '';
-    const savedPreview = localStorage.getItem('cv_studio_ai_preview') === 'true';
-    
-    el('ai-provider-select').value = savedProvider;
-    el('ai-api-key').value = savedKey;
-    el('ai-prompt-preview').checked = savedPreview;
-    
-    // Load usage cost
-    const savedCost = parseFloat(localStorage.getItem('cv_studio_ai_cost') || '0');
-    el('ai-usage-cost').textContent = `$${savedCost.toFixed(2)}`;
-    
-    // Event listeners
-    el('ai-reset-cost').addEventListener('click', () => {
-      localStorage.setItem('cv_studio_ai_cost', '0');
-      el('ai-usage-cost').textContent = '$0.00';
-    });
-    
-    // Close on outside click
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
+    modal.addEventListener('click', event => {
+      const action = event.target?.dataset?.action;
+      if (event.target === modal || action === 'close') modal.remove();
+      if (action === 'revoke') {
+        revokeConsent();
+        modal.remove();
+      }
+      if (action === 'save') {
+        setPromptPreview(!!el('ai-prompt-preview')?.checked);
+        modal.remove();
+      }
     });
   }
-  
-  function closeModal() {
-    const modal = el('ai-settings-modal');
-    if (modal) modal.style.display = 'none';
-  }
-  
-  function saveSettings() {
-    const provider = el('ai-provider-select').value;
-    const key = el('ai-api-key').value;
-    const preview = el('ai-prompt-preview').checked;
-    
-    localStorage.setItem('cv_studio_ai_provider', provider);
-    localStorage.setItem('cv_studio_ai_key', key);
-    localStorage.setItem('cv_studio_ai_preview', preview.toString());
-    
-    closeModal();
-    alert(t('ai.saved', 'AI settings saved!'));
-  }
-  
-  function getProvider() {
-    return localStorage.getItem('cv_studio_ai_provider') || '';
-  }
-  
-  function getApiKey() {
-    return localStorage.getItem('cv_studio_ai_key') || '';
-  }
-  
-  function shouldShowPreview() {
-    return localStorage.getItem('cv_studio_ai_preview') === 'true';
-  }
-  
-  function addCost(amount) {
-    const current = parseFloat(localStorage.getItem('cv_studio_ai_cost') || '0');
-    const newCost = current + amount;
-    localStorage.setItem('cv_studio_ai_cost', newCost.toString());
-    return newCost;
-  }
-  
+
   return {
     openModal,
-    closeModal,
-    saveSettings,
-    getProvider,
-    getApiKey,
+    ensureConsent,
+    consented,
+    revokeConsent,
     shouldShowPreview,
-    addCost
+    setPromptPreview
   };
 })();
