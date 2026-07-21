@@ -155,7 +155,8 @@ const LayoutEngine = (function () {
     const accent = career?.meta?.accentColor || '';
     const font = career?.meta?.fontFamily || '';
     const styleAttr = (accent || font) ? `style="${accent ? `--primary:${accent};--accent:${accent};` : ''}${font ? `font-family:'${font}',sans-serif !important;` : ''}"` : '';
-    return `<div class="cv-paper layout-${lid}" ${styleAttr}>${fn(career)}</div>`;
+    const customHtml = typeof CVSections.customSections === 'function' ? CVSections.customSections(career) : '';
+    return `<div class="cv-paper layout-${lid}" ${styleAttr}>${fn(career)}${customHtml}</div>`;
   }
 
   return { render, layouts: Object.keys(layouts) };

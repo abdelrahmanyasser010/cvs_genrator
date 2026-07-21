@@ -1,106 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CV Studio — Welcome</title>
+  <title>CV Studio — ابدأ سيرتك</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/app/assets/app.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/app/assets/app.css?v=20260721_final3">
+  <link rel="stylesheet" href="/app/assets/final-polish.css?v=20260721_final3">
 </head>
-<body>
-  <main class="wizard-wrap">
-    <div class="onboarding-card" style="max-width:540px;padding:32px;">
-      <h1 data-i18n="onboarding.title" style="font-size: 28px; margin-bottom: 8px; font-weight: 700; color: var(--text);">Let's build your resume</h1>
-      <p data-i18n="onboarding.subtitle" style="color: var(--muted); margin-bottom: 28px; font-size: 15px; line-height: 1.6;">
-        Choose how you'd like to get started
-      </p>
-      
-      <div style="display: flex; flex-direction: column; gap: 14px; text-align: left;">
-        
-        <!-- Path 1: Step by Step Wizard -->
-        <button class="btn onboarding-path-card" style="display:flex;align-items:flex-start;gap:14px;padding:16px;border:1.5px solid var(--primary,#2563eb);border-radius:12px;background:#fff;cursor:pointer;transition:all 0.2s;text-align:inherit;width:100%;" onclick="startNewCV()" onmouseover="this.style.boxShadow='0 4px 12px rgba(37,99,235,0.1)'" onmouseout="this.style.boxShadow='none'">
-          <span style="font-size: 24px;line-height:1;">✨</span>
-          <div>
-            <div style="font-size:16px;font-weight:700;color:var(--text,#0f172a);margin-bottom:4px;" data-i18n="onboarding.createNew">المعالج الذكي خطوة بخطوة (AI Step-by-Step)</div>
-            <div style="font-size:13px;color:#64748b;line-height:1.4;" data-i18n="onboarding.createDesc">مثالي لحديثي التخرج أو بناء سيرة ذاتية منظمة من الصفر بسهولة وبإرشاد ذكي</div>
-          </div>
+<body class="onboarding-body">
+  <main class="onboarding-shell">
+    <section class="onboarding-hero">
+      <div class="onboarding-brand"><span class="onboarding-brand-mark">CV</span><span>CV Studio</span></div>
+      <div class="onboarding-eyebrow">من ملف مهني إلى سيرة جاهزة للتقديم</div>
+      <h1>ابنِ سيرة واضحة، صادقة، ومناسبة لمسارك.</h1>
+      <p>رحلة مختصرة تجمع معلوماتك مرة واحدة، ثم تساعدك في صياغة النبذة والخبرات واختيار قالب احترافي دون اختراع مهارات أو إنجازات.</p>
+      <div class="onboarding-proof">
+        <div class="onboarding-proof-item"><strong>إرشاد حسب الوظيفة</strong><span>الأسئلة والاقتراحات تتغير حسب المجال والمستوى.</span></div>
+        <div class="onboarding-proof-item"><strong>تحكم كامل</strong><span>كل اقتراح يُعرض قبل اعتماده ويمكن تعديله أو رفضه.</span></div>
+        <div class="onboarding-proof-item"><strong>جاهز للطباعة</strong><span>معاينة A4 وقوالب منظمة للعربية والإنجليزية.</span></div>
+      </div>
+    </section>
+
+    <section class="onboarding-card-final" aria-labelledby="start-title">
+      <h2 id="start-title">كيف تريد أن تبدأ؟</h2>
+      <p>اختر المسار الأقرب لحالتك. يمكنك تعديل كل شيء لاحقًا داخل المحرر.</p>
+
+      <div class="onboarding-paths">
+        <button class="onboarding-path primary" onclick="startNewCV()">
+          <span class="onboarding-path-icon" aria-hidden="true">
+            <svg class="icon-svg lg" viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M9 11h6M9 15h6M9 7h3"/></svg>
+          </span>
+          <span class="onboarding-path-copy"><strong>إنشاء سيرة خطوة بخطوة</strong><span>الأفضل لأول سيرة أو لمن يريد ترتيب معلوماته بإرشاد واضح.</span></span>
+          <span class="onboarding-path-arrow">‹</span>
         </button>
 
-        <!-- Path 2: Senior / Expert Quick Start -->
-        <button class="btn onboarding-path-card" style="display:flex;align-items:flex-start;gap:14px;padding:16px;border:1.5px solid #0d9488;border-radius:12px;background:#f0fdf4;cursor:pointer;transition:all 0.2s;text-align:inherit;width:100%;" onclick="startSeniorCV()" onmouseover="this.style.boxShadow='0 4px 12px rgba(13,148,136,0.1)'" onmouseout="this.style.boxShadow='none'">
-          <span style="font-size: 24px;line-height:1;">👑</span>
-          <div>
-            <div style="font-size:16px;font-weight:700;color:#0f766e;margin-bottom:4px;" data-i18n="onboarding.seniorStart">مسار الخبراء والمحترفين (Senior Quick Start)</div>
-            <div style="font-size:13px;color:#134e4a;line-height:1.4;" data-i18n="onboarding.seniorDesc">تخطي الأسئلة الأساسية والدخول إلى لوحة التحرير مع فحص إرشادي لجاهزية ATS ومطابقة إعلان الوظيفة</div>
-          </div>
+        <button class="onboarding-path secondary" onclick="startSeniorCV()">
+          <span class="onboarding-path-icon" aria-hidden="true">
+            <svg class="icon-svg lg" viewBox="0 0 24 24"><path d="M4 19h16M7 16V8l5-4 5 4v8"/><path d="M10 16v-5h4v5"/></svg>
+          </span>
+          <span class="onboarding-path-copy"><strong>مسار سريع لصاحب خبرة</strong><span>حدد الوظيفة المستهدفة ثم ابدأ بإضافة خبراتك وصياغتها بسرعة.</span></span>
+          <span class="onboarding-path-arrow">‹</span>
         </button>
+      </div>
 
-        <!-- Path 3: Open Saved or Import JSON -->
-        <div style="border:1px solid #cbd5e1;border-radius:12px;padding:16px;background:#f8fafc;margin-top:4px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <span style="font-size:20px;">📂</span>
-              <span style="font-size:14px;font-weight:700;color:#334155;" data-i18n="onboarding.savedSection">إدارة السير السابقة واستيراد الملفات</span>
-            </div>
-          </div>
-          
-          <div id="saved-cv-container" style="margin-bottom:10px;"></div>
-
-          <div style="display:flex;gap:8px;">
-            <button class="btn onboarding-btn-secondary" style="flex:1;padding:10px;font-size:13px;font-weight:600;border:1px solid #94a3b8;border-radius:8px;background:#fff;cursor:pointer;" onclick="openEditor()">
-              📝 <span data-i18n="onboarding.openExisting">فتح آخر سيرة في المحرر</span>
-            </button>
-            <label class="btn onboarding-btn-secondary" style="flex:1;padding:10px;font-size:13px;font-weight:600;border:1px dashed #64748b;border-radius:8px;background:#fff;cursor:pointer;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;">
-              ⬆️ <span data-i18n="onboarding.importJson">استيراد ملف JSON</span>
-              <input type="file" id="import-json-input" accept=".json" style="display:none" onchange="handleImportJson(event)">
-            </label>
+      <div class="saved-cv-box-final">
+        <div class="saved-cv-box-head">
+          <strong>السير المحفوظة في هذا المتصفح</strong>
+          <div class="saved-cv-tools">
+            <button type="button" onclick="openEditor()"><svg class="icon-svg sm" viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg> فتح الأخيرة</button>
+            <label><svg class="icon-svg sm" viewBox="0 0 24 24"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 14v6h14v-6"/></svg> استيراد نسخة<input type="file" id="import-json-input" accept=".json" hidden onchange="handleImportJson(event)"></label>
           </div>
         </div>
-
+        <div id="saved-cv-container"></div>
       </div>
-    </div>
+      <div class="onboarding-note">لا تُضف أي مهارة أو رقم لم تؤكده أنت. نتائج ATS إرشادية وليست ضمان قبول.</div>
+    </section>
   </main>
 
-  <script src="/app/assets/safety.js"></script>
-  <script src="/engine/i18n.js"></script>
-  <script src="/engine/normalize-career.js"></script>
-  <script src="/engine/career-storage.js"></script>
+  <script src="/app/assets/safety.js?v=20260721_final3"></script>
+  <script src="/engine/i18n.js?v=20260721_final3"></script>
+  <script src="/engine/normalize-career.js?v=20260721_final3"></script>
+  <script src="/engine/career-storage.js?v=20260721_final3"></script>
   <script>
     function emptyCareer() {
       return typeof CareerNormalize !== 'undefined' ? CareerNormalize.createEmpty() : { personalInfo:{links:{}}, careerProfile:{field:'other',level:'junior'}, meta:{} };
     }
-
     function createFreshVersion(name) {
       const blank = emptyCareer();
-      if (typeof CareerStorage !== 'undefined' && CareerStorage.createBlankVersion) {
-        CareerStorage.createBlankVersion(name, blank);
-      } else {
-        localStorage.setItem('cv_studio_career', JSON.stringify(blank));
-      }
+      if (typeof CareerStorage !== 'undefined' && CareerStorage.createBlankVersion) CareerStorage.createBlankVersion(name, blank);
+      else localStorage.setItem('cv_studio_career', JSON.stringify(blank));
     }
-
     function startNewCV() {
       createFreshVersion('سيرة جديدة');
       sessionStorage.removeItem('cv_studio_quick_start');
       window.location.href = 'index.html';
     }
-
     function startSeniorCV() {
-      // Quick start skips beginner framing, but still asks for profession and target title.
       createFreshVersion('سيرة احترافية جديدة');
       sessionStorage.setItem('cv_studio_quick_start', 'senior');
       window.location.href = 'index.html';
     }
-
     function openEditor() { window.location.href = 'editor.html'; }
-
     function openVersion(id) {
       if (typeof CareerStorage !== 'undefined' && CareerStorage.switchVersion) CareerStorage.switchVersion(id);
       openEditor();
     }
-
     function handleImportJson(event) {
       const file = event.target.files?.[0];
       if (!file) return;
@@ -110,42 +97,27 @@
           if (typeof CareerStorage !== 'undefined' && CareerStorage.importJson) CareerStorage.importJson(e.target.result);
           else localStorage.setItem('cv_studio_career', JSON.stringify(JSON.parse(e.target.result)));
           window.location.href = 'editor.html';
-        } catch(err) {
-          alert('ملف JSON غير صالح. يرجى اختيار ملف سيرة ذاتية صحيح.');
-        }
+        } catch(err) { alert('الملف غير صالح. اختر نسخة احتياطية صادرة من CV Studio.'); }
       };
       reader.readAsText(file);
     }
-
-    function esc(value) {
-      return String(value || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-    }
-
+    function esc(value) { return String(value || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
     function checkSavedCV() {
       const container = document.getElementById('saved-cv-container');
       if (!container) return;
       try {
-        const versions = typeof CareerStorage !== 'undefined' && CareerStorage.listVersions
-          ? CareerStorage.listVersions()
-          : [];
+        const versions = typeof CareerStorage !== 'undefined' && CareerStorage.listVersions ? CareerStorage.listVersions() : [];
         if (!versions.length) {
-          container.innerHTML = `<div class="onboarding-empty-saved">لا توجد سيرة محفوظة حاليًا في هذا المتصفح</div>`;
+          container.innerHTML = '<div class="onboarding-empty-saved">لا توجد سيرة محفوظة بعد</div>';
           return;
         }
-        container.innerHTML = versions.slice(0, 5).map(version => {
+        container.innerHTML = versions.slice(0, 4).map(version => {
           const date = version.updatedAt ? new Date(version.updatedAt).toLocaleDateString('ar-EG') : '';
-          const detail = [version.field && version.field !== 'other' ? version.field : '', version.level || '', date].filter(Boolean).join(' · ');
-          return `<button type="button" class="saved-cv-row" onclick="openVersion('${esc(version.id)}')">
-            <span class="saved-cv-icon">📄</span>
-            <span class="saved-cv-copy"><strong>${esc(version.name || 'سيرة محفوظة')}</strong><small>${esc(detail || 'مسودة محفوظة')}</small></span>
-            <span class="saved-cv-open">فتح</span>
-          </button>`;
+          const detail = [version.level || '', date].filter(Boolean).join(' · ');
+          return `<button type="button" class="saved-cv-row" onclick="openVersion('${esc(version.id)}')"><span class="saved-cv-copy"><strong>${esc(version.name || 'سيرة محفوظة')}</strong><small>${esc(detail || 'مسودة محفوظة')}</small></span><span class="saved-cv-open">فتح</span></button>`;
         }).join('');
-      } catch(e) {
-        container.innerHTML = `<div class="onboarding-empty-saved">تعذر قراءة السير المحفوظة</div>`;
-      }
+      } catch(e) { container.innerHTML = '<div class="onboarding-empty-saved">تعذر قراءة السير المحفوظة</div>'; }
     }
-
     document.addEventListener('DOMContentLoaded', () => {
       checkSavedCV();
       if (typeof I18n !== 'undefined') I18n.init().then(() => I18n.translateDom());
@@ -153,5 +125,3 @@
   </script>
 </body>
 </html>
-
-

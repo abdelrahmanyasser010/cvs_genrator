@@ -7,23 +7,20 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/app/assets/app.css?v=20260720_prod1">
-  <link rel="stylesheet" href="/templates/shared/base.css?v=20260720_prod1">
-  <link rel="stylesheet" href="/templates/layouts/layouts.css?v=20260720_prod1">
+  <link rel="stylesheet" href="/app/assets/app.css?v=20260721_final3">
+  <link rel="stylesheet" href="/templates/shared/base.css?v=20260721_final3">
+  <link rel="stylesheet" href="/templates/layouts/layouts.css?v=20260721_final3">
+  <link rel="stylesheet" href="/app/assets/final-polish.css?v=20260721_final3">
 </head>
 <body class="editor-body">
 
   <!-- Top Bar (desktop) -->
   <header class="editor-topbar no-print">
     <div class="topbar-left" style="display:flex;align-items:center;gap:12px;">
-      <a href="landing.html" class="topbar-logo">CV Studio</a>
+      <a href="landing.html" class="topbar-logo"><span class="onboarding-brand-mark" style="width:30px;height:30px;border-radius:9px;font-size:10px;">CV</span><span>CV Studio</span></a>
       <div class="topbar-divider"></div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span class="topbar-filename" id="topbar-name" data-i18n="ed.myResume" style="cursor:pointer;" onclick="Editor.showVersionManagerModal()">My Resume</span>
-        <button class="topbar-btn" onclick="Editor.showVersionManagerModal()" title="إدارة النسخ والتخصيص لوظيفة أخرى" style="background:#f1f5f9;border:1px solid #cbd5e1;color:#334155;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;">
-          <span>📂</span> <span id="active-version-badge">النسخ والتخصيص</span> <span>▼</span>
-        </button>
-      </div>
+      <span class="topbar-filename" id="topbar-name" data-i18n="ed.myResume">My Resume</span>
+      <span id="active-version-badge" class="active-version-badge" hidden></span>
     </div>
     <div class="topbar-center">
       <div class="zoom-controls">
@@ -38,41 +35,35 @@
       </div>
     </div>
     <div class="topbar-right" style="display:flex;align-items:center;gap:8px;">
-      <button class="topbar-data-status" id="topbar-data-status" onclick="Editor.exportBackup()" title="البيانات محفوظة على هذا الجهاز فقط">هذا الجهاز فقط · نسخة احتياطية</button>
-      <div class="save-indicator" id="save-indicator">✓ تم الحفظ على هذا الجهاز</div>
+      <div class="save-indicator" id="save-indicator">تم الحفظ</div>
       <button class="topbar-btn coach-toggle-btn" id="coach-toggle-btn" onclick="Editor.toggleCoachPanel()">تحسين السيرة</button>
-      <button class="topbar-btn" onclick="Editor.undoAction()" title="تراجع (Ctrl+Z)" data-i18n="ed.topbar.undo">↩ تراجع</button>
-      <button class="topbar-btn" onclick="Editor.redoAction()" title="إعادة (Ctrl+Y)">↪ إعادة</button>
-      <button class="topbar-btn" onclick="Editor.showExportModal()" data-i18n="ed.topbar.download">⬇ Download</button>
-      <a href="landing.html" class="topbar-btn topbar-btn-ghost" data-i18n="ed.topbar.exit">Exit</a>
+      <button class="topbar-btn topbar-icon-btn" onclick="Editor.undoAction()" title="تراجع (Ctrl+Z)" aria-label="تراجع"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M9 7 4 12l5 5"/><path d="M5 12h8a6 6 0 0 1 6 6"/></svg></button>
+      <button class="topbar-btn topbar-icon-btn" onclick="Editor.redoAction()" title="إعادة (Ctrl+Y)" aria-label="إعادة"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m15 7 5 5-5 5"/><path d="M19 12h-8a6 6 0 0 0-6 6"/></svg></button>
+      <button class="topbar-btn" onclick="Editor.showExportModal()" data-i18n="ed.topbar.download"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m8 11 4 4 4-4"/><path d="M5 20h14"/></svg><span>تحميل</span></button>
+      <button class="topbar-btn topbar-icon-btn" onclick="Editor.showMobMenu(event)" title="المزيد" aria-label="المزيد"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
     </div>
   </header>
 
   <!-- Mobile: compact topbar -->
   <header class="mob-topbar no-print">
-    <a href="landing.html" class="mob-topbar-back" aria-label="رجوع">←</a>
-    <button class="mob-topbar-title" id="mob-topbar-name" data-i18n="ed.myResume" onclick="Editor.showVersionManagerModal()">My Resume</button>
+    <a href="landing.html" class="mob-topbar-back" aria-label="رجوع"><svg class="icon-svg" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></a>
+    <div class="mob-topbar-title" id="mob-topbar-name" data-i18n="ed.myResume">My Resume</div>
     <div class="mob-topbar-actions">
-      <button class="mob-download-btn" onclick="Editor.showExportModal()" aria-label="تحميل السيرة">⬇</button>
-      <button class="mob-topbar-menu" onclick="Editor.showMobMenu(event)" aria-label="المزيد">⋮</button>
+      <button class="mob-download-btn" onclick="Editor.showExportModal()" aria-label="تحميل السيرة"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m8 11 4 4 4-4"/><path d="M5 20h14"/></svg></button>
+      <button class="mob-topbar-menu" onclick="Editor.showMobMenu(event)" aria-label="المزيد"><svg class="icon-svg" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
     </div>
   </header>
 
   <!-- Mobile: Clickable ATS Score Card (under topbar) -->
-  <div class="mob-score-bar no-print" id="mob-score-bar" onclick="Editor.setMobileView('coach')" title="اضغط لفتح المساعد الذكي والتحسين">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:12px;font-weight:800;">
-      <span style="color:#1e293b;">💡 المساعد الذكي والتحسين ←</span>
-      <span id="mob-score-label" style="color:#2563eb;">تقييم السيرة: 0%</span>
-    </div>
-    <div style="height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden;width:100%;">
-      <div class="mob-score-fill" id="mob-score-fill" style="width:0%;height:100%;background:#3b82f6;border-radius:3px;transition:width 0.4s ease, background 0.4s ease;"></div>
-    </div>
-  </div>
-
-  <div class="local-data-banner no-print" id="local-data-banner" hidden>
-    <div><strong>محفوظ على هذا الجهاز فقط</strong><span id="local-data-copy">نزّل نسخة احتياطية حتى لا تفقد سيرك إذا مسحت بيانات المتصفح.</span></div>
-    <div class="local-data-actions"><button onclick="Editor.exportBackup()">تنزيل نسخة احتياطية</button><a href="/app/privacy.html" target="_blank" rel="noopener">الخصوصية</a><button class="local-data-dismiss" onclick="Editor.dismissDataBanner()" aria-label="إخفاء">×</button></div>
-  </div>
+  <button type="button" class="mob-score-bar no-print" id="mob-score-bar" onclick="Editor.setMobileView('coach')" title="افتح التحسينات">
+    <span class="mob-score-head">
+      <span class="mob-score-title"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4"/><path d="M8.5 14.5A6 6 0 1 1 15.5 14.5c-.9.6-1.5 1.4-1.5 2.5h-4c0-1.1-.6-1.9-1.5-2.5z"/></svg><span>تحسين السيرة</span></span>
+      <span id="mob-score-label">جودة السيرة: 0%</span>
+    </span>
+    <span style="display:block;height:6px;background:#e2e8f0;border-radius:999px;overflow:hidden;width:100%;">
+      <span class="mob-score-fill" id="mob-score-fill" style="display:block;width:0%;height:100%;background:#3b82f6;border-radius:999px;transition:width .4s ease,background .4s ease;"></span>
+    </span>
+  </button>
 
   <!-- Main Editor Layout -->
   <div class="editor-layout no-print">
@@ -80,10 +71,10 @@
     <!-- LEFT: Sections Panel -->
     <aside class="editor-panel-left" id="editor-left-panel">
       <div class="panel-search">
-        <input type="text" class="panel-search-input" id="sections-search" placeholder="🔍 Search sections...">
+        <input type="text" class="panel-search-input" id="sections-search" placeholder="ابحث داخل أقسام السيرة">
       </div>
       <div class="sections-list-title" data-i18n="ed.sections_title" style="padding: 12px 12px 6px; font-size: 13px; font-weight: 800; color: var(--gray-500); text-transform: uppercase;">
-        محتوى السيرة (CV Content)
+        محتوى السيرة
       </div>
       <div class="sections-list" id="sections-list">
         <!-- Injected by editor.js -->
@@ -94,12 +85,12 @@
     <!-- CENTER: Resume Preview -->
     <main class="editor-canvas" id="editor-canvas">
       <div class="mob-preview-controls no-print" id="mob-preview-controls" style="display:none;background:#fff;border-bottom:1px solid #e2e8f0;padding:8px 12px;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.05);width:100%;">
-        <div style="font-size:12px;font-weight:700;color:#334155;">🔍 تكبير:</div>
+        <div style="font-size:12px;font-weight:700;color:#334155;">حجم المعاينة</div>
         <div style="display:flex;gap:6px;">
           <button onclick="Editor.handleZoomSelect('60')" style="padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;background:#f8fafc;font-size:11px;font-weight:700;">60%</button>
           <button onclick="Editor.handleZoomSelect('80')" style="padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;background:#f8fafc;font-size:11px;font-weight:700;">80%</button>
           <button onclick="Editor.handleZoomSelect('100')" style="padding:4px 8px;border:1px solid #cbd5e1;border-radius:4px;background:#f8fafc;font-size:11px;font-weight:700;">100%</button>
-          <button onclick="Editor.handleZoomSelect('fit-width')" style="padding:4px 8px;border:1px solid #3b82f6;border-radius:4px;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:700;">↔ احتواء</button>
+          <button onclick="Editor.handleZoomSelect('fit-width')" style="padding:4px 8px;border:1px solid #3b82f6;border-radius:4px;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:700;">احتواء</button>
         </div>
       </div>
       <div class="a4-wrapper" id="a4-wrapper">
@@ -114,9 +105,9 @@
 
       <!-- Coach Tab Navigation -->
       <div class="coach-tabs no-print">
-        <button class="coach-tab active" id="coach-tab-overview" onclick="Editor.switchCoachTab('overview')" data-i18n="coach.tabs.overview">📋 نظرة عامة</button>
-        <button class="coach-tab" id="coach-tab-mentor" onclick="Editor.switchCoachTab('mentor')" data-i18n="coach.tabs.mentor">💡 المساعد الذكي</button>
-        <button class="coach-tab" id="coach-tab-ats" onclick="Editor.switchCoachTab('ats')" data-i18n="coach.tabs.ats">🔍 فحص ATS</button>
+        <button class="coach-tab active" id="coach-tab-overview" onclick="Editor.switchCoachTab('overview')" data-i18n="coach.tabs.overview">نظرة عامة</button>
+        <button class="coach-tab" id="coach-tab-mentor" onclick="Editor.switchCoachTab('mentor')" data-i18n="coach.tabs.mentor">المساعد</button>
+        <button class="coach-tab" id="coach-tab-ats" onclick="Editor.switchCoachTab('ats')" data-i18n="coach.tabs.ats">فحص ATS</button>
       </div>
 
       <!-- Tab: Overview -->
@@ -171,7 +162,7 @@
   <div class="modal-overlay" id="style-drawer-modal" style="display:none;" onclick="if(event.target === this) this.style.display='none'">
     <div class="modal-box" style="max-width: 520px; text-align: right;">
       <div class="modal-header">
-        <h3>🎨 تخصيص المظهر والتنسيق</h3>
+        <h3>تخصيص المظهر والتنسيق</h3>
         <button class="modal-close" onclick="document.getElementById('style-drawer-modal').style.display='none'">✕</button>
       </div>
       <div id="style-drawer-content" style="padding: 4px 0;"></div>
@@ -213,13 +204,13 @@
   <!-- Mobile Bottom Navigation (Content / Preview / Improve) -->
   <nav class="mobile-bottom-bar no-print" id="mob-bottom-nav" aria-label="التنقل الرئيسي">
     <button type="button" class="mob-bar-btn active" id="mob-btn-edit" onclick="Editor.setMobileView('edit')">
-      <span class="mob-btn-icon">✏️</span><span class="mob-btn-label">المحتوى</span>
+      <span class="mob-btn-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m13 7 4 4"/></svg></span><span class="mob-btn-label">المحتوى</span>
     </button>
     <button type="button" class="mob-bar-btn" id="mob-btn-preview" onclick="Editor.setMobileView('preview')">
-      <span class="mob-btn-icon">👁</span><span class="mob-btn-label">المعاينة</span>
+      <span class="mob-btn-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.5"/></svg></span><span class="mob-btn-label">المعاينة</span>
     </button>
     <button type="button" class="mob-bar-btn" id="mob-btn-coach" onclick="Editor.setMobileView('coach')">
-      <span class="mob-btn-icon">✨</span><span class="mob-btn-label">التحسين</span>
+      <span class="mob-btn-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4"/><path d="M8.5 14.5A6 6 0 1 1 15.5 14.5c-.9.6-1.5 1.4-1.5 2.5h-4c0-1.1-.6-1.9-1.5-2.5z"/></svg></span><span class="mob-btn-label">التحسين</span>
     </button>
   </nav>
 
@@ -227,23 +218,23 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://unpkg.com/html-docx-js@0.3.1/dist/html-docx.js"></script>
-  <script src="/app/assets/safety.js?v=20260720_prod1"></script>
-  <script src="/app/assets/telemetry.js?v=20260720_prod1"></script>
-  <script src="/engine/i18n.js?v=20260720_prod1"></script>
-  <script src="/engine/normalize-career.js?v=20260720_prod1"></script>
-  <script src="/engine/career-storage.js?v=20260720_prod1"></script>
-  <script src="/engine/content-picker.js?v=20260720_prod1"></script>
-  <script src="/engine/template-selector.js?v=20260720_prod1"></script>
-  <script src="/engine/cv-sections.js?v=20260720_prod1"></script>
-  <script src="/engine/layout-engine.js?v=20260720_prod1"></script>
-  <script src="/engine/ats-scorer.js?v=20260720_prod1"></script>
-  <script src="/engine/renderers/cv.js?v=20260720_prod1"></script>
-  <script src="/engine/ai/offline-helpers.js?v=20260720_prod1"></script>
-  <script src="/coach/content-improver.js?v=20260720_prod1"></script>
-  <script src="/coach/suggestions.js?v=20260720_prod1"></script>
-  <script src="/app/assets/ai-settings.js?v=20260720_prod1"></script>
-  <script src="/app/assets/ai-client.js?v=20260720_prod1"></script>
-  <script src="/coach/ai-coach.js?v=20260720_prod1"></script>
-  <script src="/app/assets/editor.js?v=20260720_prod1"></script>
+  <script src="/app/assets/safety.js?v=20260721_final3"></script>
+  <script src="/app/assets/telemetry.js?v=20260721_final3"></script>
+  <script src="/engine/i18n.js?v=20260721_final3"></script>
+  <script src="/engine/normalize-career.js?v=20260721_final3"></script>
+  <script src="/engine/career-storage.js?v=20260721_final3"></script>
+  <script src="/engine/content-picker.js?v=20260721_final3"></script>
+  <script src="/engine/template-selector.js?v=20260721_final3"></script>
+  <script src="/engine/cv-sections.js?v=20260721_final3"></script>
+  <script src="/engine/layout-engine.js?v=20260721_final3"></script>
+  <script src="/engine/ats-scorer.js?v=20260721_final3"></script>
+  <script src="/engine/renderers/cv.js?v=20260721_final3"></script>
+  <script src="/engine/ai/offline-helpers.js?v=20260721_final3"></script>
+  <script src="/coach/content-improver.js?v=20260721_final3"></script>
+  <script src="/coach/suggestions.js?v=20260721_final3"></script>
+  <script src="/app/assets/ai-settings.js?v=20260721_final3"></script>
+  <script src="/app/assets/ai-client.js?v=20260721_final3"></script>
+  <script src="/coach/ai-coach.js?v=20260721_final3"></script>
+  <script src="/app/assets/editor.js?v=20260721_final3"></script>
 </body>
 </html>

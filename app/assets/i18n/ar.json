@@ -180,7 +180,8 @@
     "vibrant": "نابض بالحياة",
     "canvaTeal": "كانفا تركواز",
     "canvaNavy": "كانفا كحلي",
-    "canvaSoft": "كانفا ناعم"
+    "canvaSoft": "كانفا ناعم",
+    "recommended": "موصى به"
   },
   "aiButtons": {
     "improve": "حسّن",
@@ -333,9 +334,9 @@
       "references": "المراجع"
     },
     "ai_pills": {
-      "improve": "✨ تحسين واحترافية",
+      "improve": "تحسين واحترافية",
       "translate": "🌐 ترجمة (En/Ar)",
-      "suggest_skills": "💡 اقتراح مهارات"
+      "suggest_skills": "اقتراح مهارات"
     },
     "empty_edit": "اضغط على أي حقل للتعديل.",
     "form": {
@@ -348,7 +349,7 @@
       "github": "جيت هاب / الأعمال",
       "summary": "النبذة المهنية",
       "summary_hint": "اكتب 2–3 جمل عن خبراتك وأهدافك.",
-      "generate_ai": "✨ إنشاء بالذكاء الاصطناعي",
+      "generate_ai": "إنشاء بالذكاء الاصطناعي",
       "company": "الشركة",
       "role": "الدور",
       "period": "الفترة",
@@ -406,13 +407,13 @@
       "assistant": "المساعد الذكي",
       "suggestions": "اقتراحات الذكاء الاصطناعي",
       "empty": "سيرتك الذاتية تبدو رائعة! لا توجد اقتراحات حالياً.",
-      "gen_summary": "✨ إنشاء نبذة",
+      "gen_summary": "إنشاء نبذة",
       "improve_summary": "📝 تحسين النبذة",
       "shorten_summary": "✂ اختصار النبذة",
       "translate_summary": "🌐 ترجمة النبذة",
-      "sug_skills": "💡 اقتراح مهارات",
-      "improve_experience": "🎯 تحسين الخبرات",
-      "chk_strength": "📊 فحص القوة"
+      "sug_skills": "اقتراح مهارات",
+      "improve_experience": "تحسين الخبرات",
+      "chk_strength": "فحص القوة"
     },
     "gallery": {
       "title": "معرض القوالب",
@@ -476,14 +477,14 @@
       "export_anyway": "توجد مشاكل مهمة. هل تريد التصدير رغم ذلك؟",
       "pre_export": "مراجعة قبل التصدير"
     },
-    "search": "🔍 ابحث في الأقسام..."
+    "search": "ابحث في الأقسام..."
   },
   "coach": {
     "loading": "جاري التحليل...",
     "tabs": {
       "overview": "📋 نظرة عامة",
-      "mentor": "💡 المساعد الذكي",
-      "ats": "🔍 فحص ATS"
+      "mentor": "المساعد الذكي",
+      "ats": "فحص ATS"
     },
     "overview": {
       "score": "قوة السيرة الذاتية",
@@ -504,10 +505,10 @@
     "mentor": {
       "next_steps": "خطوتك التالية:",
       "quick_actions": "إجراءات سريعة",
-      "write_summary": "⭐ أنشئ نبذة مهنية",
-      "improve_experience": "🔥 طوّر نقاط الخبرة",
-      "tailor_job": "🎯 خصص لوظيفة معينة",
-      "suggest_skills": "💡 اقترح مهارات",
+      "write_summary": "أنشئ نبذة مهنية",
+      "improve_experience": "طوّر نقاط الخبرة",
+      "tailor_job": "خصص لوظيفة معينة",
+      "suggest_skills": "اقترح مهارات",
       "roles": {
         "fresh_graduate": "حديث التخرج",
         "experienced": "ذو خبرة"

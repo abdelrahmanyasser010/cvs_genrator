@@ -69,6 +69,7 @@ const CareerNormalize = (function () {
       languages: [],
       certificates: [],
       awards: [],
+      customSections: [],
       meta: { locale: 'en', templateId: 'ai-recommended', selectedSummaryId: '', createdAt: now, updatedAt: now }
     };
   }
@@ -116,6 +117,13 @@ const CareerNormalize = (function () {
       issuer: a.issuer || a.organization || '',
       year: a.year || a.date || '',
       description: a.description || a.desc || ''
+    }));
+    merged.customSections = (raw.customSections || []).map((section, index) => ({
+      id: String(section.id || `custom_${Date.now()}_${index}`),
+      title: String(section.title || ''),
+      type: ['bullets', 'paragraph', 'tags'].includes(section.type) ? section.type : 'bullets',
+      content: String(section.content || ''),
+      visible: section.visible !== false
     }));
     merged.professionalSummary = raw.professionalSummary || '';
 

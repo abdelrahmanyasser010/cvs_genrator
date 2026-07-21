@@ -134,7 +134,8 @@
     "showExample": "Show Example"
   },
   "layouts": {
-    "ai-recommended": "AI Recommended",
+    "ai-recommended": "Recommended",
+    "recommended": "Recommended",
     "classic": "Classic",
     "sidebar": "Sidebar",
     "twocol": "Two Columns",
@@ -162,7 +163,8 @@
     "statusPoor": "Missing"
   },
   "templates": {
-    "ai-recommended": "AI Recommended",
+    "ai-recommended": "Recommended",
+    "recommended": "Recommended",
     "classic": "Classic",
     "ats": "ATS Friendly",
     "modern": "Modern",
@@ -246,7 +248,7 @@
     "featTitle": "Features",
     "featAiWrite": "⚡ AI Writing Assistant",
     "featAiWriteDesc": "Our AI helps you craft the perfect summary and professional bullets tailored to your industry.",
-    "featProTmpl": "🎨 Professional Templates",
+    "featProTmpl": "Professional Templates",
     "featProTmplDesc": "Choose clean, readable layouts designed to reduce common ATS parsing risks.",
     "featPdfExport": "📄 PDF Export",
     "featPdfExportDesc": "Download your pixel-perfect resume in PDF format instantly.",
@@ -333,9 +335,9 @@
       "references": "References"
     },
     "ai_pills": {
-      "improve": "✨ Improve & Professionalize",
+      "improve": "Improve & Professionalize",
       "translate": "🌐 Translate (En/Ar)",
-      "suggest_skills": "💡 Suggest Skills"
+      "suggest_skills": "Suggest Skills"
     },
     "empty_edit": "Click a field to edit this section.",
     "form": {
@@ -348,7 +350,7 @@
       "github": "GitHub / Portfolio",
       "summary": "Professional Summary",
       "summary_hint": "Write 2–3 sentences about your experience and goals. Be specific.",
-      "generate_ai": "✨ Generate with AI",
+      "generate_ai": "Generate with AI",
       "company": "Company",
       "role": "Role",
       "period": "Period",
@@ -406,13 +408,13 @@
       "assistant": "AI Assistant",
       "suggestions": "AI Suggestions",
       "empty": "Your resume looks great! No suggestions right now.",
-      "gen_summary": "✨ Generate Summary",
+      "gen_summary": "Generate Summary",
       "improve_summary": "📝 Improve Summary",
       "shorten_summary": "✂ Shorten Summary",
       "translate_summary": "🌐 Translate Summary",
-      "sug_skills": "💡 Suggest Skills",
-      "improve_experience": "🎯 Improve Experience",
-      "chk_strength": "📊 Check Strength"
+      "sug_skills": "Suggest Skills",
+      "improve_experience": "Improve Experience",
+      "chk_strength": "Check Strength"
     },
     "gallery": {
       "title": "Template Gallery",
@@ -476,14 +478,14 @@
       "export_anyway": "There are important issues. Export anyway?",
       "pre_export": "AI Pre-export Review"
     },
-    "search": "🔍 Search sections..."
+    "search": "Search sections..."
   },
   "coach": {
     "loading": "Analyzing...",
     "tabs": {
       "overview": "📋 Overview",
-      "mentor": "💡 AI Advisor",
-      "ats": "🔍 ATS Check"
+      "mentor": "AI Advisor",
+      "ats": "ATS Check"
     },
     "overview": {
       "score": "Resume Score",
@@ -504,10 +506,10 @@
     "mentor": {
       "next_steps": "Next Steps:",
       "quick_actions": "Quick Actions",
-      "write_summary": "⭐ Write Summary",
-      "improve_experience": "🔥 Improve Experience",
-      "tailor_job": "🎯 Tailor to Job",
-      "suggest_skills": "💡 Suggest Skills",
+      "write_summary": "Write Summary",
+      "improve_experience": "Improve Experience",
+      "tailor_job": "Tailor to Job",
+      "suggest_skills": "Suggest Skills",
       "roles": {
         "fresh_graduate": "Fresh Graduate",
         "experienced": "Experienced"

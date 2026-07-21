@@ -164,24 +164,10 @@ const Editor = (function () {
   }
 
   function updateDataSafetyBanner(force = false) {
-    if (typeof CareerStorage === 'undefined' || !CareerStorage.getSafetyStatus) return;
-    const status = CareerStorage.getSafetyStatus();
-    const banner = el('local-data-banner');
     const topStatus = el('topbar-data-status');
-    const dismissed = localStorage.getItem(DATA_BANNER_KEY) === 'true';
-    if (topStatus) {
-      topStatus.textContent = status.needsBackup
-        ? (isAr() ? 'هذا الجهاز فقط · نزّل نسخة' : 'This device only · Back up')
-        : (isAr() ? 'هذا الجهاز فقط · تم النسخ' : 'This device only · Backed up');
-      topStatus.classList.toggle('needs-backup', status.needsBackup);
-    }
-    if (!banner) return;
-    banner.hidden = !(force || (status.needsBackup && !dismissed));
-    const copy = el('local-data-copy');
-    if (copy && status.lastBackupAt) {
-      const date = new Date(status.lastBackupAt).toLocaleDateString(isAr() ? 'ar-EG' : 'en-US');
-      copy.textContent = isAr() ? `آخر نسخة احتياطية: ${date}` : `Last backup: ${date}`;
-    }
+    if (topStatus) topStatus.style.display = 'none';
+    const banner = el('local-data-banner');
+    if (banner) banner.hidden = true;
   }
 
   function dismissDataBanner() {
@@ -297,7 +283,8 @@ const Editor = (function () {
     const badge = el('active-version-badge');
     if (badge) {
       const activeId = typeof CareerStorage !== 'undefined' && CareerStorage.getActiveVersionId ? CareerStorage.getActiveVersionId() : 'default';
-      badge.textContent = activeId === 'default' ? 'النسخة الرئيسية' : (career.meta?.versionName ? (career.meta.versionName.slice(0, 15) + '...') : 'نسخة مخصصة');
+      badge.hidden = activeId === 'default';
+      badge.textContent = activeId === 'default' ? '' : (career.meta?.versionName || (isAr() ? 'نسخة مخصصة' : 'Tailored copy'));
     }
   }
 
@@ -441,38 +428,119 @@ const Editor = (function () {
   // ─────────────────────────────────────────────────
   // SECTIONS LIST
   // ─────────────────────────────────────────────────
+  const SECTION_ICONS = {
+    personalInfo: '<svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>',
+    summary: '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+    experience: '<svg class="icon-svg" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5h8v2M3 12h18M10 12v2h4v-2"/></svg>',
+    projects: '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="m4 7 8 4 8-4M12 11v10"/></svg>',
+    skills: '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="5"/></svg>',
+    education: '<svg class="icon-svg" viewBox="0 0 24 24"><path d="m3 10 9-5 9 5-9 5z"/><path d="M7 12v5c3 2 7 2 10 0v-5M21 10v6"/></svg>',
+    languages: '<svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',
+    certificates: '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M6 3h12v13H6z"/><path d="M9 7h6M9 10h6M9 13h3M9 16v5l3-2 3 2v-5"/></svg>',
+    awards: '<svg class="icon-svg" viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="m9 13-2 8 5-3 5 3-2-8"/></svg>'
+  };
+
   const SECTION_DEFS = [
-    { key: 'personalInfo', icon: '👤', labelKey: 'ed.sections.personalInfo', defaultLabel: 'Personal Information', group: 'basics' },
-    { key: 'summary', icon: '📝', labelKey: 'ed.sections.summary', defaultLabel: 'Professional Summary', group: 'basics' },
-    { key: 'experience', icon: '💼', labelKey: 'ed.sections.experience', defaultLabel: 'Work Experience', group: 'basics' },
-    { key: 'projects', icon: '🚀', labelKey: 'ed.sections.projects', defaultLabel: 'Projects', group: 'basics' },
-    { key: 'skills', icon: '⚡', labelKey: 'ed.sections.skills', defaultLabel: 'Skills', group: 'basics' },
-    { key: 'education', icon: '🎓', labelKey: 'ed.sections.education', defaultLabel: 'Education', group: 'extras' },
-    { key: 'languages', icon: '🌐', labelKey: 'ed.sections.languages', defaultLabel: 'Languages', group: 'extras' },
-    { key: 'certificates', icon: '🏆', labelKey: 'ed.sections.certificates', defaultLabel: 'Certifications', group: 'extras' },
-    { key: 'awards', icon: '⭐', labelKey: 'ed.sections.awards', defaultLabel: 'Awards', group: 'extras' }
+    { key: 'personalInfo', icon: SECTION_ICONS.personalInfo, labelKey: 'ed.sections.personalInfo', defaultLabel: 'Personal Information', group: 'basics' },
+    { key: 'summary', icon: SECTION_ICONS.summary, labelKey: 'ed.sections.summary', defaultLabel: 'Professional Summary', group: 'basics' },
+    { key: 'experience', icon: SECTION_ICONS.experience, labelKey: 'ed.sections.experience', defaultLabel: 'Work Experience', group: 'basics' },
+    { key: 'projects', icon: SECTION_ICONS.projects, labelKey: 'ed.sections.projects', defaultLabel: 'Projects', group: 'basics' },
+    { key: 'skills', icon: SECTION_ICONS.skills, labelKey: 'ed.sections.skills', defaultLabel: 'Skills', group: 'basics' },
+    { key: 'education', icon: SECTION_ICONS.education, labelKey: 'ed.sections.education', defaultLabel: 'Education', group: 'extras' },
+    { key: 'languages', icon: SECTION_ICONS.languages, labelKey: 'ed.sections.languages', defaultLabel: 'Languages', group: 'extras' },
+    { key: 'certificates', icon: SECTION_ICONS.certificates, labelKey: 'ed.sections.certificates', defaultLabel: 'Certifications', group: 'extras' },
+    { key: 'awards', icon: SECTION_ICONS.awards, labelKey: 'ed.sections.awards', defaultLabel: 'Awards', group: 'extras' }
   ];
 
+  function getSectionDefs() {
+    const customIcon = '<svg class="icon-svg" viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>';
+    const customs = (career?.customSections || []).map(section => ({
+      key: `custom:${section.id}`,
+      icon: customIcon,
+      labelKey: '',
+      defaultLabel: section.title || (isAr() ? 'قسم مخصص' : 'Custom section'),
+      group: 'extras',
+      custom: true
+    }));
+    return SECTION_DEFS.concat(customs);
+  }
+
+  function getCustomSection(key) {
+    if (!String(key || '').startsWith('custom:')) return null;
+    const id = String(key).slice(7);
+    return (career.customSections || []).find(section => String(section.id) === id) || null;
+  }
+
+  function wordCount(text) {
+    return String(text || '').trim().split(/\s+/).filter(Boolean).length;
+  }
+
   function getSectionStatus(key) {
+    const custom = getCustomSection(key);
+    if (custom) {
+      const lines = String(custom.content || '').split(/\n+/).filter(line => line.trim());
+      return custom.title && lines.length ? 'done' : 'warn';
+    }
     const issue = getSectionIssue(key);
     if (issue?.severity === 'high') return 'missing';
     if (issue?.severity === 'medium') return 'warn';
     if (issue?.severity === 'low') return 'tip';
     switch (key) {
-      case 'personalInfo': return career.personalInfo?.name && career.personalInfo?.email ? 'done' : 'warn';
-      case 'summary': return career.professionalSummary?.trim() ? 'done' : 'missing';
-      case 'experience': return (career.experience || []).length > 0 ? 'done' : 'missing';
-      case 'projects': return (career.projects || []).length > 0 ? 'done' : 'warn';
-      case 'skills': return Object.keys(career.skills || {}).length > 0 ? 'done' : 'warn';
-      case 'education': return (career.education || []).length > 0 ? 'done' : 'warn';
-      case 'languages': return (career.languages || []).length > 0 ? 'done' : 'empty';
-      case 'certificates': return (career.certificates || []).length > 0 ? 'done' : 'empty';
-      case 'awards': return (career.awards || []).length > 0 ? 'done' : 'empty';
+      case 'personalInfo': {
+        const p = career.personalInfo || {};
+        if (p.name && p.email && p.phone && (p.title || career.careerProfile?.title)) return 'done';
+        if (p.name || p.email || p.phone || p.title) return 'warn';
+        return 'missing';
+      }
+      case 'summary': {
+        const wc = wordCount(career.professionalSummary);
+        if (wc >= 35 && wc <= 95) return 'done';
+        if (wc > 0) return 'warn';
+        return 'missing';
+      }
+      case 'experience': {
+        const exps = (career.experience || []).filter(entry => entry.role || entry.company || entry.period || entry.rawDescription || (entry.bullets || []).length);
+        if (!exps.length) return 'missing';
+        const valid = exps.every(entry => entry.role && entry.company && (entry.period || career.careerProfile?.level === 'fresh') && ((entry.bullets || []).filter(Boolean).length >= 2 || wordCount(entry.rawDescription) >= 25));
+        return valid ? 'done' : 'warn';
+      }
+      case 'projects': {
+        const projects = (career.projects || []).filter(item => item.name || item.desc || item.tech || (item.bullets || []).length);
+        if (!projects.length) return 'empty';
+        return projects.every(item => item.name && (wordCount(item.desc) >= 8 || (item.bullets || []).filter(Boolean).length >= 2)) ? 'done' : 'warn';
+      }
+      case 'skills': {
+        const count = Object.values(career.skills || {}).flat().filter(Boolean).length;
+        if (count >= 5) return 'done';
+        if (count > 0) return 'warn';
+        return 'missing';
+      }
+      case 'education': {
+        const edus = (career.education || []).filter(item => item.degree || item.school || item.institution || item.year || item.period);
+        if (!edus.length) return career.careerProfile?.level === 'fresh' ? 'missing' : 'warn';
+        return edus.every(item => item.degree && (item.school || item.institution) && (item.year || item.period)) ? 'done' : 'warn';
+      }
+      case 'languages': {
+        const langs = (career.languages || []).filter(item => typeof item === 'string' ? item.trim() : (item.lang || item.language));
+        if (!langs.length) return 'empty';
+        return langs.every(item => typeof item === 'string' || item.level) ? 'done' : 'warn';
+      }
+      case 'certificates': {
+        const certs = (career.certificates || []).filter(item => item.name || item.title || item.issuer || item.year);
+        if (!certs.length) return 'empty';
+        return certs.every(item => item.name && (item.issuer || item.year)) ? 'done' : 'warn';
+      }
+      case 'awards': {
+        const awards = (career.awards || []).filter(item => item.name || item.title || item.issuer || item.year || item.description);
+        if (!awards.length) return 'empty';
+        return awards.every(item => item.name && (item.issuer || item.year || item.description)) ? 'done' : 'warn';
+      }
       default: return 'empty';
     }
   }
 
   function getSectionIssue(key) {
+    if (String(key || '').startsWith('custom:')) return null;
     if (typeof AICoach === 'undefined') return null;
     const review = AICoach.getPreExportReview(career);
     const priority = { high: 3, medium: 2, low: 1 };
@@ -482,18 +550,32 @@ const Editor = (function () {
   }
 
   function getSectionPreview(key) {
+    const custom = getCustomSection(key);
+    if (custom) return String(custom.content || '').split(/\n+/).filter(Boolean).slice(0, 2).join(' · ');
     const maxLen = 60;
-    const trunc = s => s && s.length > maxLen ? s.slice(0, maxLen) + '…' : (s || '');
+    const trunc = value => value && value.length > maxLen ? value.slice(0, maxLen) + '…' : (value || '');
     switch (key) {
-      case 'personalInfo': return career.personalInfo?.email || '';
+      case 'personalInfo': {
+        const p = career.personalInfo || {};
+        return [p.title || career.careerProfile?.title, p.location].filter(Boolean).join(' · ');
+      }
       case 'summary': return trunc(career.professionalSummary);
-      case 'experience': return (career.experience || []).length > 0 ? `${career.experience[0]?.role || ''} at ${career.experience[0]?.company || ''}` : '';
-      case 'projects': return (career.projects || []).length > 0 ? career.projects[0]?.name || '' : '';
-      case 'skills': return Object.values(career.skills || {}).flat().slice(0, 4).join(', ');
-      case 'education': return (career.education || []).length > 0 ? `${career.education.length} ${isAr() ? 'مؤهل' : 'entries'}` : '';
-      case 'languages': return (career.languages || []).length > 0 ? `${career.languages.length} ${isAr() ? 'لغات' : 'languages'}` : '';
-      case 'certificates': return (career.certificates || []).length > 0 ? `${career.certificates.length} ${isAr() ? 'شهادات موثقة' : 'credentials'}` : '';
-      case 'awards': return (career.awards || []).length > 0 ? `${career.awards.length} ${isAr() ? 'جوائز' : 'awards'}` : '';
+      case 'experience': {
+        const entries = career.experience || [];
+        if (!entries.length) return '';
+        const first = entries[0] || {};
+        const label = [first.role, first.company].filter(Boolean).join(isAr() ? ' — ' : ' at ');
+        return entries.length > 1 ? `${label} · +${entries.length - 1}` : label;
+      }
+      case 'projects': return (career.projects || []).length ? `${career.projects.length} ${isAr() ? 'مشروع' : 'projects'}` : '';
+      case 'skills': {
+        const skills = Object.values(career.skills || {}).flat().filter(Boolean);
+        return skills.length ? `${skills.length} ${isAr() ? 'مهارة مؤكدة' : 'verified skills'}` : '';
+      }
+      case 'education': return (career.education || []).length ? `${career.education.length} ${isAr() ? 'مؤهل' : 'entries'}` : '';
+      case 'languages': return (career.languages || []).length ? `${career.languages.length} ${isAr() ? 'لغة' : 'languages'}` : '';
+      case 'certificates': return (career.certificates || []).length ? `${career.certificates.length} ${isAr() ? 'شهادة أو ترخيص' : 'credentials'}` : '';
+      case 'awards': return (career.awards || []).length ? `${career.awards.length} ${isAr() ? 'جائزة' : 'awards'}` : '';
       default: return '';
     }
   }
@@ -509,126 +591,109 @@ const Editor = (function () {
   function renderSectionsList() {
     const list = el('sections-list');
     if (!list) return;
+    const ar = isAr();
+    const allDefs = getSectionDefs();
+    const statuses = allDefs.map(def => getSectionStatus(def.key));
+    const readyCount = statuses.filter(status => status === 'done').length;
+    const nextDef = allDefs.find(def => ['missing', 'warn'].includes(getSectionStatus(def.key))) || SECTION_DEFS[0];
 
-    const isAr = career.meta?.locale === 'ar' || document.documentElement.lang === 'ar';
     const starterHtml = `
-      <div class="editor-start-card">
+      <div class="editor-start-card compact">
         <div class="editor-start-copy">
-          <strong>${isAr ? 'كمّل السيرة خطوة بخطوة' : 'Complete your resume step by step'}</strong>
-          <span>${isAr ? 'لن نضيف شركة أو مهارة أو إنجازاً لم تؤكده بنفسك.' : 'We will never add an employer, skill, or achievement you did not confirm.'}</span>
+          <strong>${ar ? 'خطوتك التالية' : 'Next best step'}</strong>
+          <span>${ar ? `${readyCount} من ${allDefs.length} أقسام جاهزة. أكمل الأقسام الأساسية أولاً.` : `${readyCount} of ${allDefs.length} sections are ready. Complete the essentials first.`}</span>
         </div>
-        <button type="button" class="editor-guided-btn" onclick="Editor.autoFillStarterCV()">
-          ${isAr ? 'ابدأ بأول قسم ناقص' : 'Open the first incomplete section'}
+        <button type="button" class="editor-guided-btn" onclick="Editor.openEditPanel('${nextDef.key}')">
+          ${ar ? `افتح ${h(t(nextDef.labelKey, nextDef.defaultLabel))}` : `Open ${h(t(nextDef.labelKey, nextDef.defaultLabel))}`}
         </button>
       </div>
-      <button type="button" class="editor-style-btn" onclick="document.getElementById('style-drawer-modal').style.display='flex'">
-        <span>🎨 ${isAr ? 'التصميم والخطوط' : 'Design & typography'}</span><span>›</span>
-      </button>
-    `;
+      <div class="editor-quick-actions">
+        <button type="button" class="editor-style-btn" onclick="document.getElementById('style-drawer-modal').style.display='flex'">
+          <span>${ar ? 'القالب والتصميم' : 'Template & design'}</span><span aria-hidden="true">›</span>
+        </button>
+        <button type="button" class="editor-style-btn" onclick="Editor.showAddSectionModal()">
+          <span>${ar ? 'إضافة قسم اختياري' : 'Add optional section'}</span><span aria-hidden="true">›</span>
+        </button>
+      </div>`;
 
+    const colors = [
+      { color: '#2563eb', label: ar ? 'أزرق' : 'Blue' },
+      { color: '#0f766e', label: ar ? 'أخضر داكن' : 'Teal' },
+      { color: '#7c3aed', label: ar ? 'بنفسجي' : 'Purple' },
+      { color: '#9f1239', label: ar ? 'عنابي' : 'Burgundy' },
+      { color: '#1e293b', label: ar ? 'كحلي' : 'Navy' }
+    ];
     const styleHtml = `
-      <div style="padding:8px 12px;">
-        <div style="margin-bottom:16px;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
-          <div style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;">🎨 ${isAr ? 'لون السيرة الذاتية (Accent Color)' : 'Accent Color'}</div>
-          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
-            ${[
-              { color: '#2563eb', label: 'أزرق ملكي' },
-              { color: '#059669', label: 'أخضر زمردي' },
-              { color: '#7c3aed', label: 'بنفسجي فاخر' },
-              { color: '#be123c', label: 'عنابي أنيق' },
-              { color: '#1e293b', label: 'كحلي داكن' }
-            ].map(c => `
-              <button type="button" title="${c.label}" style="width:34px;height:34px;border-radius:50%;background:${c.color};border:2.5px solid ${career.meta.accentColor === c.color ? '#0f172a' : '#fff'};box-shadow:0 1px 4px rgba(0,0,0,0.25);cursor:pointer;" onclick="Editor.setAccentColor('${c.color}')"></button>
-            `).join('')}
+      <div class="style-settings-final" dir="${ar ? 'rtl' : 'ltr'}">
+        <section class="style-setting-section">
+          <div class="style-setting-head"><strong>${ar ? 'قالب السيرة' : 'Resume template'}</strong><span>${ar ? 'اختر الشكل الذي يناسب طبيعة الوظيفة' : 'Choose a layout that fits the role'}</span></div>
+          <button type="button" class="style-gallery-open" onclick="Editor.openGallery(); document.getElementById('style-drawer-modal').style.display='none'">${ar ? 'فتح معرض القوالب' : 'Open template gallery'} <span>›</span></button>
+        </section>
+        <section class="style-setting-section">
+          <div class="style-setting-head"><strong>${ar ? 'اللون الأساسي' : 'Accent color'}</strong><span>${ar ? 'لون العناوين والفواصل فقط' : 'Used for headings and dividers'}</span></div>
+          <div class="style-color-row">${colors.map(item => `<button type="button" class="style-color-dot ${career.meta.accentColor === item.color ? 'active' : ''}" aria-label="${h(item.label)}" title="${h(item.label)}" style="--dot:${item.color}" onclick="Editor.setAccentColor('${item.color}')"></button>`).join('')}</div>
+        </section>
+        <section class="style-setting-section">
+          <div class="style-setting-head"><strong>${ar ? 'الخط' : 'Font'}</strong><span>${ar ? 'Cairo مناسب للعربي وInter للإنجليزي' : 'Cairo for Arabic, Inter for English'}</span></div>
+          <div class="style-font-grid">${['Inter','Cairo','Tajawal','Almarai'].map(font => `<button type="button" class="style-font-btn ${career.meta.fontFamily === font ? 'active' : ''}" style="font-family:'${font}',sans-serif" onclick="Editor.setCvFont('${font}')">${font}</button>`).join('')}</div>
+        </section>
+        <section class="style-setting-section">
+          <div class="style-setting-head"><strong>${ar ? 'ترتيب الأقسام' : 'Section order'}</strong><span>${ar ? 'اختر ما يظهر أولاً حسب مستواك' : 'Choose which section leads'}</span></div>
+          <div class="style-order-grid">
+            <button type="button" onclick="Editor.setSectionOrder(['summary','experience','education','projects','skills','languages','certificates','awards'])">${ar ? 'الخبرة أولاً' : 'Experience first'}</button>
+            <button type="button" onclick="Editor.setSectionOrder(['summary','education','experience','projects','skills','languages','certificates','awards'])">${ar ? 'التعليم أولاً' : 'Education first'}</button>
           </div>
-
-          <div style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;">🔤 ${isAr ? 'الخط العربي (Font Style)' : 'Font Style'}</div>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-            ${['Inter', 'Cairo', 'Tajawal', 'Almarai'].map(f => `
-              <button type="button" style="flex:1 1 110px;padding:8px 10px;font-size:12px;border-radius:6px;border:1.5px solid ${career.meta.fontFamily === f ? '#3b82f6' : '#cbd5e1'};background:${career.meta.fontFamily === f ? '#eff6ff' : '#fff'};color:${career.meta.fontFamily === f ? '#1d4ed8' : '#334155'};font-family:'${f}',sans-serif;cursor:pointer;font-weight:700;" onclick="Editor.setCvFont('${f}')">${f}</button>
-            `).join('')}
-          </div>
-
-          <div style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;">📷 ${isAr ? 'الصورة الشخصية (Profile Photo)' : 'Profile Photo'}</div>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-            <button type="button" style="flex:1 1 130px;padding:8px;font-size:12px;border-radius:6px;border:1.5px solid ${career.meta.showPhoto ? '#16a34a' : '#cbd5e1'};background:${career.meta.showPhoto ? '#dcfce7' : '#fff'};color:#15803d;font-weight:700;cursor:pointer;" onclick="Editor.togglePhoto(true)">
-              ✅ ${isAr ? 'إظهار الصورة' : 'Show Photo'}
-            </button>
-            <button type="button" style="flex:1 1 130px;padding:8px;font-size:12px;border-radius:6px;border:1.5px solid ${!career.meta.showPhoto ? '#dc2626' : '#cbd5e1'};background:${!career.meta.showPhoto ? '#fee2e2' : '#fff'};color:#b91c1c;font-weight:700;cursor:pointer;" onclick="Editor.togglePhoto(false)">
-              🚫 ${isAr ? 'إخفاء (لـ ATS)' : 'Hide (ATS)'}
-            </button>
-          </div>
-
-          <div style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;">↕️ ${isAr ? 'ترتيب الأقسام (التعليم أولاً أم الخبرة؟)' : 'Section Order'}</div>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;">
-            <button type="button" style="flex:1 1 130px;padding:8px;font-size:12px;border-radius:6px;border:1.5px solid #cbd5e1;background:#fff;color:#334155;font-weight:700;cursor:pointer;" onclick="Editor.setSectionOrder(['summary', 'education', 'experience', 'projects', 'skills', 'languages'])">
-              🎓 ${isAr ? 'التعليم أولاً' : 'Education First'}
-            </button>
-            <button type="button" style="flex:1 1 130px;padding:8px;font-size:12px;border-radius:6px;border:1.5px solid #cbd5e1;background:#fff;color:#334155;font-weight:700;cursor:pointer;" onclick="Editor.setSectionOrder(['summary', 'experience', 'education', 'projects', 'skills', 'languages'])">
-              💼 ${isAr ? 'الخبرة أولاً' : 'Experience First'}
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
+        </section>
+        <section class="style-setting-section">
+          <div class="style-setting-head"><strong>${ar ? 'الصورة الشخصية' : 'Profile photo'}</strong><span>${ar ? 'اختيارية وقد لا تكون مناسبة لكل سوق' : 'Optional and market-dependent'}</span></div>
+          <label class="style-toggle-row"><input type="checkbox" ${career.meta.showPhoto ? 'checked' : ''} onchange="Editor.togglePhoto(this.checked)"><span>${ar ? 'إظهار الصورة عند توفر رابط حقيقي' : 'Show a verified profile photo'}</span></label>
+        </section>
+      </div>`;
 
     const groups = [
-      { id: 'basics', labelKey: 'ed.groups.basics', defaultLabel: 'Resume Sections' },
-      { id: 'extras', labelKey: 'ed.groups.extras', defaultLabel: 'Additional' },
+      { id: 'basics', labelKey: 'ed.groups.basics', defaultLabel: ar ? 'الأقسام الأساسية' : 'Essential sections' },
+      { id: 'extras', labelKey: 'ed.groups.extras', defaultLabel: ar ? 'الأقسام الإضافية' : 'Additional sections' }
     ];
-
-    const gs = document.getElementById('global-settings');
+    const gs = el('global-settings');
     if (gs) gs.innerHTML = starterHtml;
-
-    const drawerContent = document.getElementById('style-drawer-content');
+    const drawerContent = el('style-drawer-content');
     if (drawerContent) drawerContent.innerHTML = styleHtml;
 
     list.innerHTML = groups.map(group => {
-      const isCollapsed = career.meta.collapsedGroups.includes(group.id);
-      const sections = SECTION_DEFS.filter(s => s.group === group.id && shouldShowSection(s.key));
-      return `
-        <div class="section-group">
-          <div class="section-group-label" onclick="Editor.toggleGroup('${group.id}')" style="cursor:pointer; display:flex; justify-content:space-between;">
-            <span>${t(group.labelKey, group.defaultLabel)}</span>
-            <span>${isCollapsed ? '▼' : '▲'}</span>
-          </div>
-          <div style="display: ${isCollapsed ? 'none' : 'block'}">
-            ${sections.map(s => renderSectionRow(s)).join('')}
-          </div>
-        </div>
-      `;
+      const collapsed = career.meta.collapsedGroups.includes(group.id);
+      const defs = allDefs.filter(def => def.group === group.id && shouldShowSection(def.key));
+      return `<div class="section-group">
+        <button type="button" class="section-group-label" onclick="Editor.toggleGroup('${group.id}')" aria-expanded="${!collapsed}">
+          <span>${h(t(group.labelKey, group.defaultLabel))}</span><span class="group-chevron">${collapsed ? '＋' : '−'}</span>
+        </button>
+        <div class="section-group-content" ${collapsed ? 'hidden' : ''}>${defs.map(renderSectionRow).join('')}</div>
+      </div>`;
     }).join('');
-
-    // Bind clicks
-    list.querySelectorAll('.section-row').forEach(row => {
-      row.addEventListener('click', () => openEditPanel(row.dataset.key));
-    });
+    list.querySelectorAll('.section-row').forEach(row => row.addEventListener('click', () => openEditPanel(row.dataset.key)));
   }
 
   function renderSectionRow(s) {
     const status = getSectionStatus(s.key);
     const issue = getSectionIssue(s.key);
     const preview = getSectionPreview(s.key);
-    const isAr = career.meta?.locale === 'ar' || document.documentElement.lang === 'ar';
-    let statusHtml = status === 'done' ? `<span class="section-status status-done">✓ ${isAr ? 'مكتمل' : 'Done'}</span>` : '';
-    if (issue) {
-      if (issue.severity === 'high') statusHtml = `<span class="section-status status-missing">↑ ${isAr ? 'تنبيه هام' : 'High Priority'}</span>`;
-      else if (issue.severity === 'medium') statusHtml = `<span class="section-status status-warn">↗ ${isAr ? 'مقترح تحسين' : 'Suggested'}</span>`;
-      else statusHtml = `<span class="section-status status-warn">→ ${isAr ? 'إضافة اختيارية' : 'Optional'}</span>`;
-    } else if (status !== 'done') {
-      statusHtml = `<span class="section-status status-missing">+ ${isAr ? 'مفقود' : 'Add'}</span>`;
-    }
-
-    return `
-      <div class="section-row ${issue ? `needs-attention ${issue.severity}` : ''}" data-key="${s.key}">
-        <div class="section-row-icon">${s.icon}</div>
-        <div class="section-row-info">
-          <div class="section-row-label">${h(t(s.labelKey, s.defaultLabel))}</div>
-          ${issue ? `<div class="section-row-preview issue">${h(issue.title)}</div>` : preview ? `<div class="section-row-preview">${h(preview)}</div>` : ''}
-        </div>
-        <div class="section-row-status">${statusHtml}</div>
-      </div>
-    `;
+    const ar = isAr();
+    const statusMap = {
+      done: [ar ? 'جاهز' : 'Ready', 'status-done'],
+      warn: [ar ? 'راجع' : 'Review', 'status-warn'],
+      missing: [ar ? 'أكمل' : 'Complete', 'status-missing'],
+      tip: [ar ? 'اختياري' : 'Optional', 'status-neutral'],
+      empty: [ar ? 'اختياري' : 'Optional', 'status-neutral']
+    };
+    let effectiveStatus = status;
+    if (issue?.severity === 'high') effectiveStatus = 'missing';
+    else if (issue?.severity === 'medium' && status === 'done') effectiveStatus = 'warn';
+    const [label, cls] = statusMap[effectiveStatus] || statusMap.empty;
+    const supportingText = issue?.severity === 'high' || issue?.severity === 'medium' ? issue.title : preview;
+    return `<button type="button" class="section-row ${issue ? `needs-attention ${issue.severity}` : ''}" data-key="${s.key}">
+      <span class="section-row-icon">${s.icon}</span>
+      <span class="section-row-info"><span class="section-row-label">${h(t(s.labelKey, s.defaultLabel))}</span>${supportingText ? `<span class="section-row-preview ${issue ? 'issue' : ''}">${h(supportingText)}</span>` : ''}</span>
+      <span class="section-row-status"><span class="section-status ${cls}">${label}</span></span>
+    </button>`;
   }
 
   function filterSections(query) {
@@ -678,10 +743,10 @@ const Editor = (function () {
   function openEditPanel(sectionKey) {
 
     currentEditSection = sectionKey;
-    const def = SECTION_DEFS.find(s => s.key === sectionKey);
+    const def = getSectionDefs().find(s => s.key === sectionKey);
     if (!def) return;
 
-    el('edit-panel-title').textContent = `${def.icon} ${t(def.labelKey, def.defaultLabel)}`;
+    el('edit-panel-title').textContent = t(def.labelKey, def.defaultLabel);
     el('edit-panel-body').innerHTML = buildSectionCoach(sectionKey) + buildEditForm(sectionKey);
     el('edit-ai-pills').innerHTML = buildAIPills(sectionKey);
     updateExperienceChecklist();
@@ -719,8 +784,8 @@ const Editor = (function () {
     });
     const saveBtn = el('edit-save-btn');
     if (saveBtn) {
-      saveBtn.textContent = 'إغلاق';
-      saveBtn.style.background = '#64748b'; // slate-500
+      saveBtn.textContent = isAr() ? 'حفظ التغييرات' : 'Save changes';
+      saveBtn.style.background = '#2563eb';
     }
   }
 
@@ -760,11 +825,11 @@ const Editor = (function () {
   function buildAIPills(sectionKey) {
     const pills = [];
     if (['summary', 'experience', 'projects'].includes(sectionKey)) {
-      pills.push({ label: t('ed.ai_pills.improve', '✨ Improve & Professionalize'), action: `aiImprove('${sectionKey}')` });
-      pills.push({ label: t('ed.ai_pills.translate', '🌐 Translate (En/Ar)'), action: `aiTranslate('${sectionKey}')` });
+      pills.push({ label: (isAr() ? 'تحسين باحتراف' : 'Improve professionally'), action: `aiImprove('${sectionKey}')` });
+      pills.push({ label: (isAr() ? 'ترجمة' : 'Translate'), action: `aiTranslate('${sectionKey}')` });
     }
     if (sectionKey === 'skills') {
-      pills.push({ label: t('ed.ai_pills.suggest_skills', '💡 Suggest Skills'), action: `aiSuggestSkills()` });
+      pills.push({ label: (isAr() ? 'اقتراح مهارات' : 'Suggest skills'), action: `aiSuggestSkills()` });
     }
     return pills.map(p => `<button class="ai-pill" onclick="Editor.${p.action}">${p.label}</button>`).join('');
   }
@@ -780,7 +845,7 @@ const Editor = (function () {
       case 'languages': return buildLanguagesForm();
       case 'certificates': return buildCertificatesForm();
       case 'awards': return buildAwardsForm();
-      default: return `<p class="edit-empty">${t('ed.empty_edit', 'Click a field to edit this section.')}</p>`;
+      default: return String(key || '').startsWith('custom:') ? buildCustomSectionForm(key) : `<p class="edit-empty">${t('ed.empty_edit', 'Click a field to edit this section.')}</p>`;
     }
   }
 
@@ -795,7 +860,26 @@ const Editor = (function () {
       case 'languages': collectLanguages(); break;
       case 'certificates': collectCertificates(); break;
       case 'awards': collectAwards(); break;
+      default: if (String(key || '').startsWith('custom:')) collectCustomSection(key); break;
     }
+  }
+
+  function buildCustomSectionForm(key) {
+    const section = getCustomSection(key);
+    if (!section) return '';
+    return `<div class="form-grid">
+      <div class="form-field form-field-full"><label class="form-label">${isAr() ? 'عنوان القسم' : 'Section title'}</label><input class="form-input" id="f-custom-title" value="${a(section.title || '')}" placeholder="${isAr() ? 'مثال: العضويات المهنية' : 'e.g. Professional Memberships'}"></div>
+      <div class="form-field form-field-full"><label class="form-label">${isAr() ? 'شكل العرض' : 'Display style'}</label><select class="form-input" id="f-custom-type"><option value="bullets" ${section.type === 'bullets' ? 'selected' : ''}>${isAr() ? 'نقاط' : 'Bullets'}</option><option value="paragraph" ${section.type === 'paragraph' ? 'selected' : ''}>${isAr() ? 'فقرة قصيرة' : 'Short paragraph'}</option><option value="tags" ${section.type === 'tags' ? 'selected' : ''}>${isAr() ? 'عناصر مختصرة' : 'Compact tags'}</option></select></div>
+      <div class="form-field form-field-full"><label class="form-label">${isAr() ? 'المحتوى' : 'Content'}</label><textarea class="form-textarea" id="f-custom-content" rows="8" placeholder="${isAr() ? 'اكتب كل نقطة أو عنصر في سطر مستقل' : 'Write each bullet or item on a separate line'}">${h(section.content || '')}</textarea></div>
+    </div><button type="button" class="btn-delete-custom" onclick="Editor.deleteCustomSection('${a(section.id)}')">${isAr() ? 'حذف هذا القسم' : 'Delete this section'}</button>`;
+  }
+
+  function collectCustomSection(key) {
+    const section = getCustomSection(key);
+    if (!section) return;
+    section.title = el('f-custom-title')?.value?.trim() || section.title;
+    section.type = el('f-custom-type')?.value || 'bullets';
+    section.content = el('f-custom-content')?.value || '';
   }
 
   function emptyStateSVG() {
@@ -952,8 +1036,9 @@ const Editor = (function () {
         <textarea class="form-textarea" id="f-summary" rows="6" placeholder="${getPh().summary || t('ed.form.ph_summary', 'e.g. Software Engineer with 5+ years...') }">${h(career.professionalSummary || '')}</textarea>
       </div>
       <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
-        <button type="button" class="btn-generate" style="font-weight:700;padding:12px 18px;background:var(--primary,#2563eb);color:#fff;border-radius:8px;border:none;cursor:pointer;width:100%;text-align:center;" onclick="Editor.handleAIAction('generate-summary')">
-          ✨ ${isAr ? 'توليد نبذة احترافية بضغطة واحدة (AI / مقترحات لمجالي)' : 'Generate Professional Summary (AI / Smart Match)'}
+        <button type="button" class="btn-generate professional-ai-action" onclick="Editor.handleAIAction('generate-summary')">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6.3 6.3l2.8 2.8M14.9 14.9l2.8 2.8M17.7 6.3l-2.8 2.8M9.1 14.9l-2.8 2.8"/></svg>
+          <span>${isAr ? 'إنشاء أو تحسين النبذة من بياناتي' : 'Build or improve from my facts'}</span>
         </button>
       </div>
     `;
@@ -979,7 +1064,7 @@ const Editor = (function () {
         <div class="list-item-header">
           <span class="list-item-title">${h(e.role || t('ed.form.newRole', 'New Role'))} ${atWord} ${h(e.company || '...')}</span>
           <div>
-            <button class="list-item-btn" onclick="Editor.duplicateExpItem(${i})" title="Duplicate">📋</button>
+            <button class="list-item-btn" onclick="Editor.duplicateExpItem(${i})" title="${isAr() ? 'نسخ الخبرة' : 'Duplicate experience'}" aria-label="${isAr() ? 'نسخ الخبرة' : 'Duplicate experience'}"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>
             <button class="list-item-del" onclick="Editor.deleteExpItem(${i})" title="Delete">✕</button>
           </div>
         </div>
@@ -1002,8 +1087,8 @@ const Editor = (function () {
           </div>
           <div class="form-field form-field-full">
             <label class="form-label">${t('ed.form.description', 'Description')}</label>
-            <textarea class="form-textarea" id="f-exp-desc-${i}" rows="3" placeholder="${t('ed.form.ph_desc', 'Describe what you accomplished...')}">${h(e.rawDescription || (e.bullets || []).join('\n'))}</textarea>
-            <div style="font-size:11.5px;color:#64748b;margin-top:4px;">💡 <b>نصيحة:</b> مش عارف تكتب إيه في المهام؟ اضغط على زر <b>"⚡ إدراج مهام جاهزة لمجالي"</b> بالأعلى وسنقوم بكتابتها فوراً!</div>
+            <textarea class="form-textarea" id="f-exp-desc-${i}" rows="6" placeholder="${isAr() ? 'اكتب 2–4 نقاط، كل نقطة في سطر: ماذا فعلت؟ ما الأداة؟ ما النتيجة؟' : t('ed.form.ph_desc', 'Describe 2–4 bullet points, one per line...')}">${h(e.rawDescription || (e.bullets || []).join('\n'))}</textarea>
+            <div class="professional-form-tip"><span>i</span><div><b>نصيحة:</b> اكتب مهامك الحقيقية أولاً. المساعد يعيد الصياغة ولا يضيف حقائق أو أرقاماً من عنده.</div></div>
           </div>
         </div>
       </div>
@@ -1011,7 +1096,7 @@ const Editor = (function () {
 
     return `
       <div class="section-actions-top">
-        <button class="btn-text-action" onclick="Editor.showExample('experience')" style="font-weight:600;color:var(--primary,#2563eb);">⚡ ${t('ed.actions.auto_tasks', 'إدراج مهام جاهزة لمجالي')}</button>
+        <button class="btn-text-action" onclick="Editor.showExample('experience')" style="font-weight:600;color:var(--primary,#2563eb);">${isAr() ? 'عرض مثال مناسب' : 'Show relevant example'}</button>
       </div>
       <div id="exp-list">${items || `${emptyStateSVG()}<p class="edit-empty" style="text-align:center">${t('ed.empty_states.experience', 'No experience yet. Add your first job below.')}</p>`}</div>
       <button class="btn-add-item" onclick="Editor.addExpItem()">${t('ed.form.add_position', '+ Add Position')}</button>
@@ -1059,7 +1144,7 @@ const Editor = (function () {
         <div class="list-item-header">
           <span class="list-item-title">${h(p.name || t('ed.form.newProject', 'New Project'))}</span>
           <div>
-            <button class="list-item-btn" onclick="Editor.duplicateProjItem(${i})" title="Duplicate">📋</button>
+            <button class="list-item-btn" onclick="Editor.duplicateProjItem(${i})" title="Duplicate"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>
             <button class="list-item-del" onclick="Editor.deleteProjItem(${i})" title="Delete">✕</button>
           </div>
         </div>
@@ -1097,7 +1182,7 @@ const Editor = (function () {
     `).join('');
     return `
       <div class="section-actions-top">
-        <button class="btn-text-action" onclick="Editor.showExample('projects')">💡 Show Example</button>
+        <button class="btn-text-action" onclick="Editor.showExample('projects')">${isAr() ? 'عرض مثال مناسب' : 'Show a relevant example'}</button>
       </div>
       <div id="proj-list">${items || `${emptyStateSVG()}<p class="edit-empty" style="text-align:center">${t('ed.empty_states.projects', 'No projects yet. Showcase your work!')}</p>`}</div>
       <button class="btn-add-item" onclick="Editor.addProjItem()">${t('ed.form.add_project', '+ Add Project')}</button>
@@ -1152,9 +1237,9 @@ const Editor = (function () {
             <input class="form-input" id="f-skill-cat-${i}" type="text" placeholder="${getPh().skillCat || t('ed.form.ph_skill_cat', 'e.g. Frontend')}" value="${a(cat)}">
           </div>
             <div class="form-field form-field-full">
-              <label class="form-label">${t('ed.form.skills_comma', 'Skills (comma separated)')}</label>
+              <label class="form-label">${isAr() ? 'المهارات — افصل بينها بفاصلة أو اضغط + من المقترحات' : t('ed.form.skills_comma', 'Skills (comma separated)')}</label>
               <input class="form-input" id="f-skill-vals-${i}" type="text" placeholder="${getPh().skills || t('ed.form.ph_skill_vals', 'React, TypeScript, CSS')}" value="${a((skills || []).join(', '))}">
-              <div style="font-size:11.5px;color:#64748b;margin-top:6px;">💡 <b>نصيحة:</b> افصل بين كل مهارة وأخرى بفاصلة (،) أو اضغط على المقترحات الجاهزة لإضافتها فوراً:</div>
+              <div class="professional-form-tip"><span>i</span><div><b>نصيحة:</b> افصل بين المهارات بفاصلة، أو اختر من الاقتراحات المرتبطة بوظيفتك.</div></div>
               <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
                 ${(function() {
                   const f = career.careerProfile?.field || 'developer';
@@ -1235,7 +1320,7 @@ const Editor = (function () {
         <div class="list-item-header">
           <span class="list-item-title">${h(e.degree || t('ed.form.degree_fallback', 'Degree'))}</span>
           <div>
-            <button class="list-item-btn" onclick="Editor.duplicateEduItem(${i})" title="Duplicate">📋</button>
+            <button class="list-item-btn" onclick="Editor.duplicateEduItem(${i})" title="Duplicate"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>
             <button class="list-item-del" onclick="Editor.deleteEduItem(${i})" title="Delete">✕</button>
           </div>
         </div>
@@ -1302,7 +1387,7 @@ const Editor = (function () {
         <div class="list-item-header">
            <span class="list-item-title">${h(l.lang || 'Language')}</span>
            <div>
-            <button class="list-item-btn" onclick="Editor.duplicateLangItem(${i})" title="Duplicate">📋</button>
+            <button class="list-item-btn" onclick="Editor.duplicateLangItem(${i})" title="Duplicate"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>
             <button class="list-item-del" onclick="Editor.deleteLangItem(${i})" title="Delete">✕</button>
           </div>
         </div>
@@ -1423,6 +1508,9 @@ const Editor = (function () {
   }
 
   function buildSectionCoach(sectionKey) {
+    if (String(sectionKey || '').startsWith('custom:')) {
+      return `<div class="section-coach"><div class="section-coach-kicker">${isAr() ? 'نصيحة' : 'Tip'}</div><div class="section-coach-item low"><div class="section-coach-title">${isAr() ? 'استخدم هذا القسم فقط عند الحاجة' : 'Use this section only when relevant'}</div><div class="section-coach-detail">${isAr() ? 'اختر عنوانًا واضحًا، واكتب معلومات حقيقية مختصرة لا تتكرر في قسم آخر.' : 'Use a clear title and concise facts that do not duplicate another section.'}</div></div></div>`;
+    }
     if (typeof AICoach === 'undefined') return '';
     const advice = AICoach.getSectionAdvice(career, sectionKey).slice(0, 2);
     let html = `
@@ -1496,54 +1584,29 @@ const Editor = (function () {
   }
 
   function showSmartFixPreviewModal(draftCareer, beforeText, afterText, title, successMsg) {
-    const oldModal = document.getElementById('smartfix-preview-modal');
-    if (oldModal) oldModal.remove();
-
-    const isAr = (career.meta?.locale || 'ar') === 'ar';
+    el('smartfix-preview-modal')?.remove();
+    const ar = isAr();
     const modal = document.createElement('div');
     modal.id = 'smartfix-preview-modal';
-    modal.style.cssText = 'display:flex;align-items:center;justify-content:center;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.75);z-index:999999;backdrop-filter:blur(4px);padding:20px;';
-    modal.innerHTML = `
-      <div class="modal-card" style="background:#fff;border-radius:16px;max-width:760px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);overflow:hidden;direction:${isAr ? 'rtl' : 'ltr'};">
-        <div style="padding:20px 24px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;background:#f8fafc;">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:24px;">✨</span>
-            <div>
-              <h3 style="margin:0;font-size:18px;font-weight:700;color:#0f172a;">${h(title || (isAr ? 'معاينة التحسين المقترح بالمقارنة' : 'SmartFix Before & After Preview'))}</h3>
-              <div style="font-size:12px;color:#64748b;">${isAr ? 'راجع التعديل المطور بالذكاء الاصطناعي وقارنه بالنص الحالي قبل اعتماده' : 'Review the AI enhanced content against your current content before applying'}</div>
-            </div>
-          </div>
-          <button onclick="document.getElementById('smartfix-preview-modal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b;">✕</button>
-        </div>
-        <div style="padding:24px;overflow-y:auto;flex:1;display:grid;grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));gap:20px;">
-          <div style="border:1px solid #f1f5f9;border-radius:12px;padding:16px;background:#f8fafc;display:flex;flex-direction:column;">
-            <div style="font-size:12px;font-weight:700;color:#64748b;margin-bottom:12px;display:flex;align-items:center;gap:6px;">
-              <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#94a3b8;"></span> ${isAr ? 'الوضع الحالي (Before)' : 'Current Content (Before)'}
-            </div>
-            <div style="font-size:13px;line-height:1.7;color:#334155;white-space:pre-wrap;font-family:inherit;">${h(beforeText || (isAr ? '(قسم فارغ أو غير ممتلئ)' : '(Empty section)'))}</div>
-          </div>
-          <div style="border:2px solid #10b981;border-radius:12px;padding:16px;background:#f0fdf4;display:flex;flex-direction:column;position:relative;">
-            <div style="font-size:12px;font-weight:700;color:#047857;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
-              <span style="display:flex;align-items:center;gap:6px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;"></span> ${isAr ? 'الاقتراح المطور (AI Enhanced)' : 'AI Proposed Content'}</span>
-              <span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:999px;font-size:11px;">${isAr ? 'موصى به' : 'Recommended'}</span>
-            </div>
-            <div style="font-size:13px;line-height:1.7;color:#064e3b;white-space:pre-wrap;font-family:inherit;font-weight:500;">${h(afterText || (isAr ? '(تم التحسين بنجاح)' : '(Enhanced content applied)'))}</div>
-          </div>
-        </div>
-        <div style="padding:16px 24px;border-top:1px solid #e2e8f0;background:#f8fafc;display:flex;justify-content:flex-end;gap:12px;">
-          <button onclick="document.getElementById('smartfix-preview-modal').remove()" style="padding:10px 18px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:#475569;cursor:pointer;">${isAr ? '✕ إلغاء والتراجع' : 'Cancel'}</button>
-          <button id="btn-apply-smartfix-now" style="padding:10px 22px;border:none;border-radius:8px;background:#2563eb;font-size:13px;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 6px -1px rgba(37,99,235,0.2);">${isAr ? '✓ تطبيق التعديل الآن' : 'Apply Proposed Fix'}</button>
-        </div>
+    modal.className = 'modal-overlay smartfix-overlay';
+    modal.style.display = 'flex';
+    modal.onclick = event => { if (event.target === modal) modal.remove(); };
+    modal.innerHTML = `<div class="modal-box smartfix-modal" dir="${ar ? 'rtl' : 'ltr'}">
+      <div class="modal-header"><div><h3>${h(title || (ar ? 'راجع الصياغة المقترحة' : 'Review the proposed wording'))}</h3><p>${ar ? 'المساعد يعيد صياغة ما كتبته فقط. راجع الحقائق والأرقام قبل الاعتماد.' : 'The assistant rewrites only what you provided. Verify every fact and metric before applying.'}</p></div><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button></div>
+      <div class="smartfix-compare">
+        <section class="smartfix-column before"><header><span>${ar ? 'النص الحالي' : 'Current text'}</span></header><div>${h(beforeText || (ar ? 'لا يوجد محتوى كافٍ' : 'Not enough content')).replace(/\n/g,'<br>')}</div></section>
+        <section class="smartfix-column after"><header><span>${ar ? 'الصياغة المقترحة' : 'Proposed wording'}</span><b>${ar ? 'للمراجعة' : 'Review'}</b></header><div>${h(afterText || '').replace(/\n/g,'<br>')}</div></section>
       </div>
-    `;
+      <div class="smartfix-note">${ar ? 'لن تُضاف مهارة أو شركة أو رقم لم تذكره. بعد التطبيق يمكنك تعديل النص مباشرة من القسم.' : 'No unverified skill, employer, or metric is added. You can edit the result immediately after applying.'}</div>
+      <div class="smartfix-actions"><button type="button" class="secondary" onclick="this.closest('.modal-overlay').remove()">${ar ? 'الاحتفاظ بالنص الحالي' : 'Keep current'}</button><button type="button" id="btn-apply-smartfix-now">${ar ? 'استخدام الصياغة وتعديلها' : 'Use and continue editing'}</button></div>
+    </div>`;
     document.body.appendChild(modal);
-
-    document.getElementById('btn-apply-smartfix-now').onclick = () => {
+    el('btn-apply-smartfix-now').onclick = () => {
       pushUndo();
       career = JSON.parse(JSON.stringify(draftCareer));
       saveAndRender();
-      showSaveIndicator(successMsg || _ct('coach.smart_fix.success', '✓ تم تطبيق التحسين الذكي بنجاح وتحديث النتيجة!'), true);
-      document.getElementById('smartfix-preview-modal')?.remove();
+      showSaveIndicator(successMsg || (ar ? 'تم تطبيق الصياغة' : 'Wording applied'), true);
+      modal.remove();
       if (currentEditSection) openEditPanel(currentEditSection);
       if (typeof renderExportReview === 'function') renderExportReview();
       if (typeof updateCoachPanel === 'function') updateCoachPanel();
@@ -1552,16 +1615,17 @@ const Editor = (function () {
 
   function extractSectionTextForCompare(cObj, issueId) {
     if (!cObj) return '';
-    if (issueId?.includes('summary') || issueId === 'missing-summary' || issueId === 'auto-summary') {
-      return cObj.summary || '';
+    if (issueId?.includes('summary') || issueId === 'missing-summary' || issueId === 'auto-summary') return cObj.professionalSummary || '';
+    if (issueId?.includes('skills') || issueId === 'few-skills' || issueId === 'auto-skills') return Object.values(cObj.skills || {}).flat().filter(Boolean).join(', ');
+    if (issueId?.includes('bullet') || issueId?.includes('exp') || issueId === 'thin-bullet' || issueId === 'auto-bullets' || issueId === 'weak-experience') {
+      const ar = cObj.meta?.locale === 'ar';
+      return (cObj.experience || []).map(entry => {
+        const heading = [entry.role, entry.company].filter(Boolean).join(ar ? ' — ' : ' at ');
+        const bullets = (entry.bullets || []).filter(Boolean).map(item => `• ${item}`).join('\n');
+        return [heading, bullets].filter(Boolean).join('\n');
+      }).join('\n\n');
     }
-    if (issueId?.includes('skills') || issueId === 'few-skills' || issueId === 'auto-skills') {
-      return (cObj.skills?.core || []).join(', ');
-    }
-    if (issueId?.includes('bullet') || issueId?.includes('exp') || issueId === 'thin-bullet' || issueId === 'auto-bullets') {
-      return (cObj.experience || []).map(e => '• ' + e.role + ' at ' + e.company + ':\n  ' + (e.bullets||[]).join('\n  ')).join('\n\n');
-    }
-    return JSON.stringify(cObj, null, 2);
+    return '';
   }
 
   async function applyCoachFix(issueId) {
@@ -1662,7 +1726,7 @@ const Editor = (function () {
       panel.innerHTML = `
         <div class="rpanel-label">${t('ed.ai_panel.assistant', 'AI Assistant')}</div>
         <div class="suggestions-empty">
-          <div class="suggestions-empty-icon">✨</div>
+          <div class="suggestions-empty-icon"><svg viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6.3 6.3l2.8 2.8M14.9 14.9l2.8 2.8M17.7 6.3l-2.8 2.8M9.1 14.9l-2.8 2.8"/></svg></div>
           <p>${t('ed.ai_panel.empty', 'Your resume looks great! No suggestions right now.')}</p>
         </div>`;
       return;
@@ -1685,16 +1749,36 @@ const Editor = (function () {
   // ─────────────────────────────────────────────────
   // TEMPLATE PICKER
   // ─────────────────────────────────────────────────
+  const TEMPLATE_PRESENTATION = {
+    ats: { ar: ['ATS احترافي', 'أوضح اختيار للقراءة الآلية والوظائف التقليدية'], en: ['Professional ATS', 'The clearest option for parsing and traditional roles'], className: 'preview-ats', badgeAr: 'الأكثر أمانًا', badgeEn: 'ATS-safe' },
+    classic: { ar: ['كلاسيكي أنيق', 'تسلسل هادئ مناسب للتعليم والمجالات الرسمية'], en: ['Refined Classic', 'A calm hierarchy for education and formal roles'], className: 'preview-classic' },
+    modern: { ar: ['حديث نظيف', 'عمود جانبي متزن للمجالات الرقمية والإبداعية'], en: ['Clean Modern', 'A balanced sidebar for digital and creative roles'], className: 'preview-modern' },
+    corporate: { ar: ['احترافي إداري', 'مناسب للخبرات المتوسطة والإدارة'], en: ['Corporate Professional', 'Designed for mid-career and management'], className: 'preview-corporate' },
+    executive: { ar: ['تنفيذي', 'طابع هادئ للقيادات والخبرات الطويلة'], en: ['Executive', 'A restrained style for leadership profiles'], className: 'preview-executive' }
+  };
+
+  function templatePreviewMarkup(id) {
+    const meta = TEMPLATE_PRESENTATION[id] || TEMPLATE_PRESENTATION.ats;
+    return `<div class="template-preview-sheet ${meta.className}">
+      <div class="tp-sidebar"></div><div class="tp-header"></div>
+      <div class="tp-content"><i class="tp-name"></i><i class="tp-role"></i><i class="tp-contact"></i>
+        <b class="tp-heading"></b><i class="tp-line long"></i><i class="tp-line"></i><i class="tp-line short"></i>
+        <b class="tp-heading second"></b><i class="tp-line long"></i><i class="tp-line"></i><i class="tp-line medium"></i>
+        <b class="tp-heading third"></b><i class="tp-line long"></i><i class="tp-line short"></i>
+      </div>
+    </div>`;
+  }
+
+  function featuredTemplateIds() { return ['ats', 'classic', 'modern', 'corporate', 'executive']; }
+
   function renderTemplatePicker() {
     const root = el('template-picker');
     if (!root) return;
     const effective = TemplateSelector.getEffectiveTemplateId(career);
-    root.innerHTML = TemplateSelector.getFeaturedTemplates().map(tpl => {
-      const active = career.meta.templateId === tpl.id;
-      const label = tpl.id === 'ai-recommended'
-        ? `⭐ ${TemplateSelector.templateName(effective, t)}`
-        : t(tpl.nameKey, tpl.id);
-      return `<button class="template-chip ${active ? 'active' : ''}" onclick="Editor.setTemplate('${tpl.id}')">${h(label)}</button>`;
+    root.innerHTML = featuredTemplateIds().slice(0, 3).map(id => {
+      const meta = TEMPLATE_PRESENTATION[id];
+      const copy = meta[isAr() ? 'ar' : 'en'];
+      return `<button type="button" class="template-mini-choice ${effective === id ? 'active' : ''}" onclick="Editor.setTemplate('${id}')">${templatePreviewMarkup(id)}<span>${h(copy[0])}</span></button>`;
     }).join('');
   }
 
@@ -1758,31 +1842,27 @@ const Editor = (function () {
   }
 
   function showMobMenu(event) {
-    if (event && event.stopPropagation) event.stopPropagation();
+    event?.stopPropagation?.();
     const existing = el('mob-dropdown-menu');
     if (existing) { existing.remove(); return; }
     const menu = document.createElement('div');
     menu.id = 'mob-dropdown-menu';
     menu.className = 'mob-dropdown-menu';
     menu.innerHTML = `
-      <button onclick="Editor.undoAction(); document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">↩️</span> <span data-i18n="ed.topbar.undo">تراجع عن آخر تعديل</span></button>
-      <button onclick="Editor.redoAction(); document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">↪️</span> <span>إعادة آخر تعديل</span></button>
-      <button onclick="Editor.showVersionManagerModal(); document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">📂</span> <span>السير المحفوظة والنسخ</span></button>
-      <button onclick="document.getElementById('style-drawer-modal').style.display='flex'; document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">🎨</span> <span>الخط والألوان والتصميم</span></button>
-      <button onclick="Editor.setMobileView('coach'); document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">💡</span> <span>المساعد الذكي وفحص ATS</span></button>
-      <button onclick="Editor.showExportModal(); document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">⬇️</span> <span data-i18n="ed.topbar.download">تصدير / تحميل الملف</span></button>
-      <button onclick="Editor.exportBackup(); document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">🛡</span> <span>تنزيل نسخة احتياطية لكل السير</span></button>
-      <button onclick="AISettings.openModal(); document.getElementById('mob-dropdown-menu')?.remove();"><span class="icon">🔒</span> <span>الخصوصية وإعدادات المساعد</span></button>
-      <a href="landing.html" class="menu-link"><span class="icon">🚪</span> <span data-i18n="ed.topbar.exit">خروج إلى الرئيسية</span></a>
-    `;
+      <button onclick="Editor.undoAction(); this.closest('#mob-dropdown-menu').remove();"><span class="icon">↶</span><span>${isAr() ? 'تراجع' : 'Undo'}</span></button>
+      <button onclick="Editor.redoAction(); this.closest('#mob-dropdown-menu').remove();"><span class="icon">↷</span><span>${isAr() ? 'إعادة' : 'Redo'}</span></button>
+      <button onclick="document.getElementById('style-drawer-modal').style.display='flex'; this.closest('#mob-dropdown-menu').remove();"><span class="icon">◫</span><span>${isAr() ? 'القالب والتصميم' : 'Template & design'}</span></button>
+      <button onclick="Editor.showAddSectionModal(); this.closest('#mob-dropdown-menu').remove();"><span class="icon">＋</span><span>${isAr() ? 'إضافة قسم' : 'Add section'}</span></button>
+      <button onclick="Editor.showExportModal(); this.closest('#mob-dropdown-menu').remove();"><span class="icon">↓</span><span>${isAr() ? 'تحميل السيرة' : 'Download resume'}</span></button>
+      <button class="menu-secondary" onclick="Editor.showVersionManagerModal(); this.closest('#mob-dropdown-menu').remove();"><span class="icon">▣</span><span>${isAr() ? 'نسخ مخصصة للوظائف' : 'Job-specific versions'}</span></button>
+      <a href="landing.html" class="menu-link"><span class="icon">×</span><span>${isAr() ? 'خروج' : 'Exit'}</span></a>`;
     document.body.appendChild(menu);
-    const closeMenu = (e) => {
-      if (!menu.contains(e.target) && !e.target?.closest?.('.mob-topbar-menu')) {
-        menu.remove();
-        document.removeEventListener('click', closeMenu);
+    const close = e => {
+      if (!menu.contains(e.target) && !e.target?.closest?.('.mob-topbar-menu') && !e.target?.closest?.('.topbar-icon-btn')) {
+        menu.remove(); document.removeEventListener('click', close);
       }
     };
-    setTimeout(() => document.addEventListener('click', closeMenu), 10);
+    setTimeout(() => document.addEventListener('click', close), 10);
   }
 
   function applyMobileScale() {
@@ -1855,7 +1935,7 @@ const Editor = (function () {
         <div class="list-item-header">
           <span class="list-item-title">${h(c.name || (isAr() ? 'شهادة أو ترخيص' : 'Credential'))}</span>
           <div>
-            <button class="list-item-btn" onclick="Editor.duplicateCertificateItem(${i})" title="Duplicate">📋</button>
+            <button class="list-item-btn" onclick="Editor.duplicateCertificateItem(${i})" title="Duplicate"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>
             <button class="list-item-del" onclick="Editor.deleteCertificateItem(${i})" title="Delete">✕</button>
           </div>
         </div>
@@ -1906,7 +1986,7 @@ const Editor = (function () {
         <div class="list-item-header">
           <span class="list-item-title">${h(award.name || (isAr() ? 'جائزة أو تقدير' : 'Award'))}</span>
           <div>
-            <button class="list-item-btn" onclick="Editor.duplicateAwardItem(${i})" title="Duplicate">📋</button>
+            <button class="list-item-btn" onclick="Editor.duplicateAwardItem(${i})" title="Duplicate"><svg viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>
             <button class="list-item-del" onclick="Editor.deleteAwardItem(${i})" title="Delete">✕</button>
           </div>
         </div>
@@ -1940,20 +2020,22 @@ const Editor = (function () {
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.style.display = 'flex';
-    overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
-    overlay.innerHTML = `
-      <div class="modal-box" style="max-width:640px">
-        <div class="modal-header">
-          <h3>${t('ed.gallery.title', 'Template Gallery')}</h3>
-          <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
-        </div>
-        <div class="gallery-chips">
-          ${TemplateSelector.getTemplates().map(tpl => `
-            <button class="gallery-chip ${career.meta.templateId === tpl.id ? 'active' : ''}" onclick="Editor.pickGalleryTemplate('${tpl.id}'); this.closest('.modal-overlay').remove()">
-              ${h(TemplateSelector.templateName(tpl.id, t))}
-            </button>`).join('')}
-        </div>
-      </div>`;
+    overlay.onclick = event => { if (event.target === overlay) overlay.remove(); };
+    const effective = TemplateSelector.getEffectiveTemplateId(career);
+    overlay.innerHTML = `<div class="modal-box template-gallery-modal" dir="${isAr() ? 'rtl' : 'ltr'}">
+      <div class="modal-header"><div><h3>${isAr() ? 'اختر قالب السيرة' : 'Choose a resume template'}</h3><p>${isAr() ? 'خمسة قوالب مصقولة بدل عدد كبير من الخيارات المتشابهة. يمكنك تغيير اللون والخط بعد الاختيار.' : 'Five polished choices instead of many similar options. Colors and fonts stay customizable.'}</p></div><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button></div>
+      <div class="template-gallery-grid">${featuredTemplateIds().map(id => {
+        const meta = TEMPLATE_PRESENTATION[id];
+        const copy = meta[isAr() ? 'ar' : 'en'];
+        const badge = isAr() ? meta.badgeAr : meta.badgeEn;
+        return `<button type="button" class="template-gallery-card ${effective === id ? 'active' : ''}" onclick="Editor.pickGalleryTemplate('${id}'); this.closest('.modal-overlay').remove()">
+          ${badge ? `<span class="template-badge">${h(badge)}</span>` : ''}
+          <span class="template-gallery-preview">${templatePreviewMarkup(id)}</span>
+          <strong>${h(copy[0])}</strong><small>${h(copy[1])}</small>
+          <span class="template-select-label">${effective === id ? (isAr() ? 'القالب الحالي' : 'Current template') : (isAr() ? 'استخدام القالب' : 'Use template')}</span>
+        </button>`;
+      }).join('')}</div>
+    </div>`;
     document.body.appendChild(overlay);
   }
 
@@ -2070,7 +2152,7 @@ const Editor = (function () {
 
     const saveBtn = el('edit-save-btn');
     if (saveBtn && el('edit-overlay').style.display !== 'none') {
-      saveBtn.textContent = isAr() ? 'تم الحفظ على هذا الجهاز ✓' : 'Saved on this device ✓';
+      saveBtn.textContent = isAr() ? 'تم الحفظ ✓' : 'Saved ✓';
       saveBtn.style.background = '#16a34a';
     }
 
@@ -2089,7 +2171,7 @@ const Editor = (function () {
       ind.style.background = '#f0fdf4';
       ind.style.borderColor = '#bbf7d0';
       setTimeout(() => {
-        ind.textContent = isAr() ? '✓ تم الحفظ على هذا الجهاز' : '✓ Saved on this device';
+        ind.textContent = isAr() ? 'تم الحفظ' : 'Saved';
         ind.className = 'save-indicator saved';
       }, 2500);
     } else {
@@ -2126,13 +2208,21 @@ const Editor = (function () {
           const r = ContentImprover.improve(career.professionalSummary || '', {});
           improved = r.improved;
         }
-        if (improved && await showDecisionModal({
-          title: isAr() ? 'الله عليك، الصياغة اتظبطت' : 'This reads cleaner now',
-          body: improved,
-          confirmText: isAr() ? 'طبق الكلام ده' : 'Apply this',
-          cancelText: isAr() ? 'سيب القديم' : 'Keep current'
-        })) {
-          pushUndo(); career.professionalSummary = improved; saveAndRender(); openEditPanel('summary');
+        if (improved && improved.trim() && improved.trim() !== (career.professionalSummary || '').trim()) {
+          const draft = JSON.parse(JSON.stringify(career));
+          draft.professionalSummary = improved.trim();
+          showSmartFixPreviewModal(
+            draft,
+            career.professionalSummary || '',
+            draft.professionalSummary,
+            isAr() ? 'راجع النبذة قبل اعتمادها' : 'Review the improved summary',
+            isAr() ? 'تم اعتماد النبذة المقترحة' : 'Summary wording applied'
+          );
+        } else {
+          showNoticeModal({
+            title: isAr() ? 'اكتب حقائق أكثر أولاً' : 'Add more factual detail first',
+            body: isAr() ? 'أضف المسمى المستهدف وخبرتك أو مهاراتك المؤكدة، ثم سيبني المساعد نبذة أقوى بدون اختراع معلومات.' : 'Add your target title, experience, or verified skills first, then the coach can build a stronger summary without inventing facts.'
+          });
         }
       } catch (e) {
         showAIError(e);
@@ -2159,9 +2249,32 @@ const Editor = (function () {
             });
           }
         }
-        if (!applied && typeof AICoach !== 'undefined') {
-          AICoach.improveExperienceBullets(draft);
+        if (!applied) {
+          const actionStarters = isAr()
+            ? ['نفذت', 'راجعت', 'نسقت', 'تابعت']
+            : ['Delivered', 'Reviewed', 'Coordinated', 'Managed'];
+          (draft.experience || []).forEach(entry => {
+            const raw = (entry.bullets || []).filter(Boolean).length
+              ? (entry.bullets || []).filter(Boolean)
+              : String(entry.rawDescription || '').split(/\n+|(?<=[.!؟])\s+/).map(item => item.trim()).filter(Boolean);
+            if (!raw.length) return;
+            entry.bullets = raw.slice(0, 4).map((bullet, bulletIndex) => {
+              let text = String(bullet || '').trim().replace(/^[•\-–—]+\s*/, '').replace(/^(لقد|I have)\s+/i, '');
+              if (!text) return '';
+              const weak = isAr() ? /^(مسؤول عن|كنت مسؤولاً عن|قمت ب|ساعدت في|عملت على)\s*/i : /^(responsible for|helped with|worked on|tasked with|assisted with)\s*/i;
+              if (weak.test(text)) text = `${actionStarters[bulletIndex % actionStarters.length]} ${text.replace(weak, '').trim()}`;
+              if (!/[.!؟]$/.test(text)) text += '.';
+              return text;
+            }).filter(Boolean);
+            entry.rawDescription = entry.bullets.join('\n');
+          });
           applied = JSON.stringify(draft.experience) !== JSON.stringify(career.experience);
+          if (!applied) {
+            showNoticeModal({
+              title: isAr() ? 'أضف تفاصيل حقيقية أولاً' : 'Add factual detail first',
+              body: isAr() ? 'اكتب نقطتين على الأقل عن المهام أو النتائج التي نفذتها فعلاً، ثم سيحسن المساعد الصياغة بدون اختراع معلومات.' : 'Add at least two factual responsibilities or outcomes, then the assistant can improve the wording without inventing details.'
+            });
+          }
         }
         if (applied) {
           showSmartFixPreviewModal(
@@ -2186,13 +2299,16 @@ const Editor = (function () {
         setAILoading(true);
         const current = career.professionalSummary || '';
         const shortened = current.split(' ').slice(0, Math.floor(current.split(' ').length * 0.7)).join(' ');
-        if (await showDecisionModal({
-          title: isAr() ? 'دغدغ الدنيا، اختصار أخف وأوضح' : 'Shorter, cleaner version',
-          body: shortened,
-          confirmText: isAr() ? 'استخدم المختصر' : 'Use shorter text',
-          cancelText: isAr() ? 'رجعني' : 'Cancel'
-        })) {
-          pushUndo(); career.professionalSummary = shortened; saveAndRender(); openEditPanel('summary');
+        if (shortened && shortened.trim() && shortened.trim() !== current.trim()) {
+          const draft = JSON.parse(JSON.stringify(career));
+          draft.professionalSummary = shortened.trim();
+          showSmartFixPreviewModal(
+            draft,
+            current,
+            draft.professionalSummary,
+            isAr() ? 'راجع النسخة المختصرة' : 'Review the shorter version',
+            isAr() ? 'تم اعتماد النسخة المختصرة' : 'Shorter summary applied'
+          );
         }
       } catch (e) {
         showAIError(e);
@@ -2330,12 +2446,22 @@ const Editor = (function () {
             const summary = await ContentPicker.getSummary(career);
             text = summary?.text || (typeof AICoach !== 'undefined' ? AICoach.buildFallbackSummary(career) : '');
           }
-          if (text && await showDecisionModal({
-            title: isAr() ? 'نبذة زي الناس جاهزة' : 'A strong summary is ready',
-            body: text,
-            confirmText: isAr() ? 'حطها في السيرة' : 'Use this summary',
-            cancelText: isAr() ? 'لأ، سيب القديم' : 'Keep current'
-          })) { pushUndo(); career.professionalSummary = text; saveAndRender(); openEditPanel('summary'); }
+          if (text && text.trim()) {
+            const draft = JSON.parse(JSON.stringify(career));
+            draft.professionalSummary = text.trim();
+            showSmartFixPreviewModal(
+              draft,
+              career.professionalSummary || '',
+              draft.professionalSummary,
+              isAr() ? 'راجع النبذة المقترحة' : 'Review the proposed summary',
+              isAr() ? 'تم اعتماد النبذة' : 'Summary applied'
+            );
+          } else {
+            showNoticeModal({
+              title: isAr() ? 'بيانات غير كافية' : 'Not enough information',
+              body: isAr() ? 'أكمل المسمى الوظيفي وأضف مهارات أو خبرة حقيقية أولاً حتى تكون النبذة مفيدة وصادقة.' : 'Complete your target title and add verified skills or experience first so the summary stays useful and factual.'
+            });
+          }
         })().catch(e => showAIError(e)).finally(() => setAILoading(false));
         break;
       case 'improve-summary': aiImprove('summary'); break;
@@ -2518,7 +2644,7 @@ const Editor = (function () {
 
   async function tailorJob() {
     const jdText = await showInputModal({
-      title: isAr() ? '🎯 تخصيص السيرة لوظيفة محددة' : '🎯 Tailor resume to a job',
+      title: isAr() ? 'تخصيص السيرة لوظيفة محددة' : 'Tailor resume to a job',
       body: isAr()
         ? 'الصق إعلان الوظيفة الكامل. سنقارن الكلمات بالمحتوى الحقيقي في سيرتك، ولن نضيف أي مهارة قبل تأكيدك.'
         : 'Paste the full job description. We will compare it only with your actual resume content and will not add skills without confirmation.',
@@ -2553,21 +2679,10 @@ const Editor = (function () {
     if (action.startsWith('edit-')) openEditPanel(action.replace('edit-', ''));
   }
 
-  async function autoFillStarterCV() {
-    const review = typeof AICoach !== 'undefined' ? AICoach.getPreExportReview(career) : null;
-    const first = review?.items?.[0];
-    const sectionMap = {
-      personalInfo: 'personalInfo', summary: 'summary', experience: 'experience',
-      education: 'education', skills: 'skills', projects: 'projects', certificates: 'certificates'
-    };
-    const section = sectionMap[first?.section] || 'personalInfo';
-    showNoticeModal({
-      title: isAr() ? 'مساعدة آمنة بدون معلومات مختلقة' : 'Guided help without invented facts',
-      body: isAr()
-        ? 'سنفتح أول قسم يحتاج إكمالاً. اكتب الحقائق التي تعرفها، وبعدها استخدم زر التحسين لصياغتها باحتراف. لن نضيف شركة أو جامعة أو مهارة أو رقماً من عندنا.'
-        : 'We will open the first incomplete section. Enter the facts you know, then use Improve to polish the wording. We will not invent employers, schools, skills, or metrics.'
-    });
-    setTimeout(() => openEditPanel(section), 80);
+  function autoFillStarterCV() {
+    const ordered = SECTION_DEFS.filter(s => shouldShowSection(s.key));
+    const target = ordered.find(s => ['missing','warn'].includes(getSectionStatus(s.key))) || ordered[0];
+    if (target) openEditPanel(target.key);
   }
 
   function setAccentColor(color) {
@@ -2615,64 +2730,66 @@ const Editor = (function () {
     return isAr() ? ar : en;
   }
 
+
+  function showAddSectionModal() {
+    const keys = ['certificates','awards','projects','languages','education'];
+    const descriptions = {
+      certificates: isAr() ? 'شهادات مهنية أو تراخيص حصلت عليها فعلاً' : 'Verified certifications and licenses',
+      awards: isAr() ? 'جوائز أو تقدير مهني له قيمة واضحة' : 'Relevant professional recognition',
+      projects: isAr() ? 'مشروعات تثبت مهارتك ودورك والنتيجة' : 'Projects that prove your role and impact',
+      languages: isAr() ? 'اللغة ومستوى الاستخدام الحقيقي' : 'Languages and honest proficiency levels',
+      education: isAr() ? 'مؤهل إضافي أو دراسة أكاديمية' : 'Additional education or qualifications'
+    };
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay'; overlay.style.display = 'flex';
+    overlay.onclick = event => { if (event.target === overlay) overlay.remove(); };
+    overlay.innerHTML = `<div class="modal-box add-section-modal" dir="${isAr() ? 'rtl' : 'ltr'}">
+      <div class="modal-header"><div><h3>${isAr() ? 'إضافة قسم اختياري' : 'Add an optional section'}</h3><p>${isAr() ? 'أضف القسم فقط عندما توجد معلومات حقيقية تقوي السيرة.' : 'Add a section only when it contains real information that strengthens the resume.'}</p></div><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button></div>
+      <div class="add-section-grid">${getSectionDefs().filter(def => keys.includes(def.key)).map(def => `<button type="button" class="add-section-card" onclick="Editor.openEditPanel('${def.key}'); this.closest('.modal-overlay').remove();"><span class="add-section-icon">${def.icon}</span><span><strong>${h(t(def.labelKey, def.defaultLabel))}</strong><small>${h(descriptions[def.key])}</small></span><i>＋</i></button>`).join('')}<button type="button" class="add-section-card custom" onclick="Editor.createCustomSection(); this.closest('.modal-overlay').remove();"><span class="add-section-icon"><svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span><strong>${isAr() ? 'قسم مخصص' : 'Custom section'}</strong><small>${isAr() ? 'أنشئ قسمًا بعنوان وطريقة عرض من اختيارك' : 'Create your own title and display style'}</small></span><i>＋</i></button></div>
+    </div>`;
+    document.body.appendChild(overlay);
+  }
+
+  function createCustomSection() {
+    career.customSections = career.customSections || [];
+    const id = `custom_${Date.now()}`;
+    career.customSections.push({ id, title: isAr() ? 'قسم مخصص' : 'Custom Section', type: 'bullets', content: '', visible: true });
+    pushUndo();
+    saveAndRender();
+    openEditPanel(`custom:${id}`);
+  }
+
+  function deleteCustomSection(id) {
+    showDecisionModal({
+      title: isAr() ? 'حذف القسم المخصص؟' : 'Delete custom section?',
+      body: isAr() ? 'سيتم حذف عنوان القسم ومحتواه من السيرة.' : 'The section title and content will be removed.',
+      confirmText: isAr() ? 'حذف' : 'Delete',
+      cancelText: isAr() ? 'إلغاء' : 'Cancel',
+      tone: 'danger'
+    }).then(confirmed => {
+      if (!confirmed) return;
+      pushUndo();
+      career.customSections = (career.customSections || []).filter(section => String(section.id) !== String(id));
+      saveAndRender(); closeEditPanel();
+    });
+  }
+
   function showVersionManagerModal() {
-    const old = el('version-manager-modal');
-    if (old) old.remove();
-
-    const versions = typeof CareerStorage !== 'undefined' && CareerStorage.listVersions ? CareerStorage.listVersions() : [];
-    const activeId = typeof CareerStorage !== 'undefined' && CareerStorage.getActiveVersionId ? CareerStorage.getActiveVersionId() : 'default';
-    const isAr = (career.meta?.locale || 'ar') === 'ar';
-
-    const modal = document.createElement('div');
-    modal.id = 'version-manager-modal';
-    modal.style.cssText = 'display:flex;align-items:center;justify-content:center;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.75);z-index:999999;backdrop-filter:blur(4px);padding:20px;';
-    modal.innerHTML = `
-      <div class="modal-card" style="background:#fff;border-radius:16px;max-width:680px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);overflow:hidden;direction:${isAr ? 'rtl' : 'ltr'};">
-        <div style="padding:20px 24px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;background:#f8fafc;">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:24px;">📂</span>
-            <div>
-              <h3 style="margin:0;font-size:18px;font-weight:700;color:#0f172a;">${isAr ? 'إدارة النسخ والتخصيص الوظيفي' : 'CV Versions & Job Tailoring'}</h3>
-              <div style="font-size:12px;color:#64748b;">${isAr ? 'أنشئ عدة نسخ مخصصة من سيرتك لكل شركة أو وظيفة تتقدم إليها' : 'Manage multiple versions of your resume tailored for different roles'}</div>
-            </div>
-          </div>
-          <button onclick="document.getElementById('version-manager-modal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#64748b;">✕</button>
-        </div>
-
-        <div style="padding:20px 24px;background:#eff6ff;border-bottom:1px solid #bfdbfe;display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
-          <input type="text" id="new-version-name-input" placeholder="${isAr ? 'اسم النسخة الجديدة (مثال: Senior FinTech Tech Lead)...' : 'New version name...'}" style="flex:1;min-width:240px;padding:10px 14px;border:1px solid #3b82f6;border-radius:8px;font-size:13px;outline:none;">
-          <button onclick="Editor.handleCreateVersion()" style="padding:10px 18px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 2px 4px rgba(37,99,235,0.2);">
-            <span>➕</span> ${isAr ? 'إنشاء وتخصيص نسخة' : 'Duplicate & Tailor'}
-          </button>
-        </div>
-
-        <div style="padding:24px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:12px;">
-          ${versions.map(v => {
-            const isActive = v.id === activeId;
-            return `
-              <div style="border:1px solid ${isActive ? '#86efac' : '#e2e8f0'};border-radius:12px;padding:16px;background:${isActive ? '#f0fdf4' : '#fff'};display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
-                <div>
-                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-                    <span style="font-size:15px;font-weight:700;color:#0f172a;">${h(v.name)}</span>
-                    ${isActive ? `<span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;">${isAr ? 'النسخة الحالية' : 'Active'}</span>` : ''}
-                  </div>
-                  <div style="font-size:11px;color:#64748b;">${isAr ? 'آخر تحديث:' : 'Updated:'} ${new Date(v.updatedAt).toLocaleDateString(isAr ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  ${!isActive ? `<button onclick="Editor.handleSwitchVersion('${v.id}')" style="background:#2563eb;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;">${isAr ? 'انتقال لهذه النسخة ⮐' : 'Switch to this version'}</button>` : ''}
-                  ${!isActive && v.id !== 'default' ? `<button onclick="Editor.handleDeleteVersion('${v.id}')" style="background:#fee2e2;color:#dc2626;border:none;padding:8px 12px;border-radius:6px;font-size:12px;cursor:pointer;" title="حذف">🗑️</button>` : ''}
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-
-        <div style="padding:16px 24px;border-top:1px solid #e2e8f0;background:#f8fafc;display:flex;justify-content:flex-end;">
-          <button onclick="document.getElementById('version-manager-modal').remove()" style="padding:10px 20px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:#475569;cursor:pointer;">${isAr ? 'إغلاق' : 'Close'}</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
+    el('version-manager-modal')?.remove();
+    const versions = CareerStorage?.listVersions ? CareerStorage.listVersions() : [];
+    const activeId = CareerStorage?.getActiveVersionId ? CareerStorage.getActiveVersionId() : 'default';
+    const overlay = document.createElement('div');
+    overlay.id = 'version-manager-modal'; overlay.className = 'modal-overlay'; overlay.style.display = 'flex';
+    overlay.onclick = event => { if (event.target === overlay) overlay.remove(); };
+    overlay.innerHTML = `<div class="modal-box version-modal-final" dir="${isAr() ? 'rtl' : 'ltr'}">
+      <div class="modal-header"><div><h3>${isAr() ? 'نسخ مخصصة للوظائف' : 'Job-specific resume versions'}</h3><p>${isAr() ? 'ميزة اختيارية: احتفظ بسيرتك الأساسية وأنشئ نسخة عند التقديم لوظيفة مختلفة.' : 'Optional: keep a master resume and create a copy for a specific role.'}</p></div><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button></div>
+      <div class="version-create-row"><input id="new-version-name-input" type="text" placeholder="${isAr() ? 'مثال: محاسب أول — شركة التقنية' : 'e.g. Senior Accountant — Tech company'}"><button type="button" onclick="Editor.handleCreateVersion()">${isAr() ? 'إنشاء نسخة' : 'Create copy'}</button></div>
+      <div class="version-list-final">${versions.map(version => {
+        const active = version.id === activeId;
+        return `<div class="version-row-final ${active ? 'active' : ''}"><div><strong>${h(version.name || (isAr() ? 'السيرة الأساسية' : 'Master resume'))}</strong><span>${active ? (isAr() ? 'مفتوحة الآن' : 'Open now') : new Date(version.updatedAt).toLocaleDateString(isAr() ? 'ar-EG' : 'en-US')}</span></div><div>${!active ? `<button type="button" onclick="Editor.handleSwitchVersion('${version.id}')">${isAr() ? 'فتح' : 'Open'}</button>` : ''}${!active && version.id !== 'default' ? `<button type="button" class="danger" onclick="Editor.handleDeleteVersion('${version.id}')">${isAr() ? 'حذف' : 'Delete'}</button>` : ''}</div></div>`;
+      }).join('')}</div>
+    </div>`;
+    document.body.appendChild(overlay);
   }
 
   function handleCreateVersion() {
@@ -2734,7 +2851,7 @@ const Editor = (function () {
 
     let html = '<div style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: #fff; padding: 16px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);">'
       + '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">'
-      + '<span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 20px;">🎯 ' + _ct('coach.overview.today_goal', 'هدف اليوم') + '</span>'
+      + '<span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 20px;">' + _ct('coach.overview.today_goal', 'هدف اليوم') + '</span>'
       + '<span style="font-size: 11px; font-weight: 700; opacity: 0.9;">' + _ct('coach.overview.remaining', 'المتبقي') + ': ' + ins.todayGoal.remainingTasksCount + ' ' + _ct('coach.overview.tasks', 'مهام') + '</span>'
       + '</div>'
       + '<div style="font-size: 14px; font-weight: 800; line-height: 1.4; margin-bottom: 10px;">'
@@ -2777,7 +2894,7 @@ const Editor = (function () {
             + '<div style="font-size:12px;color:#475569;margin-bottom:8px;line-height:1.4;">' + h(p.detail) + '</div>'
             + (p.why ? '<div style="background:#f8fafc;border-left:' + (isRtl ? 'none' : '3px solid #94a3b8') + ';border-right:' + (isRtl ? '3px solid #94a3b8' : 'none') + ';padding:8px 10px;border-radius:6px;font-size:11px;color:#334155;line-height:1.4;margin-bottom:10px;"><strong style="color:#0f172a;">💡 ' + _ct('coach.overview.why', 'لماذا؟') + '</strong> ' + h(p.why) + '</div>' : '')
             + '<button style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:7px;padding:9px 12px;font-size:12px;font-weight:800;cursor:pointer;transition:background 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;" onmouseover="this.style.background=\'#1d4ed8\'" onmouseout="this.style.background=\'#2563eb\'" onclick="Editor.triggerSmartFix(\'' + h(p.fixAction || 'edit-personal') + '\', \'' + h(p.sectionKey) + '\', \'' + h(p.id) + '\')">'
-            + '✨ ' + (p.actionLabel || _ct('coach.overview.smart_fix', 'تحسين الآن'))
+            + (p.actionLabel || _ct('coach.overview.smart_fix', 'تحسين الآن'))
             + '</button>'
             + '</div>';
         }).join('') + '</div>';
@@ -2818,7 +2935,7 @@ const Editor = (function () {
     if (m.bestStep) {
       html += '<div style="background:#fff;border:1px solid #93c5fd;border-radius:8px;padding:10px;margin-bottom:10px;">'
         + '<div style="font-size:12px;font-weight:800;color:#1d4ed8;margin-bottom:4px;">📌 ' + h(m.bestStep) + '</div>'
-        + (m.why ? '<div style="font-size:11px;color:#3b82f6;line-height:1.4;">💡 <strong>' + _ct('coach.overview.why', 'لماذا؟') + '</strong> ' + h(m.why) + '</div>' : '')
+        + (m.why ? '<div style="font-size:11px;color:#3b82f6;line-height:1.4;"><strong>' + _ct('coach.overview.why', 'لماذا؟') + '</strong> ' + h(m.why) + '</div>' : '')
         + '</div>';
     } else if (m.explanation) {
       html += '<div style="font-size:13px;color:#1e3a8a;line-height:1.5;margin-bottom:12px;">' + h(m.explanation) + '</div>';
@@ -2872,7 +2989,7 @@ const Editor = (function () {
 
       if (ats.missingKeywords.length > 0) {
         html += '<div style="margin-bottom:16px;">'
-          + '<div style="font-size:11px;font-weight:700;color:#dc2626;margin-bottom:8px;">❌ ' + _ct('coach.ats.missing_jd_kw', 'كلمات مفتاحية مفقودة من إعلان الوظيفة:') + '</div>'
+          + '<div style="font-size:11px;font-weight:700;color:#dc2626;margin-bottom:8px;">' + _ct('coach.ats.missing_jd_kw', 'كلمات مفتاحية مفقودة من إعلان الوظيفة:') + '</div>'
           + '<div style="display:flex;flex-wrap:wrap;gap:6px;">'
           + ats.missingKeywords.map(function(kw) {
             return '<div id="' + keywordCardId(kw) + '" class="ats-keyword-card ats-keyword-missing"><span>' + h(kw) + '</span><button type="button" onclick="Editor.addKeywordWithConfirm(\'' + a(kw) + '\', \'skill\')">' + _ct('coach.ats.verify_add', 'أمتلكها — إضافة') + '</button></div>';
@@ -2881,44 +2998,66 @@ const Editor = (function () {
 
       if (ats.foundKeywords.length > 0) {
         html += '<div style="margin-bottom:16px;">'
-          + '<div style="font-size:11px;font-weight:700;color:#16a34a;margin-bottom:8px;">✅ ' + _ct('coach.ats.found_jd_kw', 'كلمات متطابقة بنجاح:') + '</div>'
+          + '<div style="font-size:11px;font-weight:700;color:#16a34a;margin-bottom:8px;">' + _ct('coach.ats.found_jd_kw', 'كلمات متطابقة بنجاح:') + '</div>'
           + '<div style="display:flex;flex-wrap:wrap;gap:6px;">'
           + ats.foundKeywords.map(function(kw) {
             return '<span style="background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;padding:4px 8px;border-radius:14px;font-size:11px;font-weight:600;">✓ ' + h(kw) + '</span>';
           }).join('') + '</div></div>';
       }
     } else {
-      const readinessColor = ats.score >= 80 ? '#16a34a' : ats.score >= 60 ? '#d97706' : '#dc2626';
-      html += '<div class="ats-readiness-score"><div><span>' + _ct('coach.ats.readiness_score','جاهزية ATS') + '</span><strong style="color:' + readinessColor + ';">' + ats.score + '%</strong></div><div class="ats-readiness-track"><i style="width:' + ats.score + '%;background:' + readinessColor + ';"></i></div></div>';
-      html += '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:16px;">';
-      (ats.readinessChecklist || []).forEach(function(item) {
-        html += '<div style="font-size:12px;color:#334155;margin-bottom:6px;display:flex;align-items:center;gap:6px;">'
-          + '<span style="color:' + (item.ok ? '#16a34a' : '#dc2626') + ';font-weight:800;">' + (item.ok ? '✓' : '✕') + '</span> '
-          + h(item.label) + '</div>';
-      });
-      html += '</div>';
+      const readinessColor = ats.score >= 85 ? '#15803d' : ats.score >= 65 ? '#b45309' : '#b91c1c';
+      const readinessLabel = ats.score >= 85
+        ? _ct('coach.ats.strong', 'قوية')
+        : ats.score >= 65
+          ? _ct('coach.ats.needs_polish', 'تحتاج مراجعة')
+          : _ct('coach.ats.not_ready', 'غير جاهزة');
+      const statusIcon = item => item.status === 'ok' ? '✓' : item.status === 'partial' ? '!' : '×';
+      const checkRows = items => (items || []).map(function(item) {
+        const status = item.status || (item.ok ? 'ok' : 'missing');
+        return '<div class="ats-honest-check ' + status + '">'
+          + '<span class="ats-honest-check-icon">' + statusIcon(item) + '</span>'
+          + '<div><strong>' + h(item.label) + '</strong><small>' + h(item.detail || '') + '</small></div>'
+          + '<span class="ats-honest-points">' + Number(item.earned || 0) + '/' + Number(item.points || 0) + '</span>'
+          + '</div>';
+      }).join('');
+
+      html += '<div class="ats-honest-score">'
+        + '<div class="ats-honest-score-head"><div><span>' + _ct('coach.ats.readiness_score','جاهزية السيرة لأنظمة ATS') + '</span><strong style="color:' + readinessColor + ';">' + ats.score + '%</strong></div><b style="color:' + readinessColor + ';">' + readinessLabel + '</b></div>'
+        + '<div class="ats-honest-track"><i style="width:' + ats.score + '%;background:' + readinessColor + ';"></i></div>'
+        + '<p>' + h(ats.readinessSummary || '') + '</p>'
+        + '<div class="ats-score-explanation">' + _ct('coach.ats.composite_explanation','النتيجة تجمع بين قابلية القراءة الآلية وجودة المحتوى، ولا ترتفع لمجرد اختيار قالب ATS.') + '</div>'
+        + '</div>';
+
+      html += '<div class="ats-honest-subscore-grid">'
+        + '<div><span>' + _ct('coach.ats.parser_score','قابلية القراءة الآلية') + '</span><strong>' + Number(ats.parserScore || 0) + '%</strong><small>' + _ct('coach.ats.parser_hint','القالب، العناوين، واستخراج النص') + '</small></div>'
+        + '<div><span>' + _ct('coach.ats.content_score','قوة المحتوى') + '</span><strong>' + Number(ats.contentScore || 0) + '%</strong><small>' + _ct('coach.ats.content_hint','النبذة، الخبرة، التعليم، والمهارات') + '</small></div>'
+        + '</div>';
+
+      html += '<section class="ats-honest-section"><div class="ats-honest-section-title"><strong>' + _ct('coach.ats.content_review','مراجعة المحتوى') + '</strong><span>' + _ct('coach.ats.fix_red_first','ابدأ بالعناصر الحمراء والصفراء') + '</span></div>'
+        + checkRows(ats.contentChecklist || (ats.readinessChecklist || []).filter(item => item.category === 'content')) + '</section>';
+      html += '<details class="ats-parser-details"><summary>' + _ct('coach.ats.show_parser_checks','عرض فحوص القراءة الآلية') + ' <span>' + Number(ats.parserScore || 0) + '%</span></summary><div>'
+        + checkRows(ats.parserChecklist || (ats.readinessChecklist || []).filter(item => item.category === 'parser')) + '</div></details>';
 
       const sugSkills = ats.commonSkills || [];
       if (sugSkills.length > 0) {
-        html += '<div style="font-size:11px;font-weight:700;color:#475569;margin-bottom:10px;">💡 ' + _ct('coach.ats.common_skills','مهارات شائعة في مجالك — أكد فقط ما تستخدمه فعلاً:') + '</div>'
-          + '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">';
+        html += '<div class="ats-skill-suggestions"><div class="ats-honest-section-title"><strong>' + _ct('coach.ats.common_skills','مهارات شائعة في مجالك') + '</strong><span>' + _ct('coach.ats.verify_only','أضف فقط ما تستخدمه فعلًا') + '</span></div><div class="ats-skill-suggestion-list">';
         sugSkills.forEach(function(kw) {
           html += '<div id="' + keywordCardId(kw) + '" class="ats-keyword-card">'
-            + '<span style="font-size:12px;font-weight:600;color:#0f172a;">' + h(kw) + '</span>'
-            + '<button style="background:none;border:none;color:#2563eb;font-size:11px;font-weight:700;cursor:pointer;padding:4px;" onclick="Editor.addKeywordWithConfirm(\'' + h(kw) + '\', \'skill\')">' + _ct('coach.ats.add','أمتلكها — إضافة') + '</button>'
+            + '<span>' + h(kw) + '</span>'
+            + '<button type="button" onclick="Editor.addKeywordWithConfirm(\'' + a(kw) + '\', \'skill\')">+ ' + _ct('coach.ats.add','إضافة') + '</button>'
             + '</div>';
         });
-        html += '</div>';
+        html += '</div></div>';
       }
     }
 
     // Target JD Paste Box
     const curJD = career.meta?.targetJD || '';
     html += '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px;margin-top:10px;">'
-      + '<div style="font-size:11px;font-weight:800;color:#1e40af;margin-bottom:6px;">🎯 ' + _ct('coach.ats.jd_target_title', 'فحص مطابقة إعلان وظيفة (Job Description)') + '</div>'
+      + '<div style="font-size:11px;font-weight:800;color:#1e40af;margin-bottom:6px;">' + _ct('coach.ats.jd_target_title', 'فحص مطابقة إعلان وظيفة (Job Description)') + '</div>'
       + '<div style="font-size:11px;color:#1e3a8a;line-height:1.4;margin-bottom:8px;">' + _ct('coach.ats.jd_target_desc', 'الصق نص إعلان الوظيفة هنا لحساب نسبة المطابقة الحقيقية ومعرفة الكلمات المفقودة في سيرتك.') + '</div>'
       + '<textarea id="coach-jd-input" rows="3" placeholder="' + _ct('coach.ats.jd_placeholder', 'الصق متطلبات الوظيفة هنا...') + '" style="width:100%;padding:8px;border:1px solid #93c5fd;border-radius:6px;font-size:11px;margin-bottom:8px;resize:vertical;">' + h(curJD) + '</textarea>'
-      + '<button style="width:100%;background:#2563eb;color:#fff;border:none;padding:8px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'#1d4ed8\'" onmouseout="this.style.background=\'#2563eb\'" onclick="Editor.applyJDMatch()">' + _ct('coach.ats.analyze_jd', '🔍 تحليل ومطابقة الوظيفة') + '</button>'
+      + '<button style="width:100%;background:#2563eb;color:#fff;border:none;padding:8px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'#1d4ed8\'" onmouseout="this.style.background=\'#2563eb\'" onclick="Editor.applyJDMatch()">' + _ct('coach.ats.analyze_jd', 'تحليل ومطابقة الوظيفة') + '</button>'
       + '</div>';
 
     html += '</div>';
@@ -3015,7 +3154,7 @@ const Editor = (function () {
     exportPdf, exportJson, exportHtml, exportPng, exportDocx,
     switchCoachTab, triggerSmartFix, applyJDMatch, clearJDMatch,
     addKeywordWithConfirm, confirmAddKeyword, cancelAddKeyword,
-    showVersionManagerModal, handleCreateVersion, handleSwitchVersion, handleDeleteVersion,
+    showVersionManagerModal, handleCreateVersion, handleSwitchVersion, handleDeleteVersion, showAddSectionModal, createCustomSection, deleteCustomSection,
     showMobMenu, setMobileView, toggleCoachPanel, exportBackup, dismissDataBanner, updateDataSafetyBanner
   };
 })();

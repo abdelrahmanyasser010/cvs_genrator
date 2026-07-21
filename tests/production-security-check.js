@@ -40,6 +40,8 @@ assert.equal(valid.ok, true);
 const client = fs.readFileSync(path.join(__dirname, '../app/assets/ai-client.js'), 'utf8');
 assert(!/api\.openai\.com|api\.anthropic\.com|openrouter\.ai|generativelanguage\.googleapis\.com/.test(client));
 assert(!/cv_studio_ai_key/.test(client));
+assert(!/confirm\s*\(/.test(client), 'Raw browser confirm must not expose AI payloads');
+assert(client.includes('ai-request-preview-modal'), 'Human-readable AI request preview is missing');
 const settings = fs.readFileSync(path.join(__dirname, '../app/assets/ai-settings.js'), 'utf8');
 assert(!/type="password"|API Key|cv_studio_ai_key/.test(settings));
 const editor = fs.readFileSync(path.join(__dirname, '../app/assets/editor.js'), 'utf8');

@@ -1,24 +1,16 @@
-/* Layout structural styles — each layout differs in HTML architecture */
-.layout-sidebar-wrap { display: flex; gap: 28px; align-items: flex-start; }
-.cv-sidebar { flex: 0 0 32%; border-right: 1px solid #eee; padding-right: 20px; }
-.cv-main { flex: 1; min-width: 0; }
-.layout-twocol { display: grid; grid-template-columns: 1fr 1.4fr; gap: 28px; }
-.layout-twocol .col-left { border-right: 1px solid #eee; padding-right: 16px; }
-.cv-timeline { position: relative; padding-left: 20px; }
-.cv-timeline-item { position: relative; padding-left: 24px; margin-bottom: 16px; border-left: 2px solid #ddd; }
-.cv-timeline-dot { position: absolute; left: -6px; top: 4px; width: 10px; height: 10px; background: #111; border-radius: 50%; }
-.layout-corporate .corp-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; }
-.layout-google .cv-header { text-align: left; border-bottom: 1px solid #4285f4; }
-.layout-google .cv-header h1 { color: #4285f4; font-size: 20px; }
-body.rtl .layout-sidebar-wrap { flex-direction: row-reverse; }
-body.rtl .cv-sidebar { border-right: none; border-left: 1px solid #eee; padding-right: 0; padding-left: 20px; }
-body.rtl .layout-twocol .col-left { border-right: none; border-left: 1px solid #eee; padding-left: 16px; padding-right: 0; }
-
-@media (max-width: 640px) {
-  .layout-sidebar-wrap, .layout-twocol, .layout-corporate .corp-grid { display: block; }
-  .cv-sidebar { border: none; padding: 0; margin-bottom: 20px; }
-}
-
+/* Structural layouts. A4 stays fixed; responsive rules belong to the editor shell. */
+.layout-sidebar-wrap { display:grid; grid-template-columns:32% minmax(0,1fr); gap:8mm; align-items:start; }
+.cv-sidebar { min-width:0; padding-inline-end:5mm; border-inline-end:1px solid #e4e7ec; }
+.cv-main { min-width:0; }
+.layout-twocol { display:grid; grid-template-columns:minmax(48mm,.8fr) minmax(0,1.4fr); gap:8mm; align-items:start; }
+.layout-twocol .col-left { min-width:0; padding-inline-end:5mm; border-inline-end:1px solid #e4e7ec; }
+.layout-twocol .col-right { min-width:0; }
+.cv-timeline { position:relative; }
+.cv-timeline-item { position:relative; margin-bottom:4mm; padding-inline-start:6mm; border-inline-start:1.5px solid #d0d5dd; break-inside:avoid; }
+.cv-timeline-dot { position:absolute; inset-inline-start:-1.7mm; top:1.3mm; width:3mm; height:3mm; border:1mm solid #fff; border-radius:50%; background:var(--primary,#1d4ed8); box-shadow:0 0 0 .4mm var(--primary,#1d4ed8); }
+.layout-corporate .corp-grid { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(45mm,.85fr); gap:8mm; align-items:start; }
+.layout-google .cv-header { text-align:start; }
+.layout-google .cv-contacts { justify-content:flex-start; }
 @media print {
-  .layout-sidebar-wrap, .layout-twocol { display: flex; }
+  .layout-sidebar-wrap,.layout-twocol,.layout-corporate .corp-grid { display:grid !important; }
 }

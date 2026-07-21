@@ -1,63 +1,13 @@
 @import url('../shared/base.css');
-/* ATS — maximum readability, no decorations, system fonts */
-.cv-paper { 
-  --accent: #000000;
-  font-family: Arial, Helvetica, sans-serif;
-  line-height: 1.5;
-}
-.cv-header { 
-  border-bottom: 2px solid #000;
-  padding-bottom: 16px;
-  margin-bottom: 20px;
-}
-.cv-header h1 { 
-  font-size: 24px;
-  font-weight: 700;
-  color: #000;
-  text-transform: uppercase;
-  letter-spacing: 0;
-}
-.cv-header h2 { 
-  font-size: 14px;
-  font-weight: 400;
-  color: #000;
-}
-.cv-section { 
-  margin-bottom: 20px;
-}
-.cv-section-title { 
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #000;
-  border-bottom: 1px solid #000;
-  padding-bottom: 5px;
-  margin-bottom: 10px;
-  letter-spacing: 0;
-}
-.cv-item { 
-  margin-bottom: 12px;
-}
-.cv-item-title { 
-  font-weight: 700;
-  font-size: 14px;
-}
-.cv-item-subtitle { 
-  font-weight: 400;
-  font-size: 13px;
-}
-.cv-contacts { 
-  font-size: 12px;
-  color: #000;
-}
-.cv-contacts .ci-icon {
-  display: none;
-}
-/* Remove all decorative elements */
-.cv-contacts .ci::before { content: none; }
-.cv-skills .skill-tag { 
-  background: none;
-  border: none;
-  padding: 0;
-  color: #000;
-}
+.cv-paper { --primary:#111827; --line:#9ca3af; padding:14mm 16mm; font-family:Arial,Helvetica,sans-serif; font-size:10.2pt; }
+[dir="rtl"] .cv-paper { font-family:'Cairo','Segoe UI',Arial,sans-serif; }
+.cv-header { text-align:start; border-bottom:1.6px solid #111827; padding-bottom:4mm; margin-bottom:5mm; }
+.cv-header h1 { font-size:22pt; letter-spacing:0; }
+.cv-header .cv-subtitle { color:#111827; font-size:10.8pt; }
+.cv-contacts { justify-content:flex-start; color:#303846; font-size:8.1pt; }
+[dir="rtl"] .cv-contacts { justify-content:flex-start; }
+.cv-contacts .ci-icon { display:none; }
+.cv-section { margin-bottom:4.4mm; }
+.cv-section-title { color:#111827; border-bottom:1px solid #111827; padding-bottom:1mm; font-size:9.7pt; letter-spacing:.025em; }
+ul.cv-ul li::before { color:#111827; }
+.cv-skill-cat { color:#111827; }

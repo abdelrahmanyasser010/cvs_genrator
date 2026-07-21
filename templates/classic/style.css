@@ -1,36 +1,9 @@
 @import url('../shared/base.css');
-
-.cv-paper {
-  --accent: #1f2937;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 13px;
-  line-height: 1.52;
-}
-.cv-header {
-  border-bottom: 1.5px solid #1f2937;
-  padding-bottom: 14px;
-  margin-bottom: 18px;
-}
-.cv-header h1 {
-  font-size: 24px;
-  font-weight: 700;
-  color: #111827;
-  letter-spacing: 0;
-  text-transform: none;
-}
-.cv-header .cv-subtitle {
-  font-size: 13px;
-  color: #374151;
-  font-weight: 600;
-}
-.cv-section-title {
-  font-size: 12px;
-  letter-spacing: 0;
-  color: #111827;
-  border-bottom: 1px solid #9ca3af;
-}
-.cv-role,
-.cv-proj-name,
-.degree {
-  color: #111827;
-}
+.cv-paper { --primary:#374151; --line:#c5cad3; font-family:Georgia,'Times New Roman',serif; padding:16mm 17mm; }
+[dir="rtl"] .cv-paper { font-family:'Cairo','Segoe UI',Arial,sans-serif; }
+.cv-header { border-bottom:1px solid #6b7280; }
+.cv-header h1 { font-size:24pt; font-weight:700; letter-spacing:0; }
+.cv-header .cv-subtitle { color:#4b5563; font-size:11pt; font-weight:600; }
+.cv-section-title { color:#374151; border-bottom:1px solid #9ca3af; font-size:10pt; text-transform:none; letter-spacing:.02em; }
+[dir="rtl"] .cv-section-title { font-weight:800; }
+ul.cv-ul li::before { color:#6b7280; }

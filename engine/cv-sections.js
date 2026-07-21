@@ -178,6 +178,19 @@ const CVSections = (function () {
     return `<section class="cv-section"><h2 class="cv-section-title">${esc(labels.languages)}</h2><div class="cv-langs">${items}</div></section>`;
   }
 
-  return { header, summary, experience, experienceTimeline, projects, skills, education, certificates, awards, languages, esc };
+  function customSections(career) {
+    return (career.customSections || []).filter(section => section.visible !== false && section.title && section.content).map(section => {
+      const lines = String(section.content || '').split(/\n+/).map(line => line.trim()).filter(Boolean);
+      let body = '';
+      if (section.type === 'paragraph') body = `<p class="cv-custom-paragraph">${esc(lines.join(' '))}</p>`;
+      else if (section.type === 'tags') body = `<div class="cv-custom-tags">${lines.map(line => `<span>${esc(line)}</span>`).join('')}</div>`;
+      else body = `<ul class="cv-ul">${lines.map(line => `<li>${esc(line.replace(/^[•\-–—]+\s*/, ''))}</li>`).join('')}</ul>`;
+      return `<section class="cv-section cv-custom-section"><h2 class="cv-section-title">${esc(section.title)}</h2>${body}</section>`;
+    }).join('');
+  }
+
+  return { header, summary, experience, experienceTimeline, projects, skills, education, certificates, awards, languages, customSections, esc };
 })();
 
+
+if (typeof module !== "undefined") module.exports = CVSections;

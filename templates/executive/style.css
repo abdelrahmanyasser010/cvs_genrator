@@ -1,32 +1,11 @@
 @import url('../shared/base.css');
-
-.cv-paper {
-  --accent: #1f2937;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 13px;
-}
-.cv-header {
-  border-bottom: 2px solid #1f2937;
-}
-.cv-header h1 {
-  font-size: 24px;
-  font-weight: 700;
-  color: #111827;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-.cv-header .cv-subtitle {
-  color: #374151;
-  font-style: italic;
-  font-weight: 600;
-}
-.cv-section-title {
-  color: #1f2937;
-  border-bottom: 1px solid #9ca3af;
-  letter-spacing: 0;
-}
-.cv-role,
-.cv-proj-name,
-.degree {
-  color: #111827;
-}
+.cv-paper { --primary:#7a542e; --line:#d6cec5; padding:16mm 17mm; font-family:Georgia,'Times New Roman',serif; }
+[dir="rtl"] .cv-paper { font-family:'Cairo','Segoe UI',Arial,sans-serif; }
+.layout-corporate .cv-header { text-align:start; border-top:3px solid #7a542e; border-bottom:1px solid #9f8b75; padding:5mm 0 4.5mm; }
+.layout-corporate .cv-header h1 { font-size:25pt; font-weight:700; letter-spacing:0; }
+.layout-corporate .cv-header .cv-subtitle { color:#6b4a2a; font-style:normal; font-size:11pt; }
+.layout-corporate .cv-contacts { justify-content:flex-start; }
+.layout-corporate .corp-grid { display:grid; grid-template-columns:minmax(0,1.75fr) minmax(47mm,.8fr); gap:9mm; align-items:start; }
+.layout-corporate .corp-grid > .cv-section:nth-child(2) { padding-inline-start:5mm; border-inline-start:1px solid #d6cec5; }
+.cv-section-title { color:#5f432a; border-bottom:1px solid #9f8b75; text-transform:none; letter-spacing:.015em; font-size:10.3pt; }
+ul.cv-ul li::before { color:#7a542e; }

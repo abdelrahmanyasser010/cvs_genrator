@@ -1,10 +1,11 @@
 {
   "name": "cv-studio",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.3",
   "private": true,
   "scripts": {
     "start": "node local-server.js",
-    "check": "node tools/production-check.js && node tests/senior-delivery-check.js && node tests/production-security-check.js",
-    "test:e2e": "python tests/e2e_smoke.py"
+    "check": "node tools/production-check.js && node tests/senior-delivery-check.js && node tests/production-security-check.js && node tests/final-polish-check.js",
+    "test:e2e": "python tests/e2e_smoke.py",
+    "test:final": "node tests/final-polish-check.js"
   }
 }

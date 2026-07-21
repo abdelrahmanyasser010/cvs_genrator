@@ -2,7 +2,7 @@
  * CV Health — rule-based scoring with actionable checklist and colored indicators.
  */
 const CVHealth = (function () {
-  const ACTION_VERBS = /^(developed|built|implemented|integrated|designed|created|led|managed|optimized|refactored|delivered|architected|collaborated|improved|reduced|increased|automated|deployed|maintained|engineered|programmed|configured|established|streamlined)/i;
+  const ACTION_VERBS = /^(developed|built|implemented|integrated|designed|created|led|managed|optimized|refactored|delivered|architected|collaborated|improved|reduced|increased|automated|deployed|maintained|engineered|programmed|configured|established|streamlined|طورت|نفذت|راجعت|أعددت|حللت|نسقت|تابعت|أدرت|حسنت|خفضت|زدت|أنشأت|صممت|قدت)/i;
 
   function countSkills(skills) {
     if (!skills) return 0;
@@ -73,12 +73,11 @@ const CVHealth = (function () {
       if (projects.length >= 1) { points += 8; checks.push({ ok: true, msg: 'Projects section filled', section: 'projects' }); }
       else checks.push({ ok: false, msg: 'No projects added — critical for your field', section: 'projects', action: 'edit-projects' });
     } else {
+      points += 8;
       if (projects.length > 0 || certs.length > 0) {
-        points += 8;
-        checks.push({ ok: true, msg: 'Projects or professional certifications present', section: 'projects' });
+        checks.push({ ok: true, msg: 'Optional projects or credentials are included', section: 'projects' });
       } else {
-        points += 2;
-        checks.push({ ok: false, msg: 'لا توجد مشاريع عملية أو دورات وشهادات تدريبية — إضافتها يرفع من قوة سيرتك الذاتية وتميزك عن المتقدمين الآخرين', section: 'projects', action: 'edit-projects' });
+        checks.push({ ok: true, msg: 'Projects are optional for this profession', section: 'projects' });
       }
     }
 

@@ -48,7 +48,7 @@ const AISettings = (function () {
               <li>${isAr() ? 'لا نطلب منك مفتاح API ولا نخزنه في المتصفح.' : 'We never ask for or store your API key in the browser.'}</li>
               <li>${isAr() ? 'راجع أي اقتراح قبل اعتماده؛ الذكاء الاصطناعي قد يخطئ.' : 'Review every suggestion before applying it; AI can make mistakes.'}</li>
             </ul>
-            <label class="ai-consent-preview"><input type="checkbox" id="ai-consent-preview-check"> ${isAr() ? 'أظهر البيانات المرسلة قبل كل طلب' : 'Show the data sent before every request'}</label>
+            <label class="ai-consent-preview"><input type="checkbox" id="ai-consent-preview-check"> ${isAr() ? 'اعرض ملخص البيانات المهنية قبل كل طلب' : 'Show a summary of professional data before every request'}</label>
             <a href="/app/privacy.html" target="_blank" rel="noopener">${isAr() ? 'اقرأ سياسة الخصوصية المختصرة' : 'Read the short privacy notice'}</a>
           </div>
           <div class="wizard-actions ai-consent-actions">
@@ -86,7 +86,7 @@ const AISettings = (function () {
           <strong>${isAr() ? 'مفتاح الذكاء الاصطناعي محمي على الخادم' : 'AI key is protected on the server'}</strong>
           <span>${isAr() ? 'لن يطلب منك CV Studio وضع مفتاح API داخل المتصفح.' : 'CV Studio never asks you to place an API key in the browser.'}</span>
         </div>
-        <label class="ai-consent-preview"><input type="checkbox" id="ai-prompt-preview" ${shouldShowPreview() ? 'checked' : ''}> ${isAr() ? 'أظهر البيانات المرسلة قبل كل طلب' : 'Show the data sent before each request'}</label>
+        <label class="ai-consent-preview"><input type="checkbox" id="ai-prompt-preview" ${shouldShowPreview() ? 'checked' : ''}> ${isAr() ? 'اعرض ملخص البيانات المهنية قبل كل طلب' : 'Show a summary of professional data before each request'}</label>
         <div class="ai-settings-links">
           <a href="/app/privacy.html" target="_blank" rel="noopener">${isAr() ? 'سياسة الخصوصية المختصرة' : 'Short privacy notice'}</a>
           <button type="button" class="btn btn-ghost" data-action="revoke">${isAr() ? 'إلغاء موافقة الذكاء الاصطناعي' : 'Revoke AI consent'}</button>

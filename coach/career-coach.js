@@ -194,13 +194,16 @@ const CareerCoach = (function () {
     if (level === 'mid' && exp.length < 2) {
       advice.push({ type: 'warning', icon: '💡', title: 'Mid-level CV needs more depth', detail: 'Add measurable ownership: projects you led, systems you improved, KPIs you owned.' });
     }
+    const projectHeavyFields = ['developer', 'designer', 'graphic_designer', 'ui_ux_designer', 'data_analyst'];
     if (level === 'fresh' && exp.length === 0) {
-      advice.push({ type: 'info', icon: '🚀', title: 'Fresh graduate — boost with projects', detail: 'No work experience yet? Add graduation projects, internships, and freelance work. These matter a lot to recruiters.' });
+      const detail = projectHeavyFields.includes(field)
+        ? 'No work experience yet? Add genuine projects, internships, or freelance work that demonstrate your skills.'
+        : 'No work experience yet? Add genuine internships, training, volunteering, or practical responsibilities relevant to your profession.';
+      advice.push({ type: 'info', icon: '', title: 'Strengthen your evidence', detail });
     }
 
-    // Missing projects for fresh/junior
-    if (['fresh', 'junior'].includes(level) && (career.projects || []).length === 0) {
-      advice.push({ type: 'critical', icon: '🚀', title: 'No projects — this is critical for your level', detail: 'For fresh grads and juniors, 2-3 strong projects replace years of experience. Add them now.', action: 'edit-projects' });
+    if (['fresh', 'junior'].includes(level) && projectHeavyFields.includes(field) && (career.projects || []).length === 0) {
+      advice.push({ type: 'warning', icon: '', title: 'Add practical project evidence', detail: 'For this profession, one or two genuine projects can demonstrate practical ability. Add only work you actually completed.', action: 'edit-projects' });
     }
 
     // Summary missing career narrative

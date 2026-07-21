@@ -83,6 +83,17 @@ assert.equal(insights.ats.mode, 'job_match');
 assert.equal(insights.ats.score, 37);
 assert.notEqual(insights.ats.readinessScore, insights.ats.score);
 
+// A technically readable template must never receive 100% when the content is weak.
+const weakStructured = sample('accountant', 'mid');
+weakStructured.professionalSummary = 'محاسب لديه خبرة في المحاسبة وإعداد التقارير.';
+weakStructured.experience = [{ role: 'محاسب مالي', company: 'شركة حقيقية', start: '', end: '', bullets: ['محاسب مالي في شركة'] }];
+weakStructured.education = [{ degree: 'بكالوريوس تجارة', school: '' }];
+weakStructured.skills = { core: ['Excel'] };
+const honestAts = AICoach.getATSReadiness(weakStructured);
+assert(honestAts.score < 70, `Weak CV received misleading ATS score: ${honestAts.score}`);
+assert(honestAts.parserScore > honestAts.contentScore, 'Parser and content quality were not separated');
+assert.notEqual(honestAts.score, 100);
+
 // All registered professions must have a rules file in both locales.
 const registry = JSON.parse(fs.readFileSync(path.join(ROOT, 'knowledge-base/registry.json'), 'utf8'));
 for (const profession of Object.values(registry.professions || {})) {

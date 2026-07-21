@@ -2,26 +2,28 @@
  * Template selection — single template = layout + theme + typography bundled
  */
 const TemplateSelector = (function () {
+  // Five curated release templates. Legacy layouts remain supported for old saved CVs,
+  // but they are intentionally hidden from the main gallery until they pass the same QA bar.
   const TEMPLATES = [
-    { id: 'ai-recommended', nameKey: 'templates.ai-recommended', featured: true, layoutId: 'classic', themeId: 'ats' },
+    { id: 'ai-recommended', nameKey: 'templates.recommended', featured: false, layoutId: 'classic', themeId: 'ats' },
     { id: 'ats', nameKey: 'templates.ats', featured: true, layoutId: 'classic', themeId: 'ats' },
-    { id: 'classic', nameKey: 'templates.classic', featured: true, layoutId: 'classic', themeId: 'minimal' },
+    { id: 'classic', nameKey: 'templates.classic', featured: true, layoutId: 'classic', themeId: 'classic' },
     { id: 'modern', nameKey: 'templates.modern', featured: true, layoutId: 'sidebar', themeId: 'modern' },
-    { id: 'sidebar', nameKey: 'templates.sidebar', featured: true, layoutId: 'sidebar', themeId: 'minimal' },
-    { id: 'timeline', nameKey: 'templates.timeline', featured: true, layoutId: 'timeline', themeId: 'modern' },
-    { id: 'compact', nameKey: 'templates.compact', featured: true, layoutId: 'classic', themeId: 'compact' },
-    { id: 'academic', nameKey: 'templates.academic', featured: true, layoutId: 'classic', themeId: 'minimal' },
-    { id: 'corporate', nameKey: 'templates.corporate', featured: true, layoutId: 'corporate', themeId: 'executive' },
+    { id: 'corporate', nameKey: 'templates.corporate', featured: true, layoutId: 'corporate', themeId: 'corporate' },
     { id: 'executive', nameKey: 'templates.executive', featured: true, layoutId: 'corporate', themeId: 'executive' },
-    { id: 'elegant', nameKey: 'templates.elegant', featured: true, layoutId: 'classic', themeId: 'elegant' },
-    { id: 'creative', nameKey: 'templates.creative', featured: true, layoutId: 'canva_sidebar', themeId: 'creative' },
-    { id: 'vibrant', nameKey: 'templates.vibrant', featured: true, layoutId: 'canva_header', themeId: 'vibrant' },
-    { id: 'canva-teal', nameKey: 'templates.canvaTeal', featured: true, layoutId: 'canva_sidebar', themeId: 'canva-teal' },
-    { id: 'canva-navy', nameKey: 'templates.canvaNavy', featured: true, layoutId: 'canva_header', themeId: 'canva-navy' },
-    { id: 'canva-soft', nameKey: 'templates.canvaSoft', featured: true, layoutId: 'canva_sidebar', themeId: 'canva-soft' }
+    { id: 'sidebar', nameKey: 'templates.sidebar', featured: false, layoutId: 'sidebar', themeId: 'minimal' },
+    { id: 'timeline', nameKey: 'templates.timeline', featured: false, layoutId: 'timeline', themeId: 'modern' },
+    { id: 'compact', nameKey: 'templates.compact', featured: false, layoutId: 'classic', themeId: 'compact' },
+    { id: 'academic', nameKey: 'templates.academic', featured: false, layoutId: 'classic', themeId: 'minimal' },
+    { id: 'elegant', nameKey: 'templates.elegant', featured: false, layoutId: 'classic', themeId: 'elegant' },
+    { id: 'creative', nameKey: 'templates.creative', featured: false, layoutId: 'canva_sidebar', themeId: 'creative' },
+    { id: 'vibrant', nameKey: 'templates.vibrant', featured: false, layoutId: 'canva_header', themeId: 'vibrant' },
+    { id: 'canva-teal', nameKey: 'templates.canvaTeal', featured: false, layoutId: 'canva_sidebar', themeId: 'canva-teal' },
+    { id: 'canva-navy', nameKey: 'templates.canvaNavy', featured: false, layoutId: 'canva_header', themeId: 'canva-navy' },
+    { id: 'canva-soft', nameKey: 'templates.canvaSoft', featured: false, layoutId: 'canva_sidebar', themeId: 'canva-soft' }
   ];
 
-  const LEVEL_TEMPLATE_DEFAULTS = { fresh: 'classic', junior: 'ats', mid: 'ats', senior: 'corporate' };
+  const LEVEL_TEMPLATE_DEFAULTS = { fresh: 'ats', junior: 'ats', mid: 'corporate', senior: 'executive' };
   const FIELD_TEMPLATE_DEFAULTS = { developer: 'ats', doctor: 'ats', teacher: 'classic', accountant: 'ats', other: 'ats' };
 
   function getTemplates() { return TEMPLATES; }
@@ -67,7 +69,7 @@ const TemplateSelector = (function () {
 
   function templateName(templateId, tFn) {
     const t = tFn || (k => k);
-    if (templateId === 'ai-recommended') return t('templates.ai-recommended', 'AI Recommended');
+    if (templateId === 'ai-recommended') return t('templates.recommended', 'Recommended');
     const template = TEMPLATES.find(tmpl => tmpl.id === templateId);
     return template ? t(template.nameKey, templateId) : templateId;
   }

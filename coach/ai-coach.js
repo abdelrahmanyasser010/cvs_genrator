@@ -619,32 +619,60 @@ const AICoach = (function () {
   }
 
   function buildFallbackSummary(career) {
-    const area = industry(career);
-    const skills = flatSkills(career).slice(0, 4).join(', ');
-    if (isArabic(career)) {
-      const suffix = skills ? ` مع مهارات في ${skills}` : ' مع تركيز على الدقة والتواصل المهني';
-      return `متخصص في ${area}${suffix}. أعمل على تقديم خدمة موثوقة وتحسين النتائج من خلال تنظيم العمل والاهتمام بالتفاصيل.`;
+    const ar = isArabic(career);
+    const p = career.personalInfo || {};
+    const cp = career.careerProfile || {};
+    const title = String(p.title || cp.specialization || industry(career) || '').trim();
+    const years = String(cp.years || '').trim();
+    const skills = flatSkills(career).filter(Boolean).slice(0, 5);
+    const roles = (career.experience || []).map(item => item.role).filter(Boolean).slice(0, 2);
+    const education = (career.education || []).map(item => item.degree).filter(Boolean).slice(0, 1);
+    if (!title && !years && !skills.length && !roles.length && !education.length) return '';
+
+    if (ar) {
+      const parts = [];
+      let first = title || 'متخصص';
+      if (years && !/^0(?:\D|$)/.test(years)) first += ` بخبرة ${years}`;
+      if (roles.length) first += `، مع خبرة عملية في ${roles.join(' و')}`;
+      parts.push(`${first}.`);
+      if (skills.length) parts.push(`أستخدم مهارات مؤكدة تشمل ${skills.join('، ')}.`);
+      if (education.length) parts.push(`الخلفية التعليمية: ${education[0]}.`);
+      parts.push('أبحث عن فرصة أطبق فيها هذه الخبرات بوضوح وأواصل تطويرها ضمن فريق مهني.');
+      return parts.slice(0, 4).join(' ');
     }
-    const suffix = skills ? ` with strengths in ${skills}` : ' with a practical, results-focused approach';
-    return `${titleCase(area)} professional${suffix}. Focused on clear communication, reliable delivery, and continuous improvement across real-world work environments.`;
+    const parts = [];
+    let first = title || 'Professional';
+    if (years && !/^0(?:\D|$)/.test(years)) first += ` with ${years} of experience`;
+    if (roles.length) first += `, with practical experience as ${roles.join(' and ')}`;
+    parts.push(`${first}.`);
+    if (skills.length) parts.push(`Verified strengths include ${skills.join(', ')}.`);
+    if (education.length) parts.push(`Educational background: ${education[0]}.`);
+    parts.push('Seeking a role where these confirmed capabilities can be applied and developed in a professional team.');
+    return parts.slice(0, 4).join(' ');
   }
 
   function improveExperienceBullets(career) {
     const ar = isArabic(career);
+    const f = field(career);
     const weakAr = /^(مسؤول عن|كنت مسؤولاً عن|قمت ب|ساعدت في)\s*/i;
     const weakEn = /^(responsible for|helped with|worked on|tasked with)\s*/i;
     (career.experience || []).forEach(entry => {
-      const source = entry.bullets?.length ? entry.bullets : [entry.rawDescription || entry.role].filter(Boolean);
-      entry.bullets = source.map((bullet, index) => {
+      let source = (entry.bullets || []).map(x => String(x || '').trim()).filter(Boolean);
+      if (!source.length && entry.rawDescription) source = String(entry.rawDescription).split(/\n+/).map(x => x.trim()).filter(Boolean);
+      if (!source.length) return;
+      entry.bullets = source.slice(0, 4).map((bullet, index) => {
         const text = String(bullet || '').trim();
         if (!text) return '';
         if (ar) {
-          // Improve weak phrasing without adding metrics, tools, or outcomes that the user did not provide.
-          if (weakAr.test(text)) return text.replace(weakAr, index % 2 ? 'نفذت ' : 'أدرت ');
+          if (weakAr.test(text)) {
+            const rest = text.replace(weakAr, '').trim();
+            const verbs = ['نفذت', 'تابعت', 'نظمت', 'راجعت'];
+            return `${verbs[index % verbs.length]} ${rest}`.trim();
+          }
           return text;
         }
         if (weakEn.test(text)) {
-          const verbs = ['Managed', 'Delivered', 'Implemented', 'Coordinated'];
+          const verbs = ['Managed', 'Delivered', 'Coordinated', 'Reviewed'];
           const rest = text.replace(weakEn, '').replace(/^./, char => char.toLowerCase());
           return `${verbs[index % verbs.length]} ${rest}`.trim();
         }
@@ -704,10 +732,10 @@ const AICoach = (function () {
 
     const nextSteps = priorities.map(item => isAr ? `ركّز على ${item}.` : `Focus on ${item}.`);
     const quickActions = [
-      { id: 'edit-summary', label: isAr ? '⭐ كتابة النبذة من بياناتي' : '⭐ Build summary from my facts', condition: !hasSummary },
-      { id: 'improve-experience', label: isAr ? '🔥 تحسين صياغة الخبرة مع المعاينة' : '🔥 Improve experience with preview', condition: hasExp },
-      { id: 'suggest-skills', label: isAr ? '💡 مراجعة مهارات مناسبة' : '💡 Review relevant skills', condition: true },
-      { id: 'tailor-job', label: isAr ? '🎯 مقارنة بوظيفة محددة' : '🎯 Compare with a target job', condition: true }
+      { id: 'edit-summary', label: isAr ? 'كتابة النبذة من بياناتي' : 'Build summary from my facts', condition: !hasSummary },
+      { id: 'improve-experience', label: isAr ? 'تحسين صياغة الخبرة مع المعاينة' : 'Improve experience with preview', condition: hasExp },
+      { id: 'suggest-skills', label: isAr ? 'مراجعة مهارات مناسبة' : 'Review relevant skills', condition: true },
+      { id: 'tailor-job', label: isAr ? 'مقارنة بوظيفة محددة' : 'Compare with a target job', condition: true }
     ].filter(item => item.condition).slice(0, 4);
 
     return { headline, bestStep, why, nextSteps, quickActions, projectMode: profile.projectMode || 'hidden', role: f, level: l };
@@ -722,18 +750,131 @@ const AICoach = (function () {
     const templateId = selectedTemplate === 'ai-recommended' ? (resolvedTemplate || 'classic') : selectedTemplate;
     const atsFriendlyTemplates = new Set(['ai-recommended', 'ats', 'classic', 'compact', 'minimal', 'corporate', 'executive']);
     const templateOk = atsFriendlyTemplates.has(templateId);
-    const hasCoreSections = !!((career.experience || []).length || (career.education || []).length) && flatSkills(career).length > 0;
-    const hasDirection = !!p.title?.trim() && wordCount(career.professionalSummary || '') >= 12;
-    const text = [p.name, p.title, career.professionalSummary, ...(career.experience || []).flatMap(e => [e.company, e.role, e.rawDescription]), ...(career.education || []).flatMap(e => [e.degree, e.school, e.institution])].filter(Boolean).join(' ').toLowerCase();
-    const cleanData = !/leading organization|accredited university|professional development program|senior specialist \/ leader|example company|شركة رائدة|جامعة معتمدة|بيانات تجريبية/.test(text);
-    const checks = [
-      { key: 'contact', points: 25, ok: !!(p.name?.trim() && validEmail && p.phone?.trim()), label: ar ? 'الاسم والإيميل والهاتف مكتملة' : 'Name, valid email, and phone are complete' },
-      { key: 'direction', points: 20, ok: hasDirection, label: ar ? 'المسمى والنبذة يوضحان اتجاه السيرة' : 'Target title and summary provide clear direction' },
-      { key: 'sections', points: 20, ok: hasCoreSections, label: ar ? 'الأقسام الأساسية موجودة بعناوين واضحة' : 'Core sections are present with standard headings' },
-      { key: 'template', points: 25, ok: templateOk, label: ar ? 'القالب الحالي بسيط ومناسب للقراءة الآلية' : 'Current template is simple and machine-readable' },
-      { key: 'truth', points: 10, ok: cleanData, label: ar ? 'لا توجد بيانات نموذجية أو تجريبية ظاهرة' : 'No visible sample or placeholder data' }
+    const profileField = career.careerProfile?.field || 'other';
+    const careerLevel = career.careerProfile?.level || 'junior';
+
+    const rawSkills = flatSkills(career).map(item => String(item || '').trim()).filter(Boolean);
+    const atomicSkills = [...new Set(rawSkills.flatMap(item => item.split(/[,،;|]/)).map(item => item.trim()).filter(Boolean))];
+    const summaryText = String(career.professionalSummary || '').trim();
+    const summaryWords = wordCount(summaryText);
+    const experience = (career.experience || []).filter(item => item && (item.role || item.company || item.rawDescription || (item.bullets || []).length));
+    const education = (career.education || []).filter(item => item && (item.degree || item.school || item.institution));
+
+    const experienceDetails = experience.map(item => {
+      const bullets = [
+        ...(Array.isArray(item.bullets) ? item.bullets : []),
+        ...String(item.rawDescription || '').split(/\n+/)
+      ].map(text => String(text || '').replace(/^[•\-*\s]+/, '').trim()).filter(Boolean);
+      const detailedBullets = bullets.filter(text => text.length >= 24 && wordCount(text) >= 4);
+      const hasRoleAndCompany = !!(String(item.role || '').trim() && String(item.company || '').trim());
+      const hasDates = !!(String(item.period || '').trim() || String(item.start || '').trim() || String(item.end || '').trim());
+      return { hasRoleAndCompany, hasDates, detailedBullets };
+    });
+    const completeExperienceCount = experienceDetails.filter(item => item.hasRoleAndCompany && item.hasDates && item.detailedBullets.length >= 2).length;
+    const totalDetailedBullets = experienceDetails.reduce((sum, item) => sum + item.detailedBullets.length, 0);
+    const completeEducationCount = education.filter(item => String(item.degree || '').trim() && String(item.school || item.institution || '').trim()).length;
+
+    const fullText = [
+      p.name, p.title, summaryText,
+      ...experience.flatMap(item => [item.company, item.role, item.rawDescription, ...(item.bullets || [])]),
+      ...education.flatMap(item => [item.degree, item.school, item.institution]),
+      ...atomicSkills
+    ].filter(Boolean).join(' ').toLowerCase();
+    const cleanData = !/leading organization|accredited university|professional development program|senior specialist \/ leader|example company|شركة رائدة|جامعة معتمدة|بيانات تجريبية/.test(fullText);
+    const hasCoreHeadings = !!(summaryText || experience.length || education.length || atomicSkills.length);
+    const hasExtractableText = fullText.replace(/\s+/g, ' ').trim().length >= 80;
+
+    function check(key, category, points, earned, label, detail) {
+      const normalizedEarned = Math.max(0, Math.min(points, earned));
+      const status = normalizedEarned >= points ? 'ok' : normalizedEarned > 0 ? 'partial' : 'missing';
+      return { key, category, points, earned: normalizedEarned, ok: status === 'ok', status, label, detail };
+    }
+
+    const parserChecks = [
+      check('contact', 'parser', 20, p.name?.trim() && validEmail && p.phone?.trim() ? 20 : (p.name?.trim() && validEmail ? 12 : 0),
+        ar ? 'بيانات التواصل الأساسية قابلة للقراءة' : 'Core contact details are machine-readable',
+        ar ? 'أضف الاسم والبريد الصحيح ورقم الهاتف.' : 'Add your name, a valid email, and phone number.'),
+      check('headings', 'parser', 15, hasCoreHeadings ? 15 : 0,
+        ar ? 'الأقسام تستخدم عناوين واضحة' : 'Sections use standard headings',
+        ar ? 'النبذة والخبرة والتعليم والمهارات تسهّل استخراج البيانات.' : 'Summary, experience, education, and skills help parsing.'),
+      check('template', 'parser', 35, templateOk ? 35 : 10,
+        ar ? 'القالب مناسب للقراءة الآلية' : 'Template supports machine reading',
+        ar ? 'القوالب البسيطة أحادية المسار أكثر أمانًا لأنظمة ATS.' : 'Simple single-flow templates are safer for ATS parsing.'),
+      check('extractable', 'parser', 15, hasExtractableText ? 15 : 5,
+        ar ? 'يوجد نص حقيقي يمكن استخراجه' : 'The CV contains extractable text',
+        ar ? 'السيرة شديدة الاختصار قد تُقرأ تقنيًا لكنها لا تقدم معلومات كافية.' : 'A very short CV may parse technically but still lack useful content.'),
+      check('truth', 'parser', 15, cleanData ? 15 : 0,
+        ar ? 'لا توجد بيانات تجريبية ظاهرة' : 'No visible sample data',
+        ar ? 'استبدل أي بيانات نموذجية أو افتراضية قبل التقديم.' : 'Replace sample or placeholder content before applying.')
     ];
-    return { score: checks.reduce((sum, item) => sum + (item.ok ? item.points : 0), 0), checks, templateOk };
+
+    let summaryEarned = 0;
+    if (summaryWords >= 28 && summaryWords <= 110) summaryEarned = 20;
+    else if (summaryWords >= 16 && summaryWords <= 140) summaryEarned = 10;
+    else if (summaryWords >= 8) summaryEarned = 5;
+
+    let experienceEarned = 0;
+    if (completeExperienceCount >= 1 && totalDetailedBullets >= 3) experienceEarned = 35;
+    else if (completeExperienceCount >= 1 || (experience.length && totalDetailedBullets >= 2)) experienceEarned = 20;
+    else if (experience.length) experienceEarned = 7;
+    else if (careerLevel === 'fresh' && ((career.projects || []).length || (career.certificates || []).length)) experienceEarned = 18;
+
+    let educationEarned = 0;
+    if (completeEducationCount >= 1) educationEarned = 15;
+    else if (education.length) educationEarned = 7;
+
+    let skillsEarned = 0;
+    if (atomicSkills.length >= 4 && atomicSkills.length <= 16) skillsEarned = 15;
+    else if (atomicSkills.length >= 2) skillsEarned = 8;
+    else if (atomicSkills.length === 1) skillsEarned = 3;
+
+    let directionEarned = 0;
+    if (p.title?.trim() && profileField !== 'other' && summaryWords >= 16) directionEarned = 15;
+    else if (p.title?.trim()) directionEarned = 8;
+
+    const contentChecks = [
+      check('summary-quality', 'content', 20, summaryEarned,
+        ar ? 'النبذة المهنية مكتملة ومحددة' : 'Professional summary is complete and specific',
+        ar ? `الحالي: ${summaryWords} كلمة. الأفضل عادة 28–90 كلمة مبنية على حقائقك.` : `Current: ${summaryWords} words. Aim for 28–90 factual words.`),
+      check('experience-quality', 'content', 35, experienceEarned,
+        ar ? 'الخبرة تحتوي على جهة ومدة ونقاط مسؤولية واضحة' : 'Experience includes employer, dates, and clear bullets',
+        ar ? 'لكل خبرة أضف المسمى والجهة والمدة و2–4 نقاط فعلية.' : 'For each role, add title, employer, dates, and 2–4 factual bullets.'),
+      check('education-quality', 'content', 15, educationEarned,
+        ar ? 'التعليم يحتوي على المؤهل والجهة' : 'Education includes qualification and institution',
+        ar ? 'اكتب المؤهل واسم الجامعة أو المعهد بوضوح.' : 'Add the qualification and institution clearly.'),
+      check('skills-quality', 'content', 15, skillsEarned,
+        ar ? 'المهارات منفصلة ومرتبطة بالدور' : 'Skills are separated and role-related',
+        ar ? `الحالي: ${atomicSkills.length} مهارة. اختر 4–12 مهارة حقيقية مرتبطة بالوظيفة.` : `Current: ${atomicSkills.length}. Select 4–12 genuine role-related skills.`),
+      check('direction-quality', 'content', 15, directionEarned,
+        ar ? 'المسمى والمحتوى يعكسان هدفًا وظيفيًا واضحًا' : 'Title and content show a clear job target',
+        ar ? 'حدد المسمى المستهدف واجعل النبذة والخبرة تدعمانه.' : 'Set a target title and align the summary and experience to it.')
+    ];
+
+    const parserScore = Math.round(parserChecks.reduce((sum, item) => sum + item.earned, 0));
+    const contentScore = Math.round(contentChecks.reduce((sum, item) => sum + item.earned, 0));
+    let score = Math.round(parserScore * 0.35 + contentScore * 0.65);
+
+    if (!cleanData) score = Math.min(score, 45);
+    if (careerLevel !== 'fresh' && completeExperienceCount === 0) score = Math.min(score, 64);
+    if (summaryWords < 16 || atomicSkills.length < 2) score = Math.min(score, 69);
+    if (contentScore < 50) score = Math.min(score, 69);
+
+    const summary = contentScore < 55
+      ? (ar ? 'القالب قابل للقراءة، لكن محتوى السيرة ما زال ضعيفًا أو ناقصًا؛ لذلك لا يمكن اعتبارها جاهزة للتقديم.' : 'The template is readable, but the CV content is still weak or incomplete, so it is not application-ready.')
+      : parserScore < 75
+        ? (ar ? 'المحتوى جيد، لكن الهيكل أو القالب يحتاج تبسيطًا لتحسين القراءة الآلية.' : 'The content is useful, but the structure or template needs simplification for better parsing.')
+        : (ar ? 'السيرة قابلة للقراءة ومحتواها جيد، مع بقاء النتيجة مؤشرًا إرشاديًا وليست ضمان قبول.' : 'The CV is readable and its content is solid; the score remains guidance, not a hiring guarantee.');
+
+    return {
+      score,
+      parserScore,
+      contentScore,
+      checks: [...contentChecks, ...parserChecks],
+      parserChecks,
+      contentChecks,
+      templateOk,
+      summary
+    };
   }
 
   function buildCoachInsights(career) {
@@ -807,7 +948,12 @@ const AICoach = (function () {
       mode: hasJD ? 'job_match' : 'readiness',
       score: hasJD ? Number(career.meta.jdMatchScore || 0) : readiness.score,
       readinessScore: readiness.score,
+      parserScore: readiness.parserScore,
+      contentScore: readiness.contentScore,
+      readinessSummary: readiness.summary,
       readinessChecklist: readiness.checks,
+      parserChecklist: readiness.parserChecks,
+      contentChecklist: readiness.contentChecks,
       commonSkills: suggestSkills(career).slice(0, 6),
       missingKeywords: hasJD ? (career.meta.jdMissingKeywords || []) : [],
       foundKeywords: hasJD ? (career.meta.jdFoundKeywords || []) : [],
